@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOAP Note Tool — v5.8.9</title>
+<title>SOAP Note Tool — v5.9</title>
 <style>
 :root {
   /* Hybrid theme: slightly darker background, soft light cards, strong blue accents */
@@ -504,12 +504,53 @@ textarea {
   color: #ffffff !important;
   border-color: var(--accent3) !important;
 }
+
+.mt-4 { margin-top: 4px; }
+.mt-6 { margin-top: 6px; }
+.mt-8 { margin-top: 8px; }
+.mt-10 { margin-top: 10px; }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+
+.patient-order .grid-2 > div,
+.patient-order .grid-3 > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.patient-order input,
+.patient-order select,
+.patient-order textarea {
+  width: 100%;
+}
+
+.patient-order label.small {
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.patient-order h4 {
+  margin-top: 12px;
+  margin-bottom: 8px;
+}
+
+.patient-order .row {
+  align-items: center;
+  gap: 10px;
+}
+
+.patient-order .btn {
+  margin-right: 4px;
+}
+
+
 </style>
 
 </head>
 <body>
 <div class="wrap">
-  <h1>SOAP Note Tool — Version 5.8.9</h1>
+  <h1>SOAP Note Tool — Version 5.9</h1>
   <div class="app">
 
     <!-- LEFT -->
@@ -721,38 +762,33 @@ textarea {
   <summary>Medical Clearance <span class="chev">▶</span></summary>
   <div class="inner">
 
-<div class="grid-3">
-  <div>
-    <label class="small">Hearing aid color</label>
-    <input type="text" id="order-color" placeholder="e.g. champagne"/>
-  </div>
+    <div class="row">
+      <label class="small">Doctor</label>
+      <input
+        type="text"
+        id="clearance-doc"
+        placeholder="e.g. Dr. Smith"
+      />
+    </div>
 
-  <div>
-    <label class="small">Ordered style (Pt chose)</label>
-    <input
-      type="text"
-      id="order-style"
-      list="order-style-list"
-      placeholder="e.g. behind-the-ear hearing aid"
-    />
-    <datalist id="order-style-list">
-      <option value="behind-the-ear hearing aid"></option>
-      <option value="power behind-the-ear hearing aid"></option>
-      <option value="super power behind-the-ear hearing aid"></option>
-      <option value="ultra power behind-the-ear hearing aid"></option>
-      <option value="receiver-in-the-canal hearing aid"></option>
-      <option value="in-the-ear hearing aid"></option>
-      <option value="half shell hearing aid"></option>
-      <option value="in-the-canal hearing aid"></option>
-      <option value="completely-in-the-canal hearing aid"></option>
-      <option value="invisible-in-the-canal hearing aid"></option>
-    </datalist>
-  </div>
+    <div class="row" style="margin-top:8px;">
+      <label class="small">Status</label>
+      <div class="row">
+        <button class="btn" data-clearance="received">Received</button>
+        <button class="btn" data-clearance="not">Not received</button>
+      </div>
+    </div>
 
-  <div>
-    <!-- empty for now, keeps layout balanced -->
-  </div>
-</div>
+    <div class="row" style="margin-top:8px;">
+      <label class="small">Ear(s)</label>
+      <div class="row">
+        <button class="btn" data-clear-ear="AS">AS</button>
+        <button class="btn" data-clear-ear="AD">AD</button>
+      </div>
+      <span class="small" style="display:block;margin-top:4px;">
+        Select both for AU in the note.
+      </span>
+    </div>
 
   </div>
 </details>
@@ -908,156 +944,197 @@ textarea {
     <!-- =====================
          PATIENT ORDER
          ===================== -->
-    <h4>Patient Order</h4>
+<h4>Patient Order</h4>
 
+<div class="patient-order">
+
+  <!-- Ear scope -->
+  <div class="row mt-6">
+    <label class="small">Ear(s) (order)</label>
     <div class="row">
-      <label class="small">Ear(s) (order)</label>
-      <div class="row">
-        <button class="btn" data-orderscope="AS">AS</button>
-        <button class="btn" data-orderscope="AD">AD</button>
-      </div>
+      <button class="btn" data-orderscope="AS">AS</button>
+      <button class="btn" data-orderscope="AD">AD</button>
     </div>
+  </div>
 
-    <div class="grid-3">
-      <div>
-        <label class="small">Manufacturer</label>
-        <input type="text" id="order-mfg" list="ha-mfg-list" placeholder="e.g., Starkey"/>
-        <datalist id="ha-mfg-list">
-          <option value="Starkey"></option>
-          <option value="Phonak"></option>
-          <option value="Oticon"></option>
-          <option value="ReSound"></option>
-          <option value="Signia"></option>
-          <option value="Widex"></option>
-        </datalist>
-      </div>
-
-      <div>
-        <label class="small">Model</label>
-        <input type="text" id="order-model" placeholder="e.g., Evolv AI 1000"/>
-      </div>
-
-      <div>
-        <label class="small">Hearing aid color</label>
-        <input type="text" id="order-color" list="ha-color-list" placeholder="e.g., champagne"/>
-        <datalist id="ha-color-list">
-          <option value="champagne"></option>
-          <option value="black"></option>
-          <option value="silver"></option>
-          <option value="beige"></option>
-          <option value="graphite"></option>
-        </datalist>
-      </div>
-    </div>
-
-    <div class="row" style="margin-top:10px;">
-      <label class="small">Ordered style (Pt chose)</label>
+  <!-- Basic device details -->
+  <div class="grid-3 mt-8">
+    <div>
+      <label class="small">Manufacturer</label>
       <input
         type="text"
-        id="order-style"
-        list="order-style-list"
-        placeholder="e.g. behind-the-ear"
-        style="max-width: 320px;"
+        id="order-mfg"
+        list="ha-mfg-list"
+        placeholder="e.g., Starkey"
       />
-      <datalist id="order-style-list">
-        <option value="behind-the-ear"></option>
-        <option value="power behind-the-ear"></option>
-        <option value="receiver-in-the-canal"></option>
-        <option value="in-the-ear"></option>
-        <option value="in-the-canal"></option>
-        <option value="completely-in-the-canal"></option>
-        <option value="invisible-in-the-canal"></option>
+      <datalist id="ha-mfg-list">
+        <option value="Starkey"></option>
+        <option value="Phonak"></option>
+        <option value="Oticon"></option>
+        <option value="ReSound"></option>
+        <option value="Signia"></option>
+        <option value="Widex"></option>
       </datalist>
     </div>
 
-    <h4>Coupling (order)</h4>
+<div>
+  <label class="small">Model</label>
+  <input
+    type="text"
+    id="order-model"
+    list="ha-model-list"
+    placeholder="e.g., Evolv AI 1000"
+  /> 
+  <datalist id="ha-model-list">
+    <option value="Evolv AI 1000"></option>
+    <option value="Genesis AI 12"></option>
+    <option value="Omega AI 16"></option>
+    <option value="Omega AI 20"></option>
+    <option value="Omega AI 24"></option>
+    <option value="ReSound Key 2"></option>
+  </datalist>
+</div>
 
-    <div class="grid-3">
-      <div>
-        <label class="small">Tube / receiver type</label>
-        <div class="row">
-          <button class="btn" data-ordertube="receiver">Receiver</button>
-          <button class="btn" data-ordertube="slim tube">Slim tube</button>
-        </div>
-      </div>
-
-      <div>
-        <label class="small">Receiver power (AS)</label>
-        <input type="text" id="rec-pwr-AS" placeholder="e.g., 50"/>
-      </div>
-
-      <div>
-        <label class="small">Receiver power (AD)</label>
-        <input type="text" id="rec-pwr-AD" placeholder="e.g., 60"/>
-      </div>
+    <div>
+      <label class="small">Hearing aid color</label>
+      <input
+        type="text"
+        id="order-color"
+        list="ha-color-list"
+        placeholder="e.g., champagne"
+      />
+      <datalist id="ha-color-list">
+        <option value="champagne"></option>
+        <option value="black"></option>
+        <option value="silver"></option>
+        <option value="beige"></option>
+        <option value="graphite"></option>
+      </datalist>
     </div>
+  </div>
 
-    <div class="grid-3">
-      <div>
-        <label class="small">Receiver/slim tube length — AS</label>
-        <select id="rec-len-AS">
-          <option value="">—</option>
-          <option>0</option><option>1</option><option>2</option>
-          <option>3</option><option>4</option><option>5</option>
-        </select>
-      </div>
+  <!-- Ordered style -->
+  <div class="row mt-8">
+    <label class="small">Ordered style (Pt chose)</label>
+    <input
+      type="text"
+      id="order-style"
+      list="order-style-list"
+      placeholder="e.g. behind-the-ear"
+      style="max-width: 360px;"
+    />
+    <datalist id="order-style-list">
+      <option value="behind-the-ear"></option>
+      <option value="power behind-the-ear"></option>
+      <option value="receiver-in-the-canal"></option>
+      <option value="in-the-ear"></option>
+      <option value="in-the-canal"></option>
+      <option value="completely-in-the-canal"></option>
+      <option value="invisible-in-the-canal"></option>
+    </datalist>
+  </div>
 
-      <div>
-        <label class="small">Receiver/slim tube length — AD</label>
-        <select id="rec-len-AD">
-          <option value="">—</option>
-          <option>0</option><option>1</option><option>2</option>
-          <option>3</option><option>4</option><option>5</option>
-        </select>
-      </div>
+  <!-- Coupling & Receivers -->
+  <h4 class="mt-16">Coupling & Receivers (order)</h4>
 
-      <div>
-        <label class="small">Ear mold color (if applicable)</label>
-        <div class="grid-2">
-          <div>
-            <input
-              type="text"
-              id="mold-color-AS"
-              list="mold-color-list"
-              placeholder="Left (AS)"
-            />
-          </div>
-          <div>
-            <input
-              type="text"
-              id="mold-color-AD"
-              list="mold-color-list"
-              placeholder="Right (AD)"
-            />
-          </div>
-        </div>
-        <datalist id="mold-color-list">
-          <option value="clear"></option>
-          <option value="champagne"></option>
-          <option value="brown"></option>
-          <option value="black"></option>
-          <option value="beige"></option>
-        </datalist>
-      </div>
-    </div>
-
+  <!-- Tube/receiver type -->
+  <div class="row mt-6">
+    <label class="small">Tube / receiver type</label>
     <div class="row">
-      <label class="small">Coupling style (order)</label>
-      <div class="row" id="order-coupling-row"></div>
+      <button class="btn" data-ordertube="receiver">Receiver</button>
+      <button class="btn" data-ordertube="slim tube">Slim tube</button>
     </div>
+  </div>
+
+  <!-- AS / AD receiver + mold inputs -->
+  <div class="grid-2 mt-10">
+
+    <!-- Left Ear -->
+    <div>
+      <span class="small"><strong>Left (AS)</strong></span>
+
+      <label class="small mt-6">Receiver/slim tube length — AS</label>
+      <select id="rec-len-AS">
+        <option value="">—</option>
+        <option>0</option><option>1</option><option>2</option>
+        <option>3</option><option>4</option><option>5</option>
+      </select>
+
+      <label class="small mt-6">Receiver power (AS)</label>
+      <input
+        type="text"
+        id="rec-pwr-AS"
+        placeholder="e.g., 50"
+      />
+
+      <label class="small mt-6">Ear mold color (AS)</label>
+      <input
+        type="text"
+        id="mold-color-AS"
+        list="mold-color-list"
+        placeholder="Left (AS)"
+      />
+    </div>
+
+    <!-- Right Ear -->
+    <div>
+      <span class="small"><strong>Right (AD)</strong></span>
+
+      <label class="small mt-6">Receiver/slim tube length — AD</label>
+      <select id="rec-len-AD">
+        <option value="">—</option>
+        <option>0</option><option>1</option><option>2</option>
+        <option>3</option><option>4</option><option>5</option>
+      </select>
+
+      <label class="small mt-6">Receiver power (AD)</label>
+      <input
+        type="text"
+        id="rec-pwr-AD"
+        placeholder="e.g., 60"
+      />
+
+      <label class="small mt-6">Ear mold color (AD)</label>
+      <input
+        type="text"
+        id="mold-color-AD"
+        list="mold-color-list"
+        placeholder="Right (AD)"
+      />
+    </div>
+
+  </div>
+
+  <datalist id="mold-color-list">
+    <option value="clear"></option>
+    <option value="champagne"></option>
+    <option value="brown"></option>
+    <option value="black"></option>
+    <option value="beige"></option>
+  </datalist>
+
+  <!-- Coupling style toggle buttons -->
+  <div class="row mt-10">
+    <label class="small">Coupling style (order)</label>
+    <div class="row" id="order-coupling-row"></div>
+  </div>
+
+  <!-- Extra details -->
+  <div class="row mt-10">
+    <label class="small">Extra order details (live)</label>
+    <textarea
+      id="order-extra"
+      rows="3"
+      placeholder="e.g., Soft ear molds due to Pt’s hearing loss."
+    ></textarea>
+  </div>
+
+</div>
 
     <h4>Impressions</h4>
     <div class="row">
       <button class="btn" data-impression="taken">Impression</button>
       <button class="btn" data-impression="onfile">Imp on file</button>
-    </div>
-
-    <div class="grid-2" style="margin-top:10px;">
-      <div>
-        <label class="small">Extra order details (live)</label>
-        <textarea id="order-extra" rows="3"
-          placeholder="e.g., Soft ear molds due to Pt’s hearing loss."></textarea>
-      </div>
     </div>
 
   </div>
@@ -1142,7 +1219,7 @@ textarea {
 
 <script>
 /* ===============================================
-   SOAP NOTE BUILDER v5.8.9 — CLEAN BASE JS
+   SOAP NOTE BUILDER — CLEAN BASE JS
    =============================================== */
 
 window.SNB = (()=>{
@@ -1370,6 +1447,49 @@ HA_COUPLING: [
       return arr.slice(0,-1).join(', ') + ', or ' + arr[arr.length-1];
     }
   };
+
+  // Reset all state values without breaking existing Set/Array references
+  function resetState(){
+    // Clear Sets and Arrays, reset primitives
+    for (const [key, value] of Object.entries(state)){
+      if (value instanceof Set){
+        value.clear();
+      } else if (Array.isArray(value)){
+        value.length = 0;
+      } else if (typeof value === 'string'){
+        state[key] = '';
+      } else if (typeof value === 'boolean'){
+        state[key] = false;
+      } else if (typeof value === 'number'){
+        // we use numbers mostly like strings; reset to empty
+        state[key] = '';
+      }
+      // Objects (like order, insurance) are handled explicitly below
+    }
+
+    // Reset nested ORDER object
+    Object.assign(state.order, {
+      mfg: '',
+      model: '',
+      style: '',
+      color: '',
+      moldType: '',
+      moldMaterial: '',
+      scope: '',
+      recLenAS: '',
+      recLenAD: '',
+      recPwrAS: '',
+      recPwrAD: '',
+      moldColorAS: '',
+      moldColorAD: '',
+      tubeType: '',
+      extraDetails: ''
+    });
+
+    // Reset nested INSURANCE object
+    state.insurance.status = null;
+  }
+
 
   /* ============================
      HISTORY TEXT LOGIC
@@ -1935,142 +2055,155 @@ if(recPrefix){
   linesA.push(recLine);
 }
 
-// =====================
 // PATIENT ORDER LINES
 // =====================
 const o = state.order;
 
-// Order scope: AS / AD / AU
-let orderScopeFull = '';
-if(o.scope === 'AS' || o.scope === 'AD' || o.scope === 'AU'){
-  orderScopeFull = o.scope;
-}
-
-const hasOrderCore =
-  o.mfg || o.model || o.style || o.color ||
-  o.moldType || o.moldMaterial || o.moldColorAS || o.moldColorAD;
-
-const hasReceiverInfo =
-  o.tubeType &&
-  (o.recLenAS || o.recLenAD || o.recPwrAS || o.recPwrAD);
-
-const moldColor = o.moldColorAS || o.moldColorAD || '';
-
 // --- Pt chose line ---
-if(hasOrderCore){
-  let ptLine = 'Pt chose';
+(function buildPatientChoseLine(){
+  const cv = [...state.orderCoupling];
+  const hasOrderCore =
+    o.mfg || o.model || o.style || o.color ||
+    o.moldColorAS || o.moldColorAD || cv.length;
 
-  const brandModel = [o.mfg, o.model].filter(Boolean).join(' ');
-  const styleText  = o.style ? `${o.style} style` : '';
+  if(!hasOrderCore) return;
 
-  if(brandModel && styleText){
-    ptLine += ` the ${brandModel} ${styleText}`;
-  } else if(brandModel){
-    ptLine += ` the ${brandModel}`;
-  } else if(styleText){
-    ptLine += ` the ${styleText}`;
+  // Scope text for AS / AD / AU
+  let scopeLabel = '';
+  if(o.scope === 'AS'){
+    scopeLabel = 'for the left ear (AS)';
+  } else if(o.scope === 'AD'){
+    scopeLabel = 'for the right ear (AD)';
+  } else if(o.scope === 'AU'){
+    scopeLabel = 'for both ears (AU)';
   }
 
-  if(o.color){
-    ptLine += ` in “${o.color}”`;
+  let line = 'Pt chose ';
+  if(scopeLabel){
+    line += scopeLabel + ': ';
   }
 
-  // Coupling for Pt chose line from ORDER coupling, not rec
-  let couplingOut = '';
-  const cv = [...state.orderCoupling]; // 'dome', 'ear mold', 'RIC ear mold'
-  const hasDome = cv.includes('dome');
-  const hasMold = cv.some(v => v === 'ear mold' || v === 'RIC ear mold');
+  const parts = [];
 
-  if(hasDome && !hasMold){
-    couplingOut = ' w/ domes';
-  } else if(hasMold && !hasDome){
-    couplingOut = ' w/ ear molds';
-  } else if(hasDome && hasMold){
-    couplingOut = ' w/ domes or ear molds';
+  // Brand + model
+  const brandModel = [o.mfg, o.model].filter(Boolean).join(' ').trim();
+  if(brandModel){
+    parts.push(brandModel);
   }
 
-  const moldColor = o.moldColorAS || o.moldColorAD || '';
-  if(couplingOut && moldColor){
-    couplingOut += ` in “${moldColor}”`;
+  // Style
+  if(o.style && o.style.trim()){
+    parts.push(o.style.trim());
   }
 
-  if(couplingOut){
-    ptLine += couplingOut;
+  // Color
+  if(o.color && o.color.trim()){
+    parts.push(`in “${o.color.trim()}”`);
   }
 
-  if(orderScopeFull){
-    ptLine += `, ${orderScopeFull}.`;
-  } else {
-    ptLine += `.`;
-  }
-
-  linesA.push(ptLine);
-}
-
-// --- Receiver order line with AU vs AS/AD logic ---
-const hasRecAS = (o.recLenAS || o.recPwrAS);
-const hasRecAD = (o.recLenAD || o.recPwrAD);
-
-if(hasRecAS || hasRecAD){
-  // Helper to build a single-ear phrase, using singular "receiver"
-  function buildRecPart(len, pwr, earLabel){
-    let part = '';
-    if(len){
-      part += `length #${len}`;
-    }
-    if(pwr){
-      part += (part ? ', ' : '') + `${pwr} gain receiver`;
-    } else if(part){
-      part += ' receiver';
+  // Coupling (order)
+  if(cv.length){
+    if(cv.length === 1){
+      parts.push(`with ${cv[0]}s`);
     } else {
-      part += 'receiver';
+      parts.push(`with ${cv.join(' or ')}s`);
     }
-    part += ` ${earLabel}`;
-    return part;
   }
 
-  // If we have both ears and they match exactly → one AU line, plural "receivers"
+  // Mold colors with AU logic
+  const leftColor  = o.moldColorAS && o.moldColorAS.trim();
+  const rightColor = o.moldColorAD && o.moldColorAD.trim();
+
+  if (leftColor && rightColor &&
+      leftColor.toLowerCase() === rightColor.toLowerCase()) {
+    // Same color both ears → compress
+    parts.push(`ear molds “${leftColor}”`);
+  } else {
+    const moldParts = [];
+    if (leftColor)  moldParts.push(`left mold “${leftColor}”`);
+    if (rightColor) moldParts.push(`right mold “${rightColor}”`);
+    if (moldParts.length){
+      parts.push(moldParts.join(', '));
+    }
+  }
+
+  if(!parts.length){
+    line += 'hearing aids.';
+  } else {
+    line += parts.join(', ') + '.';
+  }
+
+  linesA.push(line);
+})();
+
+// --- Receiver / slim tube order line ---
+(function buildReceiverOrderLine(){
+  const hasRecAS = o.recLenAS || o.recPwrAS;
+  const hasRecAD = o.recLenAD || o.recPwrAD;
+
+  if(!o.tubeType || (!hasRecAS && !hasRecAD)) return;
+
+  const isSlim = (o.tubeType === 'slim tube');
+
+  // If both ears match exactly → single AU line
   if(hasRecAS && hasRecAD &&
-     o.recLenAS && o.recLenAD &&
-     o.recPwrAS && o.recPwrAD &&
      o.recLenAS === o.recLenAD &&
      o.recPwrAS === o.recPwrAD){
 
-    const len = o.recLenAS;
-    const pwr = o.recPwrAS;
+    let core = '';
+    if(o.recLenAS){
+      core += `length #${o.recLenAS}`;
+    }
+    if(o.recPwrAS){
+      core += (core ? ', ' : '') + `${o.recPwrAS} gain`;
+    }
 
-    let line = 'I will order';
-    if(len){
-      line += ` length #${len}`;
-      if(pwr){
-        line += `, ${pwr} gain receivers`;
-      } else {
-        line += ' receivers';
-      }
-    } else if(pwr){
-      line += ` ${pwr} gain receivers`;
-    } else {
-      line += ' receivers';
+    const noun = isSlim ? 'slim tubes' : 'receivers';
+    let line = `I will order ${noun}`;
+    if(core){
+      line += ` (${core})`;
     }
     line += ', AU.';
 
     linesA.push(line);
-
-  } else {
-    // Otherwise, build AS / AD parts separately with singular "receiver"
-    const parts = [];
-
-    if(hasRecAS){
-      parts.push(buildRecPart(o.recLenAS, o.recPwrAS, 'AS'));
-    }
-    if(hasRecAD){
-      parts.push(buildRecPart(o.recLenAD, o.recPwrAD, 'AD'));
-    }
-
-    const joined = parts.join('; ');
-    linesA.push(`I will order ${joined}.`);
+    return;
   }
-}
+
+  // Otherwise, build separate AS / AD parts
+  const parts = [];
+
+  if(hasRecAS){
+    let part = 'AS: ';
+    const details = [];
+    if(o.recLenAS) details.push(`length #${o.recLenAS}`);
+    if(o.recPwrAS) details.push(`${o.recPwrAS} gain`);
+    const noun = isSlim ? 'slim tube' : 'receiver';
+    if(details.length){
+      part += details.join(', ') + ` ${noun}`;
+    } else {
+      part += noun;
+    }
+    parts.push(part);
+  }
+
+  if(hasRecAD){
+    let part = 'AD: ';
+    const details = [];
+    if(o.recLenAD) details.push(`length #${o.recLenAD}`);
+    if(o.recPwrAD) details.push(`${o.recPwrAD} gain`);
+    const noun = isSlim ? 'slim tube' : 'receiver';
+    if(details.length){
+      part += details.join(', ') + ` ${noun}`;
+    } else {
+      part += noun;
+    }
+    parts.push(part);
+  }
+
+  const nounPlural = isSlim ? 'slim tubes' : 'receivers';
+  const line = `I will order ${nounPlural} (${parts.join('; ')}).`;
+  linesA.push(line);
+})();
 
 // --- Extra order details line ---
 if(o.extraDetails && o.extraDetails.trim()){
@@ -2143,22 +2276,45 @@ if(state.impressionStatus === 'onfile'){
       }
     }
 
+    // Global custom Assessment lines (from "Additional Assessment info")
+    if (state.assessCustom && state.assessCustom.length){
+      state.assessCustom.forEach(l => {
+        if(!l || !l.trim()) return;
+        const t = l.trim();
+        linesA.push(t.endsWith('.') ? t : t + '.');
+      });
+    }
+
     /* ============================
        PLAN
        ============================ */
 
     const pl = [...state.planItems];
-    if(pl.length)
-      linesP.push(`Plan items: ${S.utils.joinAnd(pl)}.`);
 
-    if(state.rtcAsNeeded){
-      linesP.push(`RTC as needed.`);
-    } else if(state.rtcTime && state.rtcUnit){
-      linesP.push(`RTC in ${state.rtcTime} ${state.rtcUnit}.`);
+    // Each plan item gets its own bullet line
+    if (pl.length) {
+      pl.forEach(item => {
+        linesP.push(item.endsWith('.') ? item : item + '.');
+      });
     }
 
-    if(state.planCustom.length)
-      state.planCustom.forEach(l=>linesP.push(l.endsWith('.')?l:l+'.'));
+    // RTC logic:
+    // - Timeframe only -> "RTC in 4 months."
+    // - As needed only -> "RTC as needed."
+    // - Both -> "RTC in 4 months or as needed."
+    if (state.rtcTime && state.rtcUnit) {
+      let rtcLine = `RTC in ${state.rtcTime} ${state.rtcUnit}`;
+      if (state.rtcAsNeeded) {
+        rtcLine += ' or as needed';
+      }
+      rtcLine += '.';
+      linesP.push(rtcLine);
+    } else if (state.rtcAsNeeded) {
+      linesP.push('RTC as needed.');
+    }
+
+    if (state.planCustom.length)
+      state.planCustom.forEach(l => linesP.push(l.endsWith('.') ? l : l + '.'));
 
 
     /* ============================
@@ -2625,36 +2781,43 @@ makeButtons('order-coupling-row', S.consts.HA_COUPLING, state.orderCoupling);
     });
   });
 
-  // Order ear scope (independent)
-  document.querySelectorAll('button[data-orderscope]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const ear = btn.dataset.orderscope;
-      if(ear === 'AS'){
-        state.order.scope = (state.order.scope === 'AS') ? '' : 'AS';
-      } else if(ear === 'AD'){
-        state.order.scope = (state.order.scope === 'AD') ? '' : 'AD';
-      }
-
-      // If both toggled in UI, interpret as AU
-      const asOn = state.order.scope === 'AS';
-      const adOn = state.order.scope === 'AD';
-      let scope = '';
-      if(asOn && adOn) scope = 'AU';
-      else if(asOn)    scope = 'AS';
-      else if(adOn)    scope = 'AD';
-      state.order.scope = scope;
-
+    // Order scope: AS / AD buttons, internally '', 'AS', 'AD', or 'AU'
+    function updateOrderScopeButtons(){
+      const scope = state.order.scope; // '', 'AS', 'AD', 'AU'
       document.querySelectorAll('button[data-orderscope]').forEach(b=>{
-        const e = b.dataset.orderscope;
-        const on =
-          (e === 'AS' && (state.order.scope === 'AS' || state.order.scope === 'AU')) ||
-          (e === 'AD' && (state.order.scope === 'AD' || state.order.scope === 'AU'));
+        const ear = b.dataset.orderscope; // "AS" or "AD"
+        const on = (scope === 'AU') || (scope === ear);
         b.classList.toggle('toggled', on);
       });
+    }
 
-      S.rebuild();
+    document.querySelectorAll('button[data-orderscope]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const ear = btn.dataset.orderscope; // "AS" or "AD"
+        const cur = state.order.scope;      // current value
+
+        if(cur === ear){
+          // Clicking the same ear turns everything off
+          state.order.scope = '';
+        } else if(cur === ''){
+          // Nothing selected -> select this ear
+          state.order.scope = ear;
+        } else if(cur === 'AU'){
+          // Both selected; clicking one means "only the other ear"
+          state.order.scope = (ear === 'AS') ? 'AD' : 'AS';
+        } else {
+          // One ear selected; clicking the other -> AU
+          state.order.scope = 'AU';
+        }
+
+        updateOrderScopeButtons();
+        S.rebuild();
+      });
     });
-  });
+
+    // Initialize button states on load
+    updateOrderScopeButtons();
+
 
 // Hearing aid details text box
 const haTech = document.getElementById('ha-tech');
@@ -2698,37 +2861,6 @@ if(haTech){
     bindOrderInput('order-extra','extraDetails');
 
 
-    // Order scope: AS / AD buttons, internally AS/AD/AU
-    function updateOrderScopeButtons(){
-      const scope = state.order.scope;
-      document.querySelectorAll('button[data-orderscope]').forEach(b=>{
-        const ear = b.dataset.orderscope; // "AS" or "AD"
-        const on = (scope === 'AU') || (scope === ear);
-        b.classList.toggle('toggled', on);
-      });
-    }
-
-    document.querySelectorAll('button[data-orderscope]').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        const ear = btn.dataset.orderscope;
-        const cur = state.order.scope;
-
-        if(cur === ear){
-          state.order.scope = '';
-        } else if(cur === ''){
-          state.order.scope = ear;
-        } else if(cur === 'AU'){
-          state.order.scope = (ear === 'AS') ? 'AD' : 'AS';
-        } else {
-          state.order.scope = 'AU';
-        }
-
-        updateOrderScopeButtons();
-        S.rebuild();
-      });
-    });
-
-    updateOrderScopeButtons();
 
     // Impression toggles (Assessment)
     document.querySelectorAll('[data-impression]').forEach(btn=>{
@@ -2886,115 +3018,7 @@ function wirePlan(){
     if(clearBtn){
       clearBtn.addEventListener('click', ()=>{
         /* Reset everything */
-                Object.assign(state, {
-          /* SUBJECTIVE */
-          apptType: '',
-          companion: '',
-          historyAS: new Set(),
-          historyAD: new Set(),
-          historyGeneral: new Set(),
-          historyDeniesAll: false,
-          historyAdditional: '',
-          historyHAUse: '',
-
-          repGenAS: new Set(),
-          repGenAD: new Set(),
-          repHAAS: new Set(),
-          repHAAD: new Set(),
-          repCustomAS: [],
-          repCustomAD: [],
-          subjCustom: [],
-
-          /* OBJECTIVE */
-          otoAScanal: new Set(),
-          otoAStm: new Set(),
-          otoADcanal: new Set(),
-          otoADtm: new Set(),
-          otoCustomAS: [],
-          otoCustomAD: [],
-
-          audioObjSrc: '',
-          audioObjASdeg: new Set(),
-          audioObjADdeg: new Set(),
-          audioObjAStype: new Set(),
-          audioObjADtype: new Set(),
-          audioObjASconf: new Set(),
-          audioObjADconf: new Set(),
-          audioObjCustomAS: [],
-          audioObjCustomAD: [],
-
-          hacAS: new Set(),
-          hacAD: new Set(),
-          hacCustomAS: [],
-          hacCustomAD: [],
-
-          clearance: '',
-          clearanceDoc: '',
-          clearanceAS: false,
-          clearanceAD: false,
-
-          objCustom: [],
-
-          /* ASSESSMENT */
-          audioASdeg: new Set(),
-          audioADdeg: new Set(),
-          audioAStype: new Set(),
-          audioADtype: new Set(),
-          audioASconf: new Set(),
-          audioADconf: new Set(),
-          audioCustomAS: [],
-          audioCustomAD: [],
-
-          insCompany: '',
-          insBenefit: '',
-          insOOP: '',
-          insurance: { status: null },
-
-          haStyle: new Set(),
-          haRecAS: false,
-          haRecAD: false,
-          haTech: '',
-          haCoupling: new Set(),
-          orderCoupling: new Set(),
-          impressionStatus: '',
-          order: {
-            mfg: '',
-            model: '',
-            style: '',
-            color: '',
-            moldType: '',
-            moldMaterial: '',
-            scope: '',
-            recLenAS: '',
-            recLenAD: '',
-            recPwrAS: '',
-            recPwrAD: '',
-            moldColorAS: '',
-            moldColorAD: '',
-            tubeType: '',
-            extraDetails: ''
-          },
-
-          hamAS: new Set(),
-          hamAD: new Set(),
-          hamCustomAS: [],
-          hamCustomAD: [],
-
-          hamPostAS: new Set(),
-          hamPostAD: new Set(),
-          hamPostCustomAS: [],
-          hamPostCustomAD: [],
-
-          assessCustom: [],
-
-          /* PLAN */
-          planItems: new Set(),
-          rtcTime: '',
-          rtcUnit: '',
-          rtcAsNeeded: false,
-          planCustom: []
-        });
-
+        resetState();
 
         document.querySelectorAll('.btn.toggled').forEach(b=>b.classList.remove('toggled'));
         document.querySelectorAll('input[type="text"],input[type="number"]').forEach(i=>i.value='');
