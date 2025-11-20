@@ -1366,6 +1366,49 @@ HA_COUPLING: [
     }
   };
 
+  // Reset all state values without breaking existing Set/Array references
+  function resetState(){
+    // Clear Sets and Arrays, reset primitives
+    for (const [key, value] of Object.entries(state)){
+      if (value instanceof Set){
+        value.clear();
+      } else if (Array.isArray(value)){
+        value.length = 0;
+      } else if (typeof value === 'string'){
+        state[key] = '';
+      } else if (typeof value === 'boolean'){
+        state[key] = false;
+      } else if (typeof value === 'number'){
+        // we use numbers mostly like strings; reset to empty
+        state[key] = '';
+      }
+      // Objects (like order, insurance) are handled explicitly below
+    }
+
+    // Reset nested ORDER object
+    Object.assign(state.order, {
+      mfg: '',
+      model: '',
+      style: '',
+      color: '',
+      moldType: '',
+      moldMaterial: '',
+      scope: '',
+      recLenAS: '',
+      recLenAD: '',
+      recPwrAS: '',
+      recPwrAD: '',
+      moldColorAS: '',
+      moldColorAD: '',
+      tubeType: '',
+      extraDetails: ''
+    });
+
+    // Reset nested INSURANCE object
+    state.insurance.status = null;
+  }
+
+
   /* ============================
      HISTORY TEXT LOGIC
      ============================ */
@@ -2912,115 +2955,7 @@ function wirePlan(){
     if(clearBtn){
       clearBtn.addEventListener('click', ()=>{
         /* Reset everything */
-                Object.assign(state, {
-          /* SUBJECTIVE */
-          apptType: '',
-          companion: '',
-          historyAS: new Set(),
-          historyAD: new Set(),
-          historyGeneral: new Set(),
-          historyDeniesAll: false,
-          historyAdditional: '',
-          historyHAUse: '',
-
-          repGenAS: new Set(),
-          repGenAD: new Set(),
-          repHAAS: new Set(),
-          repHAAD: new Set(),
-          repCustomAS: [],
-          repCustomAD: [],
-          subjCustom: [],
-
-          /* OBJECTIVE */
-          otoAScanal: new Set(),
-          otoAStm: new Set(),
-          otoADcanal: new Set(),
-          otoADtm: new Set(),
-          otoCustomAS: [],
-          otoCustomAD: [],
-
-          audioObjSrc: '',
-          audioObjASdeg: new Set(),
-          audioObjADdeg: new Set(),
-          audioObjAStype: new Set(),
-          audioObjADtype: new Set(),
-          audioObjASconf: new Set(),
-          audioObjADconf: new Set(),
-          audioObjCustomAS: [],
-          audioObjCustomAD: [],
-
-          hacAS: new Set(),
-          hacAD: new Set(),
-          hacCustomAS: [],
-          hacCustomAD: [],
-
-          clearance: '',
-          clearanceDoc: '',
-          clearanceAS: false,
-          clearanceAD: false,
-
-          objCustom: [],
-
-          /* ASSESSMENT */
-          audioASdeg: new Set(),
-          audioADdeg: new Set(),
-          audioAStype: new Set(),
-          audioADtype: new Set(),
-          audioASconf: new Set(),
-          audioADconf: new Set(),
-          audioCustomAS: [],
-          audioCustomAD: [],
-
-          insCompany: '',
-          insBenefit: '',
-          insOOP: '',
-          insurance: { status: null },
-
-          haStyle: new Set(),
-          haRecAS: false,
-          haRecAD: false,
-          haTech: '',
-          haCoupling: new Set(),
-          orderCoupling: new Set(),
-          impressionStatus: '',
-          order: {
-            mfg: '',
-            model: '',
-            style: '',
-            color: '',
-            moldType: '',
-            moldMaterial: '',
-            scope: '',
-            recLenAS: '',
-            recLenAD: '',
-            recPwrAS: '',
-            recPwrAD: '',
-            moldColorAS: '',
-            moldColorAD: '',
-            tubeType: '',
-            extraDetails: ''
-          },
-
-          hamAS: new Set(),
-          hamAD: new Set(),
-          hamCustomAS: [],
-          hamCustomAD: [],
-
-          hamPostAS: new Set(),
-          hamPostAD: new Set(),
-          hamPostCustomAS: [],
-          hamPostCustomAD: [],
-
-          assessCustom: [],
-
-          /* PLAN */
-          planItems: new Set(),
-          rtcTime: '',
-          rtcUnit: '',
-          rtcAsNeeded: false,
-          planCustom: []
-        });
-
+        resetState();
 
         document.querySelectorAll('.btn.toggled').forEach(b=>b.classList.remove('toggled'));
         document.querySelectorAll('input[type="text"],input[type="number"]').forEach(i=>i.value='');
