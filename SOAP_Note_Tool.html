@@ -504,6 +504,47 @@ textarea {
   color: #ffffff !important;
   border-color: var(--accent3) !important;
 }
+
+.mt-4 { margin-top: 4px; }
+.mt-6 { margin-top: 6px; }
+.mt-8 { margin-top: 8px; }
+.mt-10 { margin-top: 10px; }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+
+.patient-order .grid-2 > div,
+.patient-order .grid-3 > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.patient-order input,
+.patient-order select,
+.patient-order textarea {
+  width: 100%;
+}
+
+.patient-order label.small {
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.patient-order h4 {
+  margin-top: 12px;
+  margin-bottom: 8px;
+}
+
+.patient-order .row {
+  align-items: center;
+  gap: 10px;
+}
+
+.patient-order .btn {
+  margin-right: 4px;
+}
+
+
 </style>
 
 </head>
@@ -903,156 +944,197 @@ textarea {
     <!-- =====================
          PATIENT ORDER
          ===================== -->
-    <h4>Patient Order</h4>
+<h4>Patient Order</h4>
 
+<div class="patient-order">
+
+  <!-- Ear scope -->
+  <div class="row mt-6">
+    <label class="small">Ear(s) (order)</label>
     <div class="row">
-      <label class="small">Ear(s) (order)</label>
-      <div class="row">
-        <button class="btn" data-orderscope="AS">AS</button>
-        <button class="btn" data-orderscope="AD">AD</button>
-      </div>
+      <button class="btn" data-orderscope="AS">AS</button>
+      <button class="btn" data-orderscope="AD">AD</button>
     </div>
+  </div>
 
-    <div class="grid-3">
-      <div>
-        <label class="small">Manufacturer</label>
-        <input type="text" id="order-mfg" list="ha-mfg-list" placeholder="e.g., Starkey"/>
-        <datalist id="ha-mfg-list">
-          <option value="Starkey"></option>
-          <option value="Phonak"></option>
-          <option value="Oticon"></option>
-          <option value="ReSound"></option>
-          <option value="Signia"></option>
-          <option value="Widex"></option>
-        </datalist>
-      </div>
-
-      <div>
-        <label class="small">Model</label>
-        <input type="text" id="order-model" placeholder="e.g., Evolv AI 1000"/>
-      </div>
-
-      <div>
-        <label class="small">Hearing aid color</label>
-        <input type="text" id="order-color" list="ha-color-list" placeholder="e.g., champagne"/>
-        <datalist id="ha-color-list">
-          <option value="champagne"></option>
-          <option value="black"></option>
-          <option value="silver"></option>
-          <option value="beige"></option>
-          <option value="graphite"></option>
-        </datalist>
-      </div>
-    </div>
-
-    <div class="row" style="margin-top:10px;">
-      <label class="small">Ordered style (Pt chose)</label>
+  <!-- Basic device details -->
+  <div class="grid-3 mt-8">
+    <div>
+      <label class="small">Manufacturer</label>
       <input
         type="text"
-        id="order-style"
-        list="order-style-list"
-        placeholder="e.g. behind-the-ear"
-        style="max-width: 320px;"
+        id="order-mfg"
+        list="ha-mfg-list"
+        placeholder="e.g., Starkey"
       />
-      <datalist id="order-style-list">
-        <option value="behind-the-ear"></option>
-        <option value="power behind-the-ear"></option>
-        <option value="receiver-in-the-canal"></option>
-        <option value="in-the-ear"></option>
-        <option value="in-the-canal"></option>
-        <option value="completely-in-the-canal"></option>
-        <option value="invisible-in-the-canal"></option>
+      <datalist id="ha-mfg-list">
+        <option value="Starkey"></option>
+        <option value="Phonak"></option>
+        <option value="Oticon"></option>
+        <option value="ReSound"></option>
+        <option value="Signia"></option>
+        <option value="Widex"></option>
       </datalist>
     </div>
 
-    <h4>Coupling (order)</h4>
+<div>
+  <label class="small">Model</label>
+  <input
+    type="text"
+    id="order-model"
+    list="ha-model-list"
+    placeholder="e.g., Evolv AI 1000"
+  /> 
+  <datalist id="ha-model-list">
+    <option value="Evolv AI 1000"></option>
+    <option value="Genesis AI 12"></option>
+    <option value="Omega AI 16"></option>
+    <option value="Omega AI 20"></option>
+    <option value="Omega AI 24"></option>
+    <option value="ReSound Key 2"></option>
+  </datalist>
+</div>
 
-    <div class="grid-3">
-      <div>
-        <label class="small">Tube / receiver type</label>
-        <div class="row">
-          <button class="btn" data-ordertube="receiver">Receiver</button>
-          <button class="btn" data-ordertube="slim tube">Slim tube</button>
-        </div>
-      </div>
-
-      <div>
-        <label class="small">Receiver power (AS)</label>
-        <input type="text" id="rec-pwr-AS" placeholder="e.g., 50"/>
-      </div>
-
-      <div>
-        <label class="small">Receiver power (AD)</label>
-        <input type="text" id="rec-pwr-AD" placeholder="e.g., 60"/>
-      </div>
+    <div>
+      <label class="small">Hearing aid color</label>
+      <input
+        type="text"
+        id="order-color"
+        list="ha-color-list"
+        placeholder="e.g., champagne"
+      />
+      <datalist id="ha-color-list">
+        <option value="champagne"></option>
+        <option value="black"></option>
+        <option value="silver"></option>
+        <option value="beige"></option>
+        <option value="graphite"></option>
+      </datalist>
     </div>
+  </div>
 
-    <div class="grid-3">
-      <div>
-        <label class="small">Receiver/slim tube length — AS</label>
-        <select id="rec-len-AS">
-          <option value="">—</option>
-          <option>0</option><option>1</option><option>2</option>
-          <option>3</option><option>4</option><option>5</option>
-        </select>
-      </div>
+  <!-- Ordered style -->
+  <div class="row mt-8">
+    <label class="small">Ordered style (Pt chose)</label>
+    <input
+      type="text"
+      id="order-style"
+      list="order-style-list"
+      placeholder="e.g. behind-the-ear"
+      style="max-width: 360px;"
+    />
+    <datalist id="order-style-list">
+      <option value="behind-the-ear"></option>
+      <option value="power behind-the-ear"></option>
+      <option value="receiver-in-the-canal"></option>
+      <option value="in-the-ear"></option>
+      <option value="in-the-canal"></option>
+      <option value="completely-in-the-canal"></option>
+      <option value="invisible-in-the-canal"></option>
+    </datalist>
+  </div>
 
-      <div>
-        <label class="small">Receiver/slim tube length — AD</label>
-        <select id="rec-len-AD">
-          <option value="">—</option>
-          <option>0</option><option>1</option><option>2</option>
-          <option>3</option><option>4</option><option>5</option>
-        </select>
-      </div>
+  <!-- Coupling & Receivers -->
+  <h4 class="mt-16">Coupling & Receivers (order)</h4>
 
-      <div>
-        <label class="small">Ear mold color (if applicable)</label>
-        <div class="grid-2">
-          <div>
-            <input
-              type="text"
-              id="mold-color-AS"
-              list="mold-color-list"
-              placeholder="Left (AS)"
-            />
-          </div>
-          <div>
-            <input
-              type="text"
-              id="mold-color-AD"
-              list="mold-color-list"
-              placeholder="Right (AD)"
-            />
-          </div>
-        </div>
-        <datalist id="mold-color-list">
-          <option value="clear"></option>
-          <option value="champagne"></option>
-          <option value="brown"></option>
-          <option value="black"></option>
-          <option value="beige"></option>
-        </datalist>
-      </div>
-    </div>
-
+  <!-- Tube/receiver type -->
+  <div class="row mt-6">
+    <label class="small">Tube / receiver type</label>
     <div class="row">
-      <label class="small">Coupling style (order)</label>
-      <div class="row" id="order-coupling-row"></div>
+      <button class="btn" data-ordertube="receiver">Receiver</button>
+      <button class="btn" data-ordertube="slim tube">Slim tube</button>
     </div>
+  </div>
+
+  <!-- AS / AD receiver + mold inputs -->
+  <div class="grid-2 mt-10">
+
+    <!-- Left Ear -->
+    <div>
+      <span class="small"><strong>Left (AS)</strong></span>
+
+      <label class="small mt-6">Receiver/slim tube length — AS</label>
+      <select id="rec-len-AS">
+        <option value="">—</option>
+        <option>0</option><option>1</option><option>2</option>
+        <option>3</option><option>4</option><option>5</option>
+      </select>
+
+      <label class="small mt-6">Receiver power (AS)</label>
+      <input
+        type="text"
+        id="rec-pwr-AS"
+        placeholder="e.g., 50"
+      />
+
+      <label class="small mt-6">Ear mold color (AS)</label>
+      <input
+        type="text"
+        id="mold-color-AS"
+        list="mold-color-list"
+        placeholder="Left (AS)"
+      />
+    </div>
+
+    <!-- Right Ear -->
+    <div>
+      <span class="small"><strong>Right (AD)</strong></span>
+
+      <label class="small mt-6">Receiver/slim tube length — AD</label>
+      <select id="rec-len-AD">
+        <option value="">—</option>
+        <option>0</option><option>1</option><option>2</option>
+        <option>3</option><option>4</option><option>5</option>
+      </select>
+
+      <label class="small mt-6">Receiver power (AD)</label>
+      <input
+        type="text"
+        id="rec-pwr-AD"
+        placeholder="e.g., 60"
+      />
+
+      <label class="small mt-6">Ear mold color (AD)</label>
+      <input
+        type="text"
+        id="mold-color-AD"
+        list="mold-color-list"
+        placeholder="Right (AD)"
+      />
+    </div>
+
+  </div>
+
+  <datalist id="mold-color-list">
+    <option value="clear"></option>
+    <option value="champagne"></option>
+    <option value="brown"></option>
+    <option value="black"></option>
+    <option value="beige"></option>
+  </datalist>
+
+  <!-- Coupling style toggle buttons -->
+  <div class="row mt-10">
+    <label class="small">Coupling style (order)</label>
+    <div class="row" id="order-coupling-row"></div>
+  </div>
+
+  <!-- Extra details -->
+  <div class="row mt-10">
+    <label class="small">Extra order details (live)</label>
+    <textarea
+      id="order-extra"
+      rows="3"
+      placeholder="e.g., Soft ear molds due to Pt’s hearing loss."
+    ></textarea>
+  </div>
+
+</div>
 
     <h4>Impressions</h4>
     <div class="row">
       <button class="btn" data-impression="taken">Impression</button>
       <button class="btn" data-impression="onfile">Imp on file</button>
-    </div>
-
-    <div class="grid-2" style="margin-top:10px;">
-      <div>
-        <label class="small">Extra order details (live)</label>
-        <textarea id="order-extra" rows="3"
-          placeholder="e.g., Soft ear molds due to Pt’s hearing loss."></textarea>
-      </div>
     </div>
 
   </div>
@@ -2028,16 +2110,21 @@ const o = state.order;
     }
   }
 
-  // Mold colors
-  const moldParts = [];
-  if(o.moldColorAS && o.moldColorAS.trim()){
-    moldParts.push(`left mold “${o.moldColorAS.trim()}”`);
-  }
-  if(o.moldColorAD && o.moldColorAD.trim()){
-    moldParts.push(`right mold “${o.moldColorAD.trim()}”`);
-  }
-  if(moldParts.length){
-    parts.push(moldParts.join(', '));
+  // Mold colors with AU logic
+  const leftColor  = o.moldColorAS && o.moldColorAS.trim();
+  const rightColor = o.moldColorAD && o.moldColorAD.trim();
+
+  if (leftColor && rightColor &&
+      leftColor.toLowerCase() === rightColor.toLowerCase()) {
+    // Same color both ears → compress
+    parts.push(`ear molds “${leftColor}”`);
+  } else {
+    const moldParts = [];
+    if (leftColor)  moldParts.push(`left mold “${leftColor}”`);
+    if (rightColor) moldParts.push(`right mold “${rightColor}”`);
+    if (moldParts.length){
+      parts.push(moldParts.join(', '));
+    }
   }
 
   if(!parts.length){
@@ -2694,36 +2781,43 @@ makeButtons('order-coupling-row', S.consts.HA_COUPLING, state.orderCoupling);
     });
   });
 
-  // Order ear scope (independent)
-  document.querySelectorAll('button[data-orderscope]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const ear = btn.dataset.orderscope;
-      if(ear === 'AS'){
-        state.order.scope = (state.order.scope === 'AS') ? '' : 'AS';
-      } else if(ear === 'AD'){
-        state.order.scope = (state.order.scope === 'AD') ? '' : 'AD';
-      }
-
-      // If both toggled in UI, interpret as AU
-      const asOn = state.order.scope === 'AS';
-      const adOn = state.order.scope === 'AD';
-      let scope = '';
-      if(asOn && adOn) scope = 'AU';
-      else if(asOn)    scope = 'AS';
-      else if(adOn)    scope = 'AD';
-      state.order.scope = scope;
-
+    // Order scope: AS / AD buttons, internally '', 'AS', 'AD', or 'AU'
+    function updateOrderScopeButtons(){
+      const scope = state.order.scope; // '', 'AS', 'AD', 'AU'
       document.querySelectorAll('button[data-orderscope]').forEach(b=>{
-        const e = b.dataset.orderscope;
-        const on =
-          (e === 'AS' && (state.order.scope === 'AS' || state.order.scope === 'AU')) ||
-          (e === 'AD' && (state.order.scope === 'AD' || state.order.scope === 'AU'));
+        const ear = b.dataset.orderscope; // "AS" or "AD"
+        const on = (scope === 'AU') || (scope === ear);
         b.classList.toggle('toggled', on);
       });
+    }
 
-      S.rebuild();
+    document.querySelectorAll('button[data-orderscope]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const ear = btn.dataset.orderscope; // "AS" or "AD"
+        const cur = state.order.scope;      // current value
+
+        if(cur === ear){
+          // Clicking the same ear turns everything off
+          state.order.scope = '';
+        } else if(cur === ''){
+          // Nothing selected -> select this ear
+          state.order.scope = ear;
+        } else if(cur === 'AU'){
+          // Both selected; clicking one means "only the other ear"
+          state.order.scope = (ear === 'AS') ? 'AD' : 'AS';
+        } else {
+          // One ear selected; clicking the other -> AU
+          state.order.scope = 'AU';
+        }
+
+        updateOrderScopeButtons();
+        S.rebuild();
+      });
     });
-  });
+
+    // Initialize button states on load
+    updateOrderScopeButtons();
+
 
 // Hearing aid details text box
 const haTech = document.getElementById('ha-tech');
@@ -2767,37 +2861,6 @@ if(haTech){
     bindOrderInput('order-extra','extraDetails');
 
 
-    // Order scope: AS / AD buttons, internally AS/AD/AU
-    function updateOrderScopeButtons(){
-      const scope = state.order.scope;
-      document.querySelectorAll('button[data-orderscope]').forEach(b=>{
-        const ear = b.dataset.orderscope; // "AS" or "AD"
-        const on = (scope === 'AU') || (scope === ear);
-        b.classList.toggle('toggled', on);
-      });
-    }
-
-    document.querySelectorAll('button[data-orderscope]').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        const ear = btn.dataset.orderscope;
-        const cur = state.order.scope;
-
-        if(cur === ear){
-          state.order.scope = '';
-        } else if(cur === ''){
-          state.order.scope = ear;
-        } else if(cur === 'AU'){
-          state.order.scope = (ear === 'AS') ? 'AD' : 'AS';
-        } else {
-          state.order.scope = 'AU';
-        }
-
-        updateOrderScopeButtons();
-        S.rebuild();
-      });
-    });
-
-    updateOrderScopeButtons();
 
     // Impression toggles (Assessment)
     document.querySelectorAll('[data-impression]').forEach(btn=>{
