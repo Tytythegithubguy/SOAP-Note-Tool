@@ -2146,6 +2146,15 @@ if(state.impressionStatus === 'onfile'){
       }
     }
 
+    // Global custom Assessment lines (from "Additional Assessment info")
+    if (state.assessCustom && state.assessCustom.length){
+      state.assessCustom.forEach(l => {
+        if(!l || !l.trim()) return;
+        const t = l.trim();
+        linesA.push(t.endsWith('.') ? t : t + '.');
+      });
+    }
+
     /* ============================
        PLAN
        ============================ */
