@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOAP Note Tool — v6.0</title>
+<title>SOAP Note Tool — v6.0.1</title>
 <style>
 :root {
   /* Hybrid theme: slightly darker background, soft light cards, strong blue accents */
@@ -550,7 +550,7 @@ textarea {
 </head>
 <body>
 <div class="wrap">
-  <h1>SOAP Note Tool — Version 6.0</h1>
+  <h1>SOAP Note Tool — Version 6.0.1</h1>
   <div class="app">
 
     <!-- LEFT -->
@@ -560,17 +560,6 @@ textarea {
 <details class="card" id="sec-subjective" open>
   <summary>Subjective <span class="chev">▶</span></summary>
   <div class="card-body" id="subjective-body">
-
-        <!-- QUICK TEMPLATES -->
-    <h4>Visit Templates</h4>
-    <div class="row">
-      <button class="btn template-btn" data-template="appt-HAE">
-        HAE Template
-      </button>
-      <!-- You can add more visit templates here later -->
-      <!-- <button class="btn template-btn" data-template="appt-CHT">CHT Template</button> -->
-    </div>
-    <hr class="sep"/>
 
 
     <h4>Appointment Type</h4>
@@ -1229,6 +1218,72 @@ textarea {
   </div>
 </details>
 
+<!-- NEW: Hearing Aid Maintenance -->
+<details class="subcard" id="ham-sub" open>
+  <summary>Hearing Aid Maintenance <span class="chev">▶</span></summary>
+  <div class="inner grid-2 asad-grid">
+
+    <div>
+      <div class="copy-arrows">
+        <span class="small">Left (AS)</span>
+        <button class="btn" data-copy="ham-AS-to-AD">Copy ▶</button>
+      </div>
+
+      <div id="ham-AS" class="row"></div>
+
+      <div class="row">
+        <textarea id="ham-AS-custom" rows="2"
+          placeholder="Additional HA maintenance info (AS)"></textarea>
+      </div>
+    </div>
+
+    <div>
+      <span class="small">Right (AD)</span>
+
+      <div id="ham-AD" class="row"></div>
+
+      <div class="row">
+        <textarea id="ham-AD-custom" rows="2"
+          placeholder="Additional HA maintenance info (AD)"></textarea>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+<!-- NEW: Post-Maintenance Status -->
+<details class="subcard" id="ham-post-sub" open>
+  <summary>Post-Maintenance Status <span class="chev">▶</span></summary>
+  <div class="inner grid-2 asad-grid">
+
+    <div>
+      <div class="copy-arrows">
+        <span class="small">Left (AS)</span>
+        <button class="btn" data-copy="ham-post-AS-to-AD">Copy ▶</button>
+      </div>
+
+      <div id="ham-post-AS" class="row"></div>
+
+      <div class="row">
+        <textarea id="ham-post-AS-custom" rows="2"
+          placeholder="Post-maintenance notes (AS)"></textarea>
+      </div>
+    </div>
+
+    <div>
+      <span class="small">Right (AD)</span>
+
+      <div id="ham-post-AD" class="row"></div>
+
+      <div class="row">
+        <textarea id="ham-post-AD-custom" rows="2"
+          placeholder="Post-maintenance notes (AD)"></textarea>
+      </div>
+    </div>
+
+  </div>
+</details>
+
     <div class="row" style="margin-top:8px;">
       <textarea id="custom-assessment" rows="3"
         placeholder="Additional Assessment info"></textarea>
@@ -1545,6 +1600,145 @@ HA_COUPLING: [
       return arr.slice(0,-1).join(', ') + ', or ' + arr[arr.length-1];
     }
   };
+
+  /* ============================
+     VISIT LAYOUTS (attach to appt type buttons)
+     ============================ */
+
+  S.visitLayouts = {
+    // CHT:
+    // History, patient reports, otoscopy, in-office audio, Plan
+    'comprehensive hearing test': {
+      mainOpen: ['sec-subjective','sec-objective','sec-assessment','sec-plan'],
+      subOpen:  ['otoscopy-sub','audiogram-assess-sub']
+    },
+
+    // HAE:
+    // History, patient reports, otoscopy, audiogram (outside),
+    // medical clearance, insurance info, HA Rec/Choice/Imps, Plan
+    'hearing aid evaluation': {
+      mainOpen: ['sec-subjective','sec-objective','sec-assessment','sec-plan'],
+      subOpen:  [
+        'otoscopy-sub',
+        'audiogram-obj-sub',
+        'clearance-sub',
+        'ins-sub',
+        'ha-rec-sub'
+      ]
+    },
+
+    // HAC:
+    // Same as HAE + in-office audio
+    'hearing aid consultation': {
+      mainOpen: ['sec-subjective','sec-objective','sec-assessment','sec-plan'],
+      subOpen:  [
+        'otoscopy-sub',
+        'audiogram-obj-sub',
+        'audiogram-assess-sub',
+        'clearance-sub',
+        'ins-sub',
+        'ha-rec-sub'
+      ]
+    },
+
+    // HAD:
+    // otoscopy, (future) Delivery section, Plan
+    'hearing aid delivery': {
+      mainOpen: ['sec-objective','sec-assessment','sec-plan'],
+      subOpen:  [
+        'otoscopy-sub'
+        // 'delivery-assess-sub'  // when we build it
+      ]
+    },
+
+    // HACK I/W:
+    // Patient reports, otoscopy, HA Condition, HA Maintenance, Plan
+    'in-warranty hearing aid check and clean': {
+      mainOpen: ['sec-subjective','sec-objective','sec-assessment','sec-plan'],
+      subOpen:  [
+        'otoscopy-sub',
+        'hacond-sub',
+        'ham-sub',
+        'ham-post-sub'
+      ]
+    },
+
+    // HACK O/W:
+    // Same as above
+    'out-of-warranty hearing aid check and clean': {
+      mainOpen: ['sec-subjective','sec-objective','sec-assessment','sec-plan'],
+      subOpen:  [
+        'otoscopy-sub',
+        'hacond-sub',
+        'ham-sub',
+        'ham-post-sub'
+      ]
+    },
+
+    // Annual test:
+    // History, patient reports, otoscopy, in-office audio, Plan
+    'Annual hearing test': {
+      mainOpen: ['sec-subjective','sec-objective','sec-assessment','sec-plan'],
+      subOpen:  [
+        'otoscopy-sub',
+        'audiogram-assess-sub'
+      ]
+    },
+
+    // Re-Del:
+    // Same as HACK but with Delivery report section (when built)
+    're-delivery appointment': {
+      mainOpen: ['sec-subjective','sec-objective','sec-assessment','sec-plan'],
+      subOpen:  [
+        'otoscopy-sub',
+        'hacond-sub',
+        'ham-sub',
+        'ham-post-sub'
+        // 'delivery-assess-sub' // future
+      ]
+    }
+  };
+
+  function applyVisitLayout(apptType){
+    const layout = S.visitLayouts[apptType];
+
+    const allMain = ['sec-subjective','sec-objective','sec-assessment','sec-plan'];
+    const allSub  = [
+      'otoscopy-sub',
+      'audiogram-obj-sub',
+      'audiogram-assess-sub',
+      'clearance-sub',
+      'hacond-sub',
+      'ins-sub',
+      'ha-rec-sub',
+      'ham-sub',
+      'ham-post-sub'
+      // 'delivery-assess-sub'  // future, safe if missing
+    ];
+
+    // Auto open/close the main cards
+    allMain.forEach(id=>{
+      const el = document.getElementById(id);
+      if(!el || el.tagName.toLowerCase() !== 'details') return;
+      if(layout){
+        el.open = layout.mainOpen.includes(id);
+      } else {
+        // if no layout, leave as-is (no forced close)
+      }
+    });
+
+    // Auto open/close the subcards inside Objective/Assessment
+    allSub.forEach(id=>{
+      const el = document.getElementById(id);
+      if(!el || el.tagName.toLowerCase() !== 'details') return;
+      if(layout){
+        el.open = layout.subOpen.includes(id);
+      } else {
+        // no-op when no layout
+      }
+    });
+  }
+
 
   /* ============================
      TEMPLATES (v6.0-dev)
@@ -2973,28 +3167,17 @@ if(state.impressionStatus === 'onfile'){
         if(!b) return;
         const v = b.dataset.appt;
 
-        // toggle appt type
+        // Toggle appt type state
         state.apptType = (state.apptType === v) ? '' : v;
 
+        // Visual toggle on the buttons
         apptRow.querySelectorAll('.btn').forEach(x=>{
           x.classList.toggle('toggled', x === b && state.apptType === v);
         });
 
-        // Auto-open relevant sections for certain appt types
-        if(state.apptType === 'hearing aid evaluation'){
-          // Main cards
-          ['sec-subjective','sec-objective','sec-assessment','sec-plan']
-            .forEach(id=>{
-              const el = document.getElementById(id);
-              if(el && el.tagName.toLowerCase() === 'details') el.open = true;
-            });
-
-          // Subcards typically used in an HAE
-          ['audiogram-obj-sub','audiogram-assess-sub','ha-rec-sub','ins-sub']
-            .forEach(id=>{
-              const el = document.getElementById(id);
-              if(el && el.tagName.toLowerCase() === 'details') el.open = true;
-            });
+        // Apply visit layout when an appt type is selected
+        if(state.apptType){
+          applyVisitLayout(state.apptType);
         }
 
         S.rebuild();
@@ -3620,6 +3803,11 @@ function wirePlan(){
         document.querySelectorAll('input[type="text"],input[type="number"]').forEach(i=>i.value='');
         document.querySelectorAll('textarea').forEach(t=>t.value='');
         document.querySelectorAll('select').forEach(s=>s.selectedIndex = 0);
+
+        // Auto-open all sections (all main cards + subcards)
+        document.querySelectorAll('details').forEach(d=>{
+          d.open = true;
+        });
 
         S.rebuild();
       });
