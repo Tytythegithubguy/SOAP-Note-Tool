@@ -3804,10 +3804,14 @@ function wirePlan(){
         document.querySelectorAll('textarea').forEach(t=>t.value='');
         document.querySelectorAll('select').forEach(s=>s.selectedIndex = 0);
 
+        // Auto-open all sections (all main cards + subcards)
+        document.querySelectorAll('details').forEach(d=>{
+          d.open = true;
+        });
+
         S.rebuild();
       });
     }
-  }
   
     function wireTemplates(){
     document.querySelectorAll('.template-btn[data-template]').forEach(btn=>{
