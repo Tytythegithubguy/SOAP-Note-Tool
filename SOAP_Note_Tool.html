@@ -1414,7 +1414,7 @@ window.SNB = (()=>{
       "working well","sounds weak","sounds dead","broken","needs a tube change","needs a reprogramming"
     ],
     OTO_CANAL: ["clear","non-occluding wax","occluding wax","redness","swelling","object in ear"],
-    OTO_TM: ["normal","dull","retracted","bulging","red","scarred","perforated"],
+    OTO_TM: ["normal","unremarkable","dull","retracted","bulging","red","scarred","perforated"],
      // 🔹 Hearing aid CONDITION (Objective)
     HAC_OPTS: [
         "appears clean",
@@ -1434,7 +1434,7 @@ window.SNB = (()=>{
     // 🔹 Hearing aid MAINTENANCE (used later, Plan/Assessment section)
     HAM_OPTS: [
         "cleaned",
-        "microphones vacuumed",
+        "vacuumed microphones",
         "wax guard replaced",
         "tubing replaced",
         "dome replaced",
@@ -1472,15 +1472,17 @@ HA_COUPLING: [
     ],
 
     PLAN_ITEMS: [
-      { label: "PCP", value: "Follow up with PCP"},
-      { label: "ENT", value: "Follow up with ENT"},
-      { label: "HAE", value: "Schedule HAE"},
+      { label: "PCP referral", value: "Follow up with PCP"},
+      { label: "ENT referral", value: "Follow up with ENT"},
+      { label: "Schedule HAE", value: "Schedule HAE"},
       { label: "hearing test", value: "Annual hearing tests"},
-      { label: "submit order", value: " I will submit the order to the manufacturer with options noted above"},
-      { label: "submit order +imps", value: "I will send impressions to the manufacturer with options noted above"},
+      { label: "ready submit order", value: "I will submit the order to the manufacturer with options noted above"},
+      { label: "not ready submit order", value: "When auth is received, I will submit the order to the manufacturer with options noted above"},
+      { label: "ready submit order +imps", value: "I will send impressions to the manufacturer with options noted above"},
+      { label: "not ready submit order +imps", value: "When auth is received, I will send impressions to the manufacturer with options noted above"},
       { label: "delivery call", value: "RTC 4-6 weeks for a Delivery appt. We will call when the hearing aids are received"},
       { label: "delivery schedule", value: "RTC 4-6 weeks for a delivery appt."},
-      { label: "think about it", value: "If patient wants to move forward with ordering hearing aids through Sonus or if they have any other questions, they will contact us."},
+      { label: "think about it", value: "If patient wants to move forward with ordering hearing aids or if they have any other questions, they will contact us."},
       { label: "event list", value: "I will add patient to the event candidate list."},
       { label: "eligible new", value: "Pt may be eligible for new HA’s, RTC for an annual hearing test to start the process"},
     ]
