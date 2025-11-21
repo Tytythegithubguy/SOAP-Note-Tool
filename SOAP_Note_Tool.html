@@ -561,6 +561,18 @@ textarea {
   <summary>Subjective <span class="chev">▶</span></summary>
   <div class="card-body" id="subjective-body">
 
+        <!-- QUICK TEMPLATES -->
+    <h4>Visit Templates</h4>
+    <div class="row">
+      <button class="btn template-btn" data-template="appt-HAE">
+        HAE Template
+      </button>
+      <!-- You can add more visit templates here later -->
+      <!-- <button class="btn template-btn" data-template="appt-CHT">CHT Template</button> -->
+    </div>
+    <hr class="sep"/>
+
+
     <h4>Appointment Type</h4>
     <div id="apptButtons" class="row">
       <button class="btn" data-appt="comprehensive hearing test">CHT</button>
@@ -947,6 +959,34 @@ textarea {
          ===================== -->
 <h4>Patient Order</h4>
 
+  <!-- ORDER TEMPLATES -->
+  <div class="row mt-4">
+    <label class="small">Order templates</label>
+    <div class="row">
+      <button class="btn template-btn" data-template="Evolv AI 1000 BTE w/ EM">
+        Evolv AI 1000 BTE w/ EM
+      </button>
+      <button class="btn template-btn" data-template="evolv-ric-domes-50">
+        Evolv AI 1000 RIC
+      </button>
+
+      <button class="btn template-btn" data-template="evolv-ric-ricmolds-60">
+        Evolv AI 1000 RIC w/ RIC molds
+      </button>
+
+      <button class="btn template-btn" data-template="key2-ite">
+        Key 2 ITE
+      </button>
+
+      <button class="btn template-btn" data-template="key2-itc">
+        Key 2 ITC
+      </button>
+      <!-- Add more order templates here in the future -->
+      <!-- <button class="btn template-btn" data-template="order-medi-cal-ric">Medi-Cal RIC Order</button> -->
+    </div>
+  </div>
+
+
 <div class="patient-order">
 
   <!-- Ear scope -->
@@ -1077,7 +1117,10 @@ textarea {
         <option value="">—</option>
         <option value="canal">canal</option>
         <option value="canal lock">canal lock</option>
+        <option value="helix">helix</option>
         <option value="half shell">half shell</option>
+        <option value="3/4 shell">3/4 shell</option>
+        <option value="skeleton">skeleton</option>
         <option value="full shell">full shell</option>
       </select>
 
@@ -1503,6 +1546,322 @@ HA_COUPLING: [
     }
   };
 
+  /* ============================
+     TEMPLATES (v6.0-dev)
+     ============================ */
+
+  // How to add your own later:
+  // 1) Copy one of these blocks
+  // 2) Change the key (e.g. 'appt-HAE')
+  // 3) Adjust openDetails / actions
+  // 4) Add a <button class="btn template-btn" data-template="your-key"> in the HTML
+
+  S.templates = {
+    // Example baseline template for a Hearing Aid Evaluation visit
+    'appt-HAE': {
+      label: 'HAE baseline',
+      clearFirst: true,  // runs the same "clear" logic as Clear Note button
+      openDetails: [
+        'sec-subjective',
+        'sec-objective',
+        'sec-assessment',
+        'sec-plan',
+        'audiogram-assess-sub',
+        'ha-rec-sub',
+        'ins-sub'
+      ],
+      actions: [
+        // Prefill RTC 4 weeks
+        { type: 'setInput', id: 'rtc-time', value: '4' },
+        { type: 'clickRaw', selector: 'button[data-rtcunit="weeks"]' }
+        // You can add more here later (e.g. default plan items)
+      ]
+    },
+
+    // Example template for Starkey Evolv AI 1000 BTE with custom ear molds
+'Evolv AI 1000 BTE w/ EM': {
+  label: 'Evolv AI 1000 BTE w/ EM',
+  clearFirst: false, 
+  clearOrderFirst: true,
+  openDetails: [
+    'sec-assessment',
+    'ha-rec-sub'
+  ],
+  actions: [
+    // Order Scope (click AS, then AD → results in AU)
+    { type: 'clickRaw', selector: 'button[data-orderscope="AS"]' },
+    { type: 'clickRaw', selector: 'button[data-orderscope="AD"]' },
+
+    // Basic order info
+    { type: 'setInput', id: 'order-mfg',   value: 'Starkey' },
+    { type: 'setInput', id: 'order-model', value: 'Evolv AI 1000' },
+    { type: 'setInput', id: 'order-style', value: 'behind-the-ear' },
+    { type: 'setInput', id: 'order-color', value: 'champagne' },
+
+    // Ear molds AS
+    { type: 'setSelect', id: 'order-mold-type-AS',     value: 'half shell' },
+    { type: 'setSelect', id: 'order-mold-material-AS', value: 'hard' },
+    { type: 'setInput',  id: 'mold-color-AS',          value: 'clear' },
+
+    // Ear molds AD
+    { type: 'setSelect', id: 'order-mold-type-AD',     value: 'half shell' },
+    { type: 'setSelect', id: 'order-mold-material-AD', value: 'hard' },
+    { type: 'setInput',  id: 'mold-color-AD',          value: 'clear' },
+
+    // Coupling selection (ear mold)
+    { 
+      type: 'toggleOption',
+      containerId: 'order-coupling-row',
+      value: 'ear mold'
+    }
+  ]
+},
+
+    // Evolv AI 1000 RIC with domes, AU, champagne, #3 50 gain receivers
+    'evolv-ric-domes-50': {
+      label: 'Evolv AI 1000 RIC w/domes AU champagne, #3 50 gain',
+      clearFirst: false,
+      clearOrderFirst: true,
+      openDetails: [
+        'sec-assessment',
+        'ha-rec-sub'
+      ],
+      actions: [
+        // AU = click AS then AD
+        { type: 'clickRaw', selector: 'button[data-orderscope="AS"]' },
+        { type: 'clickRaw', selector: 'button[data-orderscope="AD"]' },
+
+        // Basic order info
+        { type: 'setInput', id: 'order-mfg',   value: 'Starkey' },
+        { type: 'setInput', id: 'order-model', value: 'Evolv AI 1000' },
+        { type: 'setInput', id: 'order-style', value: 'receiver-in-the-canal' },
+        { type: 'setInput', id: 'order-color', value: 'champagne' },
+
+        // Tube / receiver type
+        { type: 'clickRaw', selector: 'button[data-ordertube="receiver"]' },
+
+        // Receivers #3 50 AU
+        { type: 'setSelect', id: 'rec-len-AS', value: '3' },
+        { type: 'setSelect', id: 'rec-len-AD', value: '3' },
+        { type: 'setInput',  id: 'rec-pwr-AS', value: '50' },
+        { type: 'setInput',  id: 'rec-pwr-AD', value: '50' },
+
+        // Coupling: domes
+        {
+          type: 'toggleOption',
+          containerId: 'order-coupling-row',
+          value: 'dome'
+        }
+      ]
+    },
+
+    // Evolv AI 1000 RIC with RIC ear molds, AU, champagne, #3 60 gain, skeleton molds
+    'evolv-ric-ricmolds-60': {
+      label: 'Evolv AI 1000 RIC w/RIC EM skeleton, AU champagne, #3 60 gain',
+      clearFirst: false,
+      clearOrderFirst: true,
+      openDetails: [
+        'sec-assessment',
+        'ha-rec-sub'
+      ],
+      actions: [
+        // AU
+        { type: 'clickRaw', selector: 'button[data-orderscope="AS"]' },
+        { type: 'clickRaw', selector: 'button[data-orderscope="AD"]' },
+
+        // Basic order info
+        { type: 'setInput', id: 'order-mfg',   value: 'Starkey' },
+        { type: 'setInput', id: 'order-model', value: 'Evolv AI 1000' },
+        { type: 'setInput', id: 'order-style', value: 'receiver-in-the-canal' },
+        { type: 'setInput', id: 'order-color', value: 'champagne' },
+
+        // Tube / receiver type
+        { type: 'clickRaw', selector: 'button[data-ordertube="receiver"]' },
+
+        // Receivers #3 60 AU
+        { type: 'setSelect', id: 'rec-len-AS', value: '3' },
+        { type: 'setSelect', id: 'rec-len-AD', value: '3' },
+        { type: 'setInput',  id: 'rec-pwr-AS', value: '60' },
+        { type: 'setInput',  id: 'rec-pwr-AD', value: '60' },
+
+        // RIC ear molds with skeleton style (I’m assuming soft/clear; you can tweak)
+        { type: 'setSelect', id: 'order-mold-type-AS',     value: 'skeleton' },
+        { type: 'setSelect', id: 'order-mold-type-AD',     value: 'skeleton' },
+        { type: 'setSelect', id: 'order-mold-material-AS', value: 'soft' },
+        { type: 'setSelect', id: 'order-mold-material-AD', value: 'soft' },
+        { type: 'setInput',  id: 'mold-color-AS',          value: 'clear' },
+        { type: 'setInput',  id: 'mold-color-AD',          value: 'clear' },
+
+        // Coupling: RIC ear molds
+        {
+          type: 'toggleOption',
+          containerId: 'order-coupling-row',
+          value: 'RIC ear mold'
+        }
+      ]
+    },
+
+    // ReSound Key 2 ITE, AU (full-shell style custom)
+    'key2-ite': {
+      label: 'Key 2 ITE AU',
+      clearFirst: false,
+      clearOrderFirst: true,
+      openDetails: [
+        'sec-assessment',
+        'ha-rec-sub'
+      ],
+      actions: [
+        // AU
+        { type: 'clickRaw', selector: 'button[data-orderscope="AS"]' },
+        { type: 'clickRaw', selector: 'button[data-orderscope="AD"]' },
+
+        // Basic order info
+        { type: 'setInput', id: 'order-mfg',   value: 'ReSound' },
+        { type: 'setInput', id: 'order-model', value: 'Key 2' },
+        { type: 'setInput', id: 'order-style', value: 'in-the-ear' },
+        { type: 'setInput', id: 'order-color', value: 'beige' },
+
+        // Custom full-shell style “ear mold” AU
+        { type: 'setSelect', id: 'order-mold-type-AS',     value: 'full shell' },
+        { type: 'setSelect', id: 'order-mold-type-AD',     value: 'full shell' },
+        { type: 'setSelect', id: 'order-mold-material-AS', value: 'hard' },
+        { type: 'setSelect', id: 'order-mold-material-AD', value: 'hard' },
+        { type: 'setInput',  id: 'mold-color-AS',          value: 'beige' },
+        { type: 'setInput',  id: 'mold-color-AD',          value: 'beige' },
+
+        // Coupling: treat as “ear mold”
+        {
+          type: 'toggleOption',
+          containerId: 'order-coupling-row',
+          value: 'ear mold'
+        }
+      ]
+    },
+
+    // ReSound Key 2 ITC, AU (canal style custom)
+    'key2-itc': {
+      label: 'Key 2 ITC AU',
+      clearFirst: false,
+      clearOrderFirst: true,
+      openDetails: [
+        'sec-assessment',
+        'ha-rec-sub'
+      ],
+      actions: [
+        // AU
+        { type: 'clickRaw', selector: 'button[data-orderscope="AS"]' },
+        { type: 'clickRaw', selector: 'button[data-orderscope="AD"]' },
+
+        // Basic order info
+        { type: 'setInput', id: 'order-mfg',   value: 'ReSound' },
+        { type: 'setInput', id: 'order-model', value: 'Key 2' },
+        { type: 'setInput', id: 'order-style', value: 'in-the-canal' },
+        { type: 'setInput', id: 'order-color', value: 'beige' },
+
+        // Custom canal “ear molds” AU
+        { type: 'setSelect', id: 'order-mold-type-AS',     value: 'canal' },
+        { type: 'setSelect', id: 'order-mold-type-AD',     value: 'canal' },
+        { type: 'setSelect', id: 'order-mold-material-AS', value: 'hard' },
+        { type: 'setSelect', id: 'order-mold-material-AD', value: 'hard' },
+        { type: 'setInput',  id: 'mold-color-AS',          value: 'beige' },
+        { type: 'setInput',  id: 'mold-color-AD',          value: 'beige' },
+
+        {
+          type: 'toggleOption',
+          containerId: 'order-coupling-row',
+          value: 'ear mold'
+        }
+      ]
+    },
+
+
+  };
+
+  function applyTemplate(templateId){
+    const tpl = S.templates[templateId];
+    if(!tpl) return;
+
+    // Optional: clear everything (full app reset, like Clear Note)
+    if(tpl.clearFirst){
+      const clearBtn = document.getElementById('clear-note');
+      if(clearBtn){
+        clearBtn.click();
+      }
+    }
+
+    // Optional: clear only the Patient Order block
+    if(tpl.clearOrderFirst){
+      resetOrderSectionUI();
+    }
+
+    // Open relevant <details> sections
+    if(Array.isArray(tpl.openDetails)){
+      tpl.openDetails.forEach(id=>{
+        const el = document.getElementById(id);
+        if(el && el.tagName && el.tagName.toLowerCase() === 'details'){
+          el.open = true;
+        }
+      });
+    }
+
+    // Run actions
+    if(Array.isArray(tpl.actions)){
+      tpl.actions.forEach(act=>{
+        if(!act || !act.type) return;
+
+        switch(act.type){
+
+          case 'clickRaw': {
+            const btn = document.querySelector(act.selector);
+            if(btn){
+              btn.click(); // let existing handlers manage state/toggles
+            }
+            break;
+          }
+
+          case 'toggleOption': {
+            const container = document.getElementById(act.containerId);
+            if(!container) break;
+            const btn = container.querySelector(`.btn[data-value="${act.value}"]`);
+            if(btn && !btn.classList.contains('toggled')){
+              btn.click();
+            }
+            break;
+          }
+
+          case 'setInput': {
+            const el = document.getElementById(act.id);
+            if(!el) break;
+            el.value = act.value;
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+            break;
+          }
+
+          case 'setTextarea': {
+            const el = document.getElementById(act.id);
+            if(!el) break;
+            el.value = act.value;
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+            break;
+          }
+
+          case 'setSelect': {
+            const el = document.getElementById(act.id);
+            if(!el) break;
+            el.value = act.value;
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+            break;
+          }
+
+          default:
+            break;
+        }
+      });
+    }
+
+    S.rebuild();
+  }
+
   // Reset all state values without breaking existing Set/Array references
   function resetState(){
     // Clear Sets and Arrays, reset primitives
@@ -1548,6 +1907,85 @@ HA_COUPLING: [
 
     // Reset nested INSURANCE object
     state.insurance.status = null;
+  }
+
+    // Clear only the Patient Order portion (inputs, selects, scope, tube type, coupling)
+  function resetOrderSectionUI(){
+    // Reset order-related state
+    Object.assign(state.order, {
+      mfg: '',
+      model: '',
+      style: '',
+      color: '',
+      scope: '',
+
+      recLenAS: '',
+      recLenAD: '',
+      recPwrAS: '',
+      recPwrAD: '',
+      tubeType: '',
+
+      moldTypeAS: '',
+      moldTypeAD: '',
+      moldMaterialAS: '',
+      moldMaterialAD: '',
+      moldColorAS: '',
+      moldColorAD: '',
+
+      extraDetails: ''
+    });
+
+    // Clear coupling set used for order
+    if (state.orderCoupling && state.orderCoupling.clear){
+      state.orderCoupling.clear();
+    }
+
+    // Clear text inputs
+    [
+      'order-mfg',
+      'order-model',
+      'order-style',
+      'order-color',
+      'rec-pwr-AS',
+      'rec-pwr-AD',
+      'mold-color-AS',
+      'mold-color-AD',
+      'order-extra'
+    ].forEach(id=>{
+      const el = document.getElementById(id);
+      if(el) el.value = '';
+    });
+
+    // Reset selects
+    [
+      'rec-len-AS',
+      'rec-len-AD',
+      'order-mold-type-AS',
+      'order-mold-type-AD',
+      'order-mold-material-AS',
+      'order-mold-material-AD'
+    ].forEach(id=>{
+      const el = document.getElementById(id);
+      if(el) el.selectedIndex = 0;
+    });
+
+    // Clear scope buttons (AS / AD)
+    state.order.scope = '';
+    document.querySelectorAll('button[data-orderscope]').forEach(b=>{
+      b.classList.remove('toggled');
+    });
+
+    // Clear tube / receiver type buttons
+    state.order.tubeType = '';
+    document
+      .querySelectorAll('button[data-order-tube], button[data-ordertube]')
+      .forEach(b => b.classList.remove('toggled'));
+
+    // Clear coupling buttons in the row
+    const cRow = document.getElementById('order-coupling-row');
+    if(cRow){
+      cRow.querySelectorAll('.btn').forEach(b=>b.classList.remove('toggled'));
+    }
   }
 
 
@@ -2472,6 +2910,9 @@ if(state.impressionStatus === 'onfile'){
       const label = opt.label || opt;
       const value = opt.value || opt;
 
+      // expose underlying value for template engine
+      b.dataset.value = value;
+
       if(set.has(value)) b.classList.add('toggled');
       b.textContent = label;
 
@@ -2531,10 +2972,31 @@ if(state.impressionStatus === 'onfile'){
         const b = e.target.closest('button[data-appt]');
         if(!b) return;
         const v = b.dataset.appt;
+
+        // toggle appt type
         state.apptType = (state.apptType === v) ? '' : v;
+
         apptRow.querySelectorAll('.btn').forEach(x=>{
           x.classList.toggle('toggled', x === b && state.apptType === v);
         });
+
+        // Auto-open relevant sections for certain appt types
+        if(state.apptType === 'hearing aid evaluation'){
+          // Main cards
+          ['sec-subjective','sec-objective','sec-assessment','sec-plan']
+            .forEach(id=>{
+              const el = document.getElementById(id);
+              if(el && el.tagName.toLowerCase() === 'details') el.open = true;
+            });
+
+          // Subcards typically used in an HAE
+          ['audiogram-obj-sub','audiogram-assess-sub','ha-rec-sub','ins-sub']
+            .forEach(id=>{
+              const el = document.getElementById(id);
+              if(el && el.tagName.toLowerCase() === 'details') el.open = true;
+            });
+        }
+
         S.rebuild();
       });
     }
@@ -3164,6 +3626,15 @@ function wirePlan(){
     }
   }
   
+    function wireTemplates(){
+    document.querySelectorAll('.template-btn[data-template]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const id = btn.dataset.template;
+        applyTemplate(id);
+      });
+    });
+  }
+
 
   /* ============================
      INIT
@@ -3174,6 +3645,7 @@ function wirePlan(){
     wireAssessment();
     wirePlan();
     wireNoteControls();
+    wireTemplates();
     S.rebuild();
   }
 
