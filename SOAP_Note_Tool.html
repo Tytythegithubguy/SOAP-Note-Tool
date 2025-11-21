@@ -1117,7 +1117,10 @@ textarea {
         <option value="">—</option>
         <option value="canal">canal</option>
         <option value="canal lock">canal lock</option>
+        <option value="helix">helix</option>
         <option value="half shell">half shell</option>
+        <option value="3/4 shell">3/4 shell</option>
+        <option value="skeleton">skeleton</option>
         <option value="full shell">full shell</option>
       </select>
 
@@ -1579,6 +1582,7 @@ HA_COUPLING: [
 'Evolv AI 1000 BTE w/ EM': {
   label: 'Evolv AI 1000 BTE w/ EM',
   clearFirst: false, 
+  clearOrderFirst: true,
   openDetails: [
     'sec-assessment',
     'ha-rec-sub'
@@ -1617,6 +1621,7 @@ HA_COUPLING: [
     'evolv-ric-domes-50': {
       label: 'Evolv AI 1000 RIC w/domes AU champagne, #3 50 gain',
       clearFirst: false,
+      clearOrderFirst: true,
       openDetails: [
         'sec-assessment',
         'ha-rec-sub'
@@ -1654,6 +1659,7 @@ HA_COUPLING: [
     'evolv-ric-ricmolds-60': {
       label: 'Evolv AI 1000 RIC w/RIC EM skeleton, AU champagne, #3 60 gain',
       clearFirst: false,
+      clearOrderFirst: true,
       openDetails: [
         'sec-assessment',
         'ha-rec-sub'
@@ -1699,6 +1705,7 @@ HA_COUPLING: [
     'key2-ite': {
       label: 'Key 2 ITE AU',
       clearFirst: false,
+      clearOrderFirst: true,
       openDetails: [
         'sec-assessment',
         'ha-rec-sub'
@@ -1735,6 +1742,7 @@ HA_COUPLING: [
     'key2-itc': {
       label: 'Key 2 ITC AU',
       clearFirst: false,
+      clearOrderFirst: true,
       openDetails: [
         'sec-assessment',
         'ha-rec-sub'
@@ -1773,12 +1781,17 @@ HA_COUPLING: [
     const tpl = S.templates[templateId];
     if(!tpl) return;
 
-    // Optional: clear everything first (same as clicking Clear Note)
+    // Optional: clear everything (full app reset, like Clear Note)
     if(tpl.clearFirst){
       const clearBtn = document.getElementById('clear-note');
       if(clearBtn){
-        clearBtn.click();  // uses your existing resetState + UI clear
+        clearBtn.click();
       }
+    }
+
+    // Optional: clear only the Patient Order block
+    if(tpl.clearOrderFirst){
+      resetOrderSectionUI();
     }
 
     // Open relevant <details> sections
@@ -1791,7 +1804,7 @@ HA_COUPLING: [
       });
     }
 
-    // Run each action in order
+    // Run actions
     if(Array.isArray(tpl.actions)){
       tpl.actions.forEach(act=>{
         if(!act || !act.type) return;
@@ -1800,14 +1813,13 @@ HA_COUPLING: [
 
           case 'clickRaw': {
             const btn = document.querySelector(act.selector);
-            if(btn && !btn.classList.contains('toggled')){
-              btn.click();  // let existing handlers update state
+            if(btn){
+              btn.click(); // let existing handlers manage state/toggles
             }
             break;
           }
 
           case 'toggleOption': {
-            // For buttons built with makeButtons() (they have data-value)
             const container = document.getElementById(act.containerId);
             if(!container) break;
             const btn = container.querySelector(`.btn[data-value="${act.value}"]`);
@@ -1842,16 +1854,13 @@ HA_COUPLING: [
           }
 
           default:
-            // no-op for unknown types
             break;
         }
       });
     }
 
-    // Rebuild note at the end
     S.rebuild();
   }
-
 
   // Reset all state values without breaking existing Set/Array references
   function resetState(){
@@ -1898,6 +1907,85 @@ HA_COUPLING: [
 
     // Reset nested INSURANCE object
     state.insurance.status = null;
+  }
+
+    // Clear only the Patient Order portion (inputs, selects, scope, tube type, coupling)
+  function resetOrderSectionUI(){
+    // Reset order-related state
+    Object.assign(state.order, {
+      mfg: '',
+      model: '',
+      style: '',
+      color: '',
+      scope: '',
+
+      recLenAS: '',
+      recLenAD: '',
+      recPwrAS: '',
+      recPwrAD: '',
+      tubeType: '',
+
+      moldTypeAS: '',
+      moldTypeAD: '',
+      moldMaterialAS: '',
+      moldMaterialAD: '',
+      moldColorAS: '',
+      moldColorAD: '',
+
+      extraDetails: ''
+    });
+
+    // Clear coupling set used for order
+    if (state.orderCoupling && state.orderCoupling.clear){
+      state.orderCoupling.clear();
+    }
+
+    // Clear text inputs
+    [
+      'order-mfg',
+      'order-model',
+      'order-style',
+      'order-color',
+      'rec-pwr-AS',
+      'rec-pwr-AD',
+      'mold-color-AS',
+      'mold-color-AD',
+      'order-extra'
+    ].forEach(id=>{
+      const el = document.getElementById(id);
+      if(el) el.value = '';
+    });
+
+    // Reset selects
+    [
+      'rec-len-AS',
+      'rec-len-AD',
+      'order-mold-type-AS',
+      'order-mold-type-AD',
+      'order-mold-material-AS',
+      'order-mold-material-AD'
+    ].forEach(id=>{
+      const el = document.getElementById(id);
+      if(el) el.selectedIndex = 0;
+    });
+
+    // Clear scope buttons (AS / AD)
+    state.order.scope = '';
+    document.querySelectorAll('button[data-orderscope]').forEach(b=>{
+      b.classList.remove('toggled');
+    });
+
+    // Clear tube / receiver type buttons
+    state.order.tubeType = '';
+    document
+      .querySelectorAll('button[data-order-tube], button[data-ordertube]')
+      .forEach(b => b.classList.remove('toggled'));
+
+    // Clear coupling buttons in the row
+    const cRow = document.getElementById('order-coupling-row');
+    if(cRow){
+      cRow.querySelectorAll('.btn').forEach(b=>b.classList.remove('toggled'));
+    }
   }
 
 
