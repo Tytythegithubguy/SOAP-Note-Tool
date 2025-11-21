@@ -561,7 +561,7 @@ textarea {
   <summary>Subjective <span class="chev">▶</span></summary>
   <div class="card-body" id="subjective-body">
 
-    <h4>Appointment Type (single-select)</h4>
+    <h4>Appointment Type</h4>
     <div id="apptButtons" class="row">
       <button class="btn" data-appt="comprehensive hearing test">CHT</button>
       <button class="btn" data-appt="hearing aid evaluation">HAE</button>
@@ -570,12 +570,13 @@ textarea {
       <button class="btn" data-appt="in-warranty hearing aid check and clean">HACK I/W</button>
       <button class="btn" data-appt="out-of-warranty hearing aid check and clean">HACK O/W</button>
       <button class="btn" data-appt="first follow-up appointment">1st F/U</button>
+      <button class="btn" data-appt="Annual hearing test">Annual test</button>
       <button class="btn" data-appt="re-delivery appointment">Re-Del</button>
     </div>
 
     <div class="grid-2">
       <div>
-        <label class="small">Companion (optional)</label>
+        <label class="small">Companion</label>
         <input type="text" id="subjective-companion" placeholder="e.g., with spouse John"/>
       </div>
     </div>
@@ -977,23 +978,24 @@ textarea {
       </datalist>
     </div>
 
-<div>
-  <label class="small">Model</label>
-  <input
-    type="text"
-    id="order-model"
-    list="ha-model-list"
-    placeholder="e.g., Evolv AI 1000"
-  /> 
-  <datalist id="ha-model-list">
-    <option value="Evolv AI 1000"></option>
-    <option value="Genesis AI 12"></option>
-    <option value="Omega AI 16"></option>
-    <option value="Omega AI 20"></option>
-    <option value="Omega AI 24"></option>
-    <option value="ReSound Key 2"></option>
-  </datalist>
-</div>
+    <div>
+      <label class="small">Model</label>
+      <input
+        type="text"
+        id="order-model"
+        list="ha-model-list"
+        placeholder="e.g., Evolv AI 1000"
+      />
+      <datalist id="ha-model-list">
+        <option value="Evolv AI 1000"></option>
+        <option value="Evolv AI 1200"></option>
+        <option value="Genesis AI 12"></option>
+        <option value="Genesis AI 20"></option>
+        <option value="Audeo L30"></option>
+        <option value="Audeo L50"></option>
+        <option value="ReSound Key 2"></option>
+      </datalist>
+    </div>
 
     <div>
       <label class="small">Hearing aid color</label>
@@ -1051,7 +1053,10 @@ textarea {
 
     <!-- Left Ear -->
     <div>
-      <span class="small"><strong>Left (AS)</strong></span>
+      <div class="copy-arrows">
+        <span class="small"><strong>Left (AS)</strong></span>
+        <button class="btn" id="copy-coupling-AS-to-AD">Copy ▶</button>
+      </div>
 
       <label class="small mt-6">Receiver/slim tube length — AS</label>
       <select id="rec-len-AS">
@@ -1067,6 +1072,24 @@ textarea {
         placeholder="e.g., 50"
       />
 
+      <label class="small mt-6">Ear mold style (AS)</label>
+      <select id="order-mold-type-AS">
+        <option value="">—</option>
+        <option value="canal">canal</option>
+        <option value="canal lock">canal lock</option>
+        <option value="half shell">half shell</option>
+        <option value="full shell">full shell</option>
+      </select>
+
+      <label class="small mt-6">Ear mold material (AS)</label>
+      <select id="order-mold-material-AS">
+        <option value="">—</option>
+        <option value="soft">soft</option>
+        <option value="hard">hard</option>
+        <option value="silicone">silicone</option>
+        <option value="acrylic">acrylic</option>
+      </select>
+
       <label class="small mt-6">Ear mold color (AS)</label>
       <input
         type="text"
@@ -1078,7 +1101,11 @@ textarea {
 
     <!-- Right Ear -->
     <div>
-      <span class="small"><strong>Right (AD)</strong></span>
+      <div class="copy-arrows">
+        <span class="small"><strong>Right (AD)</strong></span>
+        <!-- dummy button to match Copy ▶ height on the left -->
+        <button class="btn" style="visibility:hidden; pointer-events:none;">Copy ▶</button>
+      </div>
 
       <label class="small mt-6">Receiver/slim tube length — AD</label>
       <select id="rec-len-AD">
@@ -1093,6 +1120,25 @@ textarea {
         id="rec-pwr-AD"
         placeholder="e.g., 60"
       />
+
+      <label class="small mt-6">Ear mold style (AD)</label>
+      <select id="order-mold-type-AD">
+        <option value="">—</option>
+        <option value="canal">canal</option>
+        <option value="canal lock">canal lock</option>
+        <option value="helix">helix</option>
+        <option value="half shell">half shell</option>
+        <option value="3/4 shell">3/4 shell</option>
+        <option value="skeleton">skeleton</option>
+        <option value="full shell">full shell</option>
+      </select>
+
+      <label class="small mt-6">Ear mold material (AD)</label>
+      <select id="order-mold-material-AD">
+        <option value="">—</option>
+        <option value="soft">soft</option>
+        <option value="hard">hard</option>
+      </select>
 
       <label class="small mt-6">Ear mold color (AD)</label>
       <input
@@ -1306,16 +1352,23 @@ window.SNB = (()=>{
       model: '',
       style: '',
       color: '',
-      moldType: '',
-      moldMaterial: '',
       scope: '',              // AS, AD, or AU (also derived from buttons)
+
+      // Receiver / tube details
       recLenAS: '',
       recLenAD: '',
       recPwrAS: '',
       recPwrAD: '',
+      tubeType: '',           // "slim tube" or "receiver"
+
+      // Ear mold style/material/color — independent per ear
+      moldTypeAS: '',
+      moldTypeAD: '',
+      moldMaterialAS: '',
+      moldMaterialAD: '',
       moldColorAS: '',
       moldColorAD: '',
-      tubeType: '',           // "slim tube" or "receiver"
+
       extraDetails: ''        // optional extra line for order
     },
 
@@ -1361,7 +1414,7 @@ window.SNB = (()=>{
       "working well","sounds weak","sounds dead","broken","needs a tube change","needs a reprogramming"
     ],
     OTO_CANAL: ["clear","non-occluding wax","occluding wax","redness","swelling","object in ear"],
-    OTO_TM: ["normal","dull","retracted","bulging","red","scarred","perforated"],
+    OTO_TM: ["normal","unremarkable","dull","retracted","bulging","red","scarred","perforated"],
      // 🔹 Hearing aid CONDITION (Objective)
     HAC_OPTS: [
         "appears clean",
@@ -1381,7 +1434,7 @@ window.SNB = (()=>{
     // 🔹 Hearing aid MAINTENANCE (used later, Plan/Assessment section)
     HAM_OPTS: [
         "cleaned",
-        "microphones vacuumed",
+        "vacuumed microphones",
         "wax guard replaced",
         "tubing replaced",
         "dome replaced",
@@ -1419,15 +1472,17 @@ HA_COUPLING: [
     ],
 
     PLAN_ITEMS: [
-      { label: "PCP", value: "Follow up with PCP"},
-      { label: "ENT", value: "Follow up with ENT"},
-      { label: "HAE", value: "Schedule HAE"},
+      { label: "PCP referral", value: "Follow up with PCP"},
+      { label: "ENT referral", value: "Follow up with ENT"},
+      { label: "Schedule HAE", value: "Schedule HAE"},
       { label: "hearing test", value: "Annual hearing tests"},
-      { label: "submit order", value: " I will submit the order to the manufacturer with options noted above"},
-      { label: "submit order +imps", value: "I will send impressions to the manufacturer with options noted above"},
+      { label: "ready submit order", value: "I will submit the order to the manufacturer with options noted above"},
+      { label: "not ready submit order", value: "When auth is received, I will submit the order to the manufacturer with options noted above"},
+      { label: "ready submit order +imps", value: "I will send impressions to the manufacturer with options noted above"},
+      { label: "not ready submit order +imps", value: "When auth is received, I will send impressions to the manufacturer with options noted above"},
       { label: "delivery call", value: "RTC 4-6 weeks for a Delivery appt. We will call when the hearing aids are received"},
       { label: "delivery schedule", value: "RTC 4-6 weeks for a delivery appt."},
-      { label: "think about it", value: "If patient wants to move forward with ordering hearing aids through Sonus or if they have any other questions, they will contact us."},
+      { label: "think about it", value: "If patient wants to move forward with ordering hearing aids or if they have any other questions, they will contact us."},
       { label: "event list", value: "I will add patient to the event candidate list."},
       { label: "eligible new", value: "Pt may be eligible for new HA’s, RTC for an annual hearing test to start the process"},
     ]
@@ -1473,16 +1528,21 @@ HA_COUPLING: [
       model: '',
       style: '',
       color: '',
-      moldType: '',
-      moldMaterial: '',
       scope: '',
+
       recLenAS: '',
       recLenAD: '',
       recPwrAS: '',
       recPwrAD: '',
+      tubeType: '',
+
+      moldTypeAS: '',
+      moldTypeAD: '',
+      moldMaterialAS: '',
+      moldMaterialAD: '',
       moldColorAS: '',
       moldColorAD: '',
-      tubeType: '',
+
       extraDetails: ''
     });
 
@@ -2059,157 +2119,185 @@ if(recPrefix){
 // =====================
 const o = state.order;
 
-// --- Pt chose line ---
+// Build "Pt chose ..." line with style/material & AS/AD/AU logic
 (function buildPatientChoseLine(){
   const cv = [...state.orderCoupling];
+
   const hasOrderCore =
     o.mfg || o.model || o.style || o.color ||
-    o.moldColorAS || o.moldColorAD || cv.length;
+    o.moldType || o.moldMaterial ||
+    o.moldColorAS || o.moldColorAD ||
+    cv.length;
 
   if(!hasOrderCore) return;
 
-  // Scope text for AS / AD / AU
-  let scopeLabel = '';
-  if(o.scope === 'AS'){
-    scopeLabel = 'for the left ear (AS)';
-  } else if(o.scope === 'AD'){
-    scopeLabel = 'for the right ear (AD)';
-  } else if(o.scope === 'AU'){
-    scopeLabel = 'for both ears (AU)';
-  }
+  const scope = o.scope; // '', 'AS', 'AD', 'AU'
 
   let line = 'Pt chose ';
-  if(scopeLabel){
-    line += scopeLabel + ': ';
-  }
-
-  const parts = [];
 
   // Brand + model
   const brandModel = [o.mfg, o.model].filter(Boolean).join(' ').trim();
   if(brandModel){
-    parts.push(brandModel);
+    line += brandModel + ' ';
   }
 
-  // Style
+  // Style (e.g. "receiver-in-the-canal")
   if(o.style && o.style.trim()){
-    parts.push(o.style.trim());
+    line += o.style.trim() + ' ';
   }
 
-  // Color
+  // Hearing aid(s)
+  if(scope === 'AU'){
+    line += 'hearing aids';
+  } else {
+    line += 'hearing aid';
+  }
+
+  // Color of HA shell
   if(o.color && o.color.trim()){
-    parts.push(`in “${o.color.trim()}”`);
+    line += ` in “${o.color.trim()}”`;
   }
 
-  // Coupling (order)
+  // Coupling / ear molds
+  let withPhrase = '';
+
   if(cv.length){
-    if(cv.length === 1){
-      parts.push(`with ${cv[0]}s`);
+    const couplingType = cv[0]; // assume one selection
+    const leftColor  = o.moldColorAS && o.moldColorAS.trim();
+    const rightColor = o.moldColorAD && o.moldColorAD.trim();
+
+    const moldType     = o.moldType && o.moldType.trim();       // e.g. "half shell"
+    const moldMaterial = o.moldMaterial && o.moldMaterial.trim(); // e.g. "soft"
+
+    // Helper to build a descriptive ear mold base (without color)
+    function buildMoldBase(isRIC){
+      let base = '';
+      if(moldMaterial) base += moldMaterial + ' ';
+      if(moldType)     base += moldType + ' ';
+      if(isRIC)        base += 'RIC ';
+      base += 'ear molds';
+      return base.trim();
+    }
+
+    if(couplingType === 'dome'){
+      // Simple domes, no mold style
+      withPhrase = 'domes';
+    } else if(couplingType === 'ear mold' || couplingType === 'RIC ear mold'){
+      const isRIC = (couplingType === 'RIC ear mold');
+      const base = buildMoldBase(isRIC); // e.g. "soft half shell RIC ear molds"
+
+      if(leftColor && rightColor &&
+         leftColor.toLowerCase() === rightColor.toLowerCase()){
+        // Same color both ears → compress
+        withPhrase = `${base} in “${leftColor}”`;
+      } else if(leftColor || rightColor){
+        // Different per-ear colors
+        const parts = [];
+        if(leftColor){
+          parts.push(
+            base.replace('ear molds','ear mold')
+                .replace('RIC ear mold','RIC ear mold')  // safety
+                .replace('ear molds','ear mold') + ` in “${leftColor}” (AS)`
+          );
+        }
+        if(rightColor){
+          parts.push(
+            base.replace('ear molds','ear mold') + ` in “${rightColor}” (AD)`
+          );
+        }
+        withPhrase = parts.join(', ');
+      } else {
+        // No mold color, just describe style/material
+        withPhrase = base;
+      }
     } else {
-      parts.push(`with ${cv.join(' or ')}s`);
+      // Any future coupling types
+      withPhrase = couplingType;
     }
   }
 
-  // Mold colors with AU logic
-  const leftColor  = o.moldColorAS && o.moldColorAS.trim();
-  const rightColor = o.moldColorAD && o.moldColorAD.trim();
-
-  if (leftColor && rightColor &&
-      leftColor.toLowerCase() === rightColor.toLowerCase()) {
-    // Same color both ears → compress
-    parts.push(`ear molds “${leftColor}”`);
-  } else {
-    const moldParts = [];
-    if (leftColor)  moldParts.push(`left mold “${leftColor}”`);
-    if (rightColor) moldParts.push(`right mold “${rightColor}”`);
-    if (moldParts.length){
-      parts.push(moldParts.join(', '));
-    }
+  if(withPhrase){
+    line += `, with ${withPhrase}`;
   }
 
-  if(!parts.length){
-    line += 'hearing aids.';
+  // Scope suffix at end
+  if(scope === 'AS'){
+    line += ', AS.';
+  } else if(scope === 'AD'){
+    line += ', AD.';
+  } else if(scope === 'AU'){
+    line += ', AU.';
   } else {
-    line += parts.join(', ') + '.';
+    line += '.';
   }
 
   linesA.push(line);
 })();
 
-// --- Receiver / slim tube order line ---
+// Receiver / slim tube order line with AU vs AS/AD logic
 (function buildReceiverOrderLine(){
-  const hasRecAS = o.recLenAS || o.recPwrAS;
-  const hasRecAD = o.recLenAD || o.recPwrAD;
+  if(!o.tubeType) return;
 
-  if(!o.tubeType || (!hasRecAS && !hasRecAD)) return;
+  const hasRecAS = (o.recLenAS || o.recPwrAS);
+  const hasRecAD = (o.recLenAD || o.recPwrAD);
+
+  if(!hasRecAS && !hasRecAD) return;
 
   const isSlim = (o.tubeType === 'slim tube');
 
-  // If both ears match exactly → single AU line
-  if(hasRecAS && hasRecAD &&
-     o.recLenAS === o.recLenAD &&
-     o.recPwrAS === o.recPwrAD){
+  // Helper to build per-ear detail
+  function buildRecDetails(len, pwr){
+    const bits = [];
+    if(len) bits.push(`length #${len}`);
+    if(pwr) bits.push(`${pwr} gain`);
+    return bits.join(', ');
+  }
 
-    let core = '';
-    if(o.recLenAS){
-      core += `length #${o.recLenAS}`;
-    }
-    if(o.recPwrAS){
-      core += (core ? ', ' : '') + `${o.recPwrAS} gain`;
-    }
-
+  // If both ears have identical receiver data, use AU
+  if(
+    hasRecAS && hasRecAD &&
+    o.recLenAS === o.recLenAD &&
+    o.recPwrAS === o.recPwrAD
+  ){
+    const details = buildRecDetails(o.recLenAS, o.recPwrAS);
     const noun = isSlim ? 'slim tubes' : 'receivers';
+
     let line = `I will order ${noun}`;
-    if(core){
-      line += ` (${core})`;
-    }
+    if(details) line += ` (${details})`;
     line += ', AU.';
 
     linesA.push(line);
     return;
   }
 
-  // Otherwise, build separate AS / AD parts
+  // Otherwise, specify AS and AD separately
   const parts = [];
-
   if(hasRecAS){
-    let part = 'AS: ';
-    const details = [];
-    if(o.recLenAS) details.push(`length #${o.recLenAS}`);
-    if(o.recPwrAS) details.push(`${o.recPwrAS} gain`);
+    const details = buildRecDetails(o.recLenAS, o.recPwrAS);
     const noun = isSlim ? 'slim tube' : 'receiver';
-    if(details.length){
-      part += details.join(', ') + ` ${noun}`;
-    } else {
-      part += noun;
-    }
-    parts.push(part);
+    parts.push(`AS: ${details ? details + ' ' + noun : noun}`);
   }
-
   if(hasRecAD){
-    let part = 'AD: ';
-    const details = [];
-    if(o.recLenAD) details.push(`length #${o.recLenAD}`);
-    if(o.recPwrAD) details.push(`${o.recPwrAD} gain`);
+    const details = buildRecDetails(o.recLenAD, o.recPwrAD);
     const noun = isSlim ? 'slim tube' : 'receiver';
-    if(details.length){
-      part += details.join(', ') + ` ${noun}`;
-    } else {
-      part += noun;
-    }
-    parts.push(part);
+    parts.push(`AD: ${details ? details + ' ' + noun : noun}`);
   }
 
-  const nounPlural = isSlim ? 'slim tubes' : 'receivers';
-  const line = `I will order ${nounPlural} (${parts.join('; ')}).`;
+  const pluralNoun = isSlim ? 'slim tubes' : 'receivers';
+  let line = `I will order ${pluralNoun}`;
+  if(parts.length){
+    line += ` (${parts.join('; ')}).`;
+  } else {
+    line += '.';
+  }
+
   linesA.push(line);
 })();
 
-// --- Extra order details line ---
+// Extra order details
 if(o.extraDetails && o.extraDetails.trim()){
   linesA.push(`Additional order details: ${o.extraDetails.trim()}.`);
 }
-
 // =====================
 // IMPRESSION LINE
 // =====================
@@ -2850,16 +2938,62 @@ if(haTech){
     bindOrderInput('order-model','model');
     bindOrderInput('order-style','style');
     bindOrderInput('order-color','color');
-    bindOrderSelect('order-mold-type','moldType');
-    bindOrderSelect('order-mold-material','moldMaterial');
+
+    // Receiver lengths / powers
     bindOrderSelect('rec-len-AS','recLenAS');
     bindOrderSelect('rec-len-AD','recLenAD');
     bindOrderInput('rec-pwr-AS','recPwrAS');
     bindOrderInput('rec-pwr-AD','recPwrAD');
+
+    // Ear mold style / material / color — independent per ear
+    bindOrderSelect('order-mold-type-AS','moldTypeAS');
+    bindOrderSelect('order-mold-type-AD','moldTypeAD');
+    bindOrderSelect('order-mold-material-AS','moldMaterialAS');
+    bindOrderSelect('order-mold-material-AD','moldMaterialAD');
     bindOrderInput('mold-color-AS','moldColorAS');
     bindOrderInput('mold-color-AD','moldColorAD');
+
     bindOrderInput('order-extra','extraDetails');
 
+    // Copy entire left coupling row → right
+    const copyCouplingBtn = document.getElementById('copy-coupling-AS-to-AD');
+    if(copyCouplingBtn){
+      copyCouplingBtn.addEventListener('click', ()=>{
+        const lenAS  = document.getElementById('rec-len-AS');
+        const lenAD  = document.getElementById('rec-len-AD');
+        const pwrAS  = document.getElementById('rec-pwr-AS');
+        const pwrAD  = document.getElementById('rec-pwr-AD');
+        const typeAS = document.getElementById('order-mold-type-AS');
+        const typeAD = document.getElementById('order-mold-type-AD');
+        const matAS  = document.getElementById('order-mold-material-AS');
+        const matAD  = document.getElementById('order-mold-material-AD');
+        const moldAS = document.getElementById('mold-color-AS');
+        const moldAD = document.getElementById('mold-color-AD');
+
+        if(lenAS && lenAD){
+          lenAD.value = lenAS.value;
+          state.order.recLenAD = lenAS.value || '';
+        }
+        if(pwrAS && pwrAD){
+          pwrAD.value = pwrAS.value;
+          state.order.recPwrAD = pwrAS.value || '';
+        }
+        if(typeAS && typeAD){
+          typeAD.value = typeAS.value;
+          state.order.moldTypeAD = typeAS.value || '';
+        }
+        if(matAS && matAD){
+          matAD.value = matAS.value;
+          state.order.moldMaterialAD = matAS.value || '';
+        }
+        if(moldAS && moldAD){
+          moldAD.value = moldAS.value;
+          state.order.moldColorAD = moldAS.value || '';
+        }
+
+        S.rebuild();
+      });
+    }
 
 
     // Impression toggles (Assessment)
