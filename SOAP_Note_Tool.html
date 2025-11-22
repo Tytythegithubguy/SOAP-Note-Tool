@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOAP Note Tool — v6.1.1</title>
+<title>SOAP Note Tool — v6.2.1</title>
 <style>
 :root {
   /* Hybrid theme: slightly darker background, soft light cards, strong blue accents */
@@ -559,7 +559,7 @@ textarea {
 </head>
 <body>
 <div class="wrap">
-  <h1>SOAP Note Tool — Version 6.1.1</h1>
+  <h1>SOAP Note Tool — Version 6.2.1</h1>
   <div class="app">
 
     <!-- LEFT -->
@@ -1438,9 +1438,6 @@ textarea {
 
     <h4>Plan Items</h4>
 
-    <label class="small">Referral</label>
-    <div id="plan-referral" class="row"></div>
-
     <label class="small">Provider tasks</label>
     <div id="plan-provider" class="row"></div>
 
@@ -1456,13 +1453,24 @@ textarea {
         <label class="small">Timeframe</label>
         <input type="number" id="rtc-time" placeholder="e.g., 2"/>
 
-        <label class="small mt-4">Reason</label>
-        <input
-          type="text"
-          id="rtc-reason"
-          placeholder="e.g., a follow up"
-        />
-      </div>
+<label class="small mt-4">Reason</label>
+<input
+  type="text"
+  id="rtc-reason"
+  list="rtc-reason-list"
+  placeholder="e.g., a follow up"
+/>
+
+<datalist id="rtc-reason-list">
+  <option value="an annual hearing test"></option>
+  <option value="a follow up"></option>
+  <option value="a hearing aid check and clean"></option>
+  <option value="a hearing aid consultation"></option>
+  <option value="a hearing aid delivery"></option>
+  <option value="a hearing aid evaluation"></option>
+  <option value="a re-delivery"></option>
+  <option value="a reprogramming"></option>
+</datalist>
 
       <!-- UNIT BUTTONS COLUMN -->
       <div>
@@ -1736,27 +1744,39 @@ HA_COUPLING: [
       { label: "IIC",       value: "invisible-in-the-canal" }
     ],
 
-    PLAN_ITEMS: {
-      referral: [
-        { label: "PCP referral", value: "Follow up with PCP" },
-        { label: "ENT referral", value: "Follow up with ENT" }
-      ],
-      provider: [
-        { label: "ready submit order", value: "I will submit the order to the manufacturer with options noted above" },
-        { label: "not ready submit order", value: "When auth is received, I will submit the order to the manufacturer with options noted above" },
-        { label: "ready submit order +imps", value: "I will send impressions to the manufacturer with options noted above" },
-        { label: "not ready submit order +imps", value: "When auth is received, I will send impressions to the manufacturer with options noted above" },
-        { label: "event list", value: "I will add patient to the event candidate list." },
-        { label: "eligible new", value: "Pt may be eligible for new HA’s, RTC for an annual hearing test to start the process" }
-      ],
-      patient: [
-        { label: "Schedule HAE", value: "Schedule HAE" },
-        { label: "hearing test", value: "Annual hearing tests" },
-        { label: "delivery call", value: "RTC 4-6 weeks for a Delivery appt. We will call when the hearing aids are received" },
-        { label: "delivery schedule", value: "RTC 4-6 weeks for a delivery appt." },
-        { label: "think about it", value: "If patient wants to move forward with ordering hearing aids or if they have any other questions, they will contact us." }
-    ]
-    }
+PLAN_ITEMS: {
+
+  provider: [
+    { label: "ready submit order", value: "I will submit the order to the manufacturer with options noted above" },
+    { label: "not ready submit order", value: "When auth is received, I will submit the order to the manufacturer with options noted above" },
+    { label: "ready submit order +imps", value: "I will send impressions to the manufacturer with options noted above" },
+    { label: "not ready submit order +imps", value: "When auth is received, I will send impressions to the manufacturer with options noted above" },
+
+    // Delivery call moved here
+    { label: "delivery call", value: "RTC 4-6 weeks for a Delivery appt. We will call when the hearing aids are received" },
+
+    // NEW
+    { label: "Request Rx", value: "We will request a medical clearance from the PCP or ENT" },
+    { label: "Submit Auth", value: "We will submit authorization to the patient's insurance company" }
+  ],
+
+  patient: [
+    // Referral items moved here
+    { label: "PCP referral", value: "Follow up with PCP" },
+    { label: "ENT referral", value: "Follow up with ENT" },
+
+    // Existing items
+    { label: "Schedule HAE", value: "RTC for a hearing aid evaluation appointment" },
+    { label: "Annual hearing tests", value: "RTC for annual hearing tests" },
+
+    // Eligible new moved here
+    { label: "eligible new", value: "Pt may be eligible for new HA’s, RTC for an annual hearing test to start the process" },
+
+    // Existing
+    { label: "delivery schedule", value: "RTC 4-6 weeks for a delivery appt." },
+    { label: "think about it", value: "If patient wants to move forward with ordering hearing aids or if they have any other questions, they will contact us." }
+  ]
+}
   };
   
   S.utils = {
@@ -3950,7 +3970,6 @@ document
   function wirePlan(){
 
     // 🔹 Generate grouped Plan buttons
-    makeButtons('plan-referral', S.consts.PLAN_ITEMS.referral, state.planReferral);
     makeButtons('plan-provider', S.consts.PLAN_ITEMS.provider, state.planProvider);
     makeButtons('plan-patient',  S.consts.PLAN_ITEMS.patient,  state.planPatient);
 
