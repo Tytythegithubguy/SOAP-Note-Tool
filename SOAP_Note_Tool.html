@@ -1438,7 +1438,14 @@ textarea {
 
     <h4>Plan Items</h4>
 
-    <div id="plan-items" class="row"></div>
+    <label class="small">Referral</label>
+    <div id="plan-referral" class="row"></div>
+
+    <label class="small">Provider tasks</label>
+    <div id="plan-provider" class="row"></div>
+
+    <label class="small">Patient tasks</label>
+    <div id="plan-patient" class="row"></div>
 
     <h4>RTC Builder</h4>
 
@@ -1448,6 +1455,13 @@ textarea {
       <div>
         <label class="small">Timeframe</label>
         <input type="number" id="rtc-time" placeholder="e.g., 2"/>
+
+        <label class="small mt-4">Reason</label>
+        <input
+          type="text"
+          id="rtc-reason"
+          placeholder="e.g., a follow up"
+        />
       </div>
 
       <!-- UNIT BUTTONS COLUMN -->
@@ -1631,9 +1645,12 @@ window.SNB = (()=>{
     assessCustom: [],
 
     /* PLAN */
-    planItems: new Set(),
+    planReferral: new Set(),
+    planProvider: new Set(),
+    planPatient: new Set(),
     rtcTime: '',
     rtcUnit: '',
+    rtcReason: '',
     rtcAsNeeded: false,
     planCustom: []
   };
@@ -1719,23 +1736,29 @@ HA_COUPLING: [
       { label: "IIC",       value: "invisible-in-the-canal" }
     ],
 
-    PLAN_ITEMS: [
-      { label: "PCP referral", value: "Follow up with PCP"},
-      { label: "ENT referral", value: "Follow up with ENT"},
-      { label: "Schedule HAE", value: "Schedule HAE"},
-      { label: "hearing test", value: "Annual hearing tests"},
-      { label: "ready submit order", value: "I will submit the order to the manufacturer with options noted above"},
-      { label: "not ready submit order", value: "When auth is received, I will submit the order to the manufacturer with options noted above"},
-      { label: "ready submit order +imps", value: "I will send impressions to the manufacturer with options noted above"},
-      { label: "not ready submit order +imps", value: "When auth is received, I will send impressions to the manufacturer with options noted above"},
-      { label: "delivery call", value: "RTC 4-6 weeks for a Delivery appt. We will call when the hearing aids are received"},
-      { label: "delivery schedule", value: "RTC 4-6 weeks for a delivery appt."},
-      { label: "think about it", value: "If patient wants to move forward with ordering hearing aids or if they have any other questions, they will contact us."},
-      { label: "event list", value: "I will add patient to the event candidate list."},
-      { label: "eligible new", value: "Pt may be eligible for new HA’s, RTC for an annual hearing test to start the process"},
+    PLAN_ITEMS: {
+      referral: [
+        { label: "PCP referral", value: "Follow up with PCP" },
+        { label: "ENT referral", value: "Follow up with ENT" }
+      ],
+      provider: [
+        { label: "ready submit order", value: "I will submit the order to the manufacturer with options noted above" },
+        { label: "not ready submit order", value: "When auth is received, I will submit the order to the manufacturer with options noted above" },
+        { label: "ready submit order +imps", value: "I will send impressions to the manufacturer with options noted above" },
+        { label: "not ready submit order +imps", value: "When auth is received, I will send impressions to the manufacturer with options noted above" },
+        { label: "event list", value: "I will add patient to the event candidate list." },
+        { label: "eligible new", value: "Pt may be eligible for new HA’s, RTC for an annual hearing test to start the process" }
+      ],
+      patient: [
+        { label: "Schedule HAE", value: "Schedule HAE" },
+        { label: "hearing test", value: "Annual hearing tests" },
+        { label: "delivery call", value: "RTC 4-6 weeks for a Delivery appt. We will call when the hearing aids are received" },
+        { label: "delivery schedule", value: "RTC 4-6 weeks for a delivery appt." },
+        { label: "think about it", value: "If patient wants to move forward with ordering hearing aids or if they have any other questions, they will contact us." }
     ]
+    }
   };
-
+  
   S.utils = {
     joinAnd(arr){
       if(!arr.length) return '';
@@ -3186,7 +3209,12 @@ pushDeliveryLines(state.deliveryPurchase);
        PLAN
        ============================ */
 
-    const pl = [...state.planItems];
+    // Combine all plan items (referral / provider / patient)
+    const pl = [
+      ...state.planReferral,
+      ...state.planProvider,
+      ...state.planPatient
+    ];
 
     // Each plan item gets its own bullet line
     if (pl.length) {
@@ -3195,18 +3223,29 @@ pushDeliveryLines(state.deliveryPurchase);
       });
     }
 
-    // RTC logic:
-    // - Timeframe only -> "RTC in 4 months."
-    // - As needed only -> "RTC as needed."
-    // - Both -> "RTC in 4 months or as needed."
-    if (state.rtcTime && state.rtcUnit) {
-      let rtcLine = `RTC in ${state.rtcTime} ${state.rtcUnit}`;
-      if (state.rtcAsNeeded) {
-        rtcLine += ' or as needed';
+    // RTC logic with optional reason:
+    // Examples:
+    // - RTC for a follow up in 2 weeks or as needed.
+    // - RTC for hearing aid delivery as needed.
+    // - RTC in 3 months.
+    const time    = state.rtcTime && String(state.rtcTime).trim();
+    const unit    = state.rtcUnit;
+    const reason  = state.rtcReason && state.rtcReason.trim();
+    const asNeed  = state.rtcAsNeeded;
+
+    if (time && unit) {
+      let line;
+      if (reason) {
+        line = `RTC for ${reason} in ${time} ${unit}`;
+      } else {
+        line = `RTC in ${time} ${unit}`;
       }
-      rtcLine += '.';
-      linesP.push(rtcLine);
-    } else if (state.rtcAsNeeded) {
+      if (asNeed) line += ' or as needed';
+      line += '.';
+      linesP.push(line);
+    } else if (asNeed && reason) {
+      linesP.push(`RTC for ${reason} as needed.`);
+    } else if (asNeed) {
       linesP.push('RTC as needed.');
     }
 
@@ -3908,59 +3947,72 @@ document
      WIRE PLAN
      ============================ */
 
-function wirePlan(){
+  function wirePlan(){
 
-  // 🔹 Generate the Plan buttons from S.consts.PLAN_ITEMS
-  makeButtons('plan-items', S.consts.PLAN_ITEMS, state.planItems);
+    // 🔹 Generate grouped Plan buttons
+    makeButtons('plan-referral', S.consts.PLAN_ITEMS.referral, state.planReferral);
+    makeButtons('plan-provider', S.consts.PLAN_ITEMS.provider, state.planProvider);
+    makeButtons('plan-patient',  S.consts.PLAN_ITEMS.patient,  state.planPatient);
 
-  const rtcTime = document.getElementById('rtc-time');
-  if(rtcTime){
-    rtcTime.addEventListener('input', ()=>{
-      state.rtcTime = rtcTime.value;
-      S.rebuild();
-    });
-  }
-
-  document.querySelectorAll('button[data-rtcunit]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const unit = btn.dataset.rtcunit;
-      state.rtcUnit = (state.rtcUnit === unit) ? '' : unit;
-      document.querySelectorAll('button[data-rtcunit]').forEach(b=>{
-        b.classList.toggle('toggled', b.dataset.rtcunit === state.rtcUnit);
+    const rtcTime = document.getElementById('rtc-time');
+    if(rtcTime){
+      rtcTime.addEventListener('input', ()=>{
+        state.rtcTime = rtcTime.value;
+        S.rebuild();
       });
-      S.rebuild();
-    });
-  });
+    }
 
-  const rtcAs = document.getElementById('rtc-asneeded');
-  if(rtcAs){
-    rtcAs.addEventListener('click', ()=>{
-      state.rtcAsNeeded = !state.rtcAsNeeded;
-      rtcAs.classList.toggle('toggled', state.rtcAsNeeded);
-      S.rebuild();
+    const rtcReason = document.getElementById('rtc-reason');
+    if(rtcReason){
+      rtcReason.addEventListener('input', ()=>{
+        state.rtcReason = rtcReason.value.trim();
+        S.rebuild();
+      });
+    }
+
+    document.querySelectorAll('button[data-rtcunit]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const unit = btn.dataset.rtcunit;
+        state.rtcUnit = (state.rtcUnit === unit) ? '' : unit;
+        document.querySelectorAll('button[data-rtcunit]').forEach(b=>{
+          b.classList.toggle('toggled', b.dataset.rtcunit === state.rtcUnit);
+        });
+        S.rebuild();
+      });
     });
+
+    const rtcAs = document.getElementById('rtc-asneeded');
+    if(rtcAs){
+      rtcAs.addEventListener('click', ()=>{
+        state.rtcAsNeeded = !state.rtcAsNeeded;
+        rtcAs.classList.toggle('toggled', state.rtcAsNeeded);
+        S.rebuild();
+      });
+    }
+
+    const rtcClear = document.getElementById('rtc-clear');
+    if(rtcClear){
+      rtcClear.addEventListener('click', ()=>{
+        state.rtcTime = '';
+        state.rtcUnit = '';
+        state.rtcReason = '';
+        state.rtcAsNeeded = false;
+
+        const t = document.getElementById('rtc-time');
+        if(t) t.value = '';
+        const r = document.getElementById('rtc-reason');
+        if(r) r.value = '';
+
+        document.querySelectorAll('button[data-rtcunit]').forEach(b=>b.classList.remove('toggled'));
+        const asbtn = document.getElementById('rtc-asneeded');
+        if(asbtn) asbtn.classList.remove('toggled');
+
+        S.rebuild();
+      });
+    }
+
+    wireLiveTextarea('custom-plan','planCustom');
   }
-
-  const rtcClear = document.getElementById('rtc-clear');
-  if(rtcClear){
-    rtcClear.addEventListener('click', ()=>{
-      state.rtcTime = '';
-      state.rtcUnit = '';
-      state.rtcAsNeeded = false;
-
-      const t = document.getElementById('rtc-time');
-      if(t) t.value = '';
-
-      document.querySelectorAll('button[data-rtcunit]').forEach(b=>b.classList.remove('toggled'));
-      const asbtn = document.getElementById('rtc-asneeded');
-      if(asbtn) asbtn.classList.remove('toggled');
-
-      S.rebuild();
-    });
-  }
-
-  wireLiveTextarea('custom-plan','planCustom');
-}
 
 
   /* ============================
