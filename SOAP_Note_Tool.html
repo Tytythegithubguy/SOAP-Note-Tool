@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOAP Note Tool — v6.1</title>
+<title>SOAP Note Tool — v6.1.1</title>
 <style>
 :root {
   /* Hybrid theme: slightly darker background, soft light cards, strong blue accents */
@@ -544,13 +544,22 @@ textarea {
   margin-right: 4px;
 }
 
+/* ===== DELIVERY FULL-WIDTH INPUT FIX ===== */
+#delivery-assess-sub .row input[type="text"],
+#delivery-assess-sub .row textarea {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: 1 1 auto !important;
+  box-sizing: border-box !important;
+}
+
 
 </style>
 
 </head>
 <body>
 <div class="wrap">
-  <h1>SOAP Note Tool — Version 6.1</h1>
+  <h1>SOAP Note Tool — Version 6.1.1</h1>
   <div class="app">
 
     <!-- LEFT -->
@@ -1217,75 +1226,133 @@ textarea {
 
   </div>
 </details>
+
 <!-- NEW: Delivery Section -->
 <details class="subcard" id="delivery-assess-sub" open>
   <summary>Delivery <span class="chev">▶</span></summary>
   <div class="inner">
 
-    <!-- 1) Fit / coupling -->
-    <label class="small">Fit / coupling</label>
+    <!-- Fit / coupling -->
     <div class="row">
-      <button class="btn" type="button" data-delivery-toggle="fit">
-        Include fit line
-      </button>
-    </div>
-    <div class="row">
-      <textarea id="delivery-fit" rows="2"
-        placeholder="e.g., I fit the hearing aids and earmolds."></textarea>
-    </div>
-
-    <!-- 2) Feedback / REM -->
-    <label class="small" style="margin-top:8px;">Feedback / REM</label>
-    <div class="row">
-      <button class="btn" type="button" data-delivery-toggle="feedback">
-        Include feedback / REM line
-      </button>
-    </div>
-    <div class="row">
-      <textarea id="delivery-feedback" rows="2"
-        placeholder="e.g., Ran feedback. or Ran feedback and REM."></textarea>
+      <input
+        type="text"
+        id="delivery-fit"
+        list="del-fit-list"
+        class="full"
+        placeholder="Fit/coupling details"
+      />
+      <datalist id="del-fit-list">
+        <option value="I fit the hearing aids."></option>
+        <option value="I fit the hearing aids and earmolds."></option>
+        <option value="I fit the hearing aids with domes."></option>
+        <option value="I fit the hearing aids with custom earmolds."></option>
+        <option value="I fit the hearing aids with #3, 50g receivers and 7mm closed domes."></option>
+        <option value="I fit the hearing aids with #3, 50g receivers and canal lock ear molds."></option>
+      </datalist>
     </div>
 
-    <!-- 3) Programming / gain changes -->
-    <label class="small" style="margin-top:8px;">Programming / gain changes</label>
+    <!-- Feedback / REM -->
     <div class="row">
-      <button class="btn" type="button" data-delivery-toggle="programming">
-        Include programming line
-      </button>
-    </div>
-    <div class="row">
-      <textarea id="delivery-programming" rows="2"
-        placeholder="e.g., Set to best-fit and experience level 3. Increased overall gain by 10 dB."></textarea>
-    </div>
-
-    <!-- 4) VC / programs -->
-    <label class="small" style="margin-top:8px;">VC / programs</label>
-    <div class="row">
-      <button class="btn" type="button" data-delivery-toggle="vc">
-        Include VC / program line
-      </button>
-    </div>
-    <div class="row">
-      <textarea id="delivery-vc" rows="2"
-        placeholder="e.g., The VC was not enabled. Programs: All-around, Restaurant, Music."></textarea>
+      <input
+        type="text"
+        id="delivery-feedback"
+        list="del-feedback-list"
+        class="full"
+        placeholder="Feedback or REM details"
+      />
+      <datalist id="del-feedback-list">
+        <option value="Ran feedback."></option>
+        <option value="Ran feedback and REM."></option>
+        <option value="Ran REM and adjusted gain to target."></option>
+        <option value="Ran feedback; stable fitting achieved."></option>
+      </datalist>
     </div>
 
-    <!-- 5) Patient response -->
-    <label class="small" style="margin-top:8px;">Patient response</label>
+    <!-- Programming / experience -->
     <div class="row">
-      <button class="btn" type="button" data-delivery-toggle="ptresponse">
-        Include patient response line
-      </button>
-    </div>
-    <div class="row">
-      <textarea id="delivery-ptresponse" rows="2"
-        placeholder="e.g., Pt noted improved sound quality and comfort and understands expectations."></textarea>
+      <input
+        type="text"
+        id="delivery-programming"
+        list="del-programming-list"
+        class="full"
+        placeholder="Programming details"
+      />
+      <datalist id="del-programming-list">
+        <option value="Set to best-fit and experience level 1."></option>
+        <option value="Set to best-fit and experience level 2."></option>
+        <option value="Set to best-fit and experience level 3."></option>
+        <option value="Increased overall gain by 10 dB."></option>
+        <option value="Lowered MPO by 5 dB."></option>
+        <option value="Increased high frequencies for clarity."></option>
+      </datalist>
     </div>
 
-    <p class="muted" style="margin-top:8px;">
-      “Instructed on use and care.” and “Reviewed purchase agreement and warranty information.”
-      will be added automatically for delivery visits.
-    </p>
+    <!-- VC / programs -->
+    <div class="row">
+      <input
+        type="text"
+        id="delivery-vc"
+        list="del-vc-list"
+        class="full"
+        placeholder="VC or program details"
+      />
+      <datalist id="del-vc-list">
+        <option value="The VC was not enabled."></option>
+        <option value="Volume control was enabled."></option>
+        <option value="Programs set: All-around, Restaurant, Music."></option>
+        <option value="Programs set: Speech-in-noise, Music, TV."></option>
+      </datalist>
+    </div>
+
+    <!-- Patient response -->
+    <div class="row">
+      <input
+        type="text"
+        id="delivery-ptresponse"
+        list="del-ptr-list"
+        class="full"
+        placeholder="Patient response"
+      />
+      <datalist id="del-ptr-list">
+        <option value="Pt noted improved sound quality and comfort."></option>
+        <option value="Pt reported improved clarity."></option>
+        <option value="Pt reported sounds were too loud initially but improved with adjustment."></option>
+        <option value="Pt continues to have difficulty in noise; additional counseling given."></option>
+      </datalist>
+    </div>
+
+    <!-- Instructions -->
+    <div class="row">
+      <input
+        type="text"
+        id="delivery-instructions"
+        list="del-inst-list"
+        class="full"
+        placeholder="Instructions provided"
+      />
+      <datalist id="del-inst-list">
+        <option value="Instructed on use and care."></option>
+        <option value="Reviewed insertion and removal."></option>
+        <option value="Reviewed charging instructions."></option>
+        <option value="Reviewed cleaning and maintenance."></option>
+      </datalist>
+    </div>
+
+    <!-- Purchase agreement / warranty -->
+    <div class="row">
+      <input
+        type="text"
+        id="delivery-purchase"
+        list="del-pur-list"
+        class="full"
+        placeholder="Purchase agreement/warranty info"
+      />
+      <datalist id="del-pur-list">
+        <option value="Reviewed purchase agreement and warranty information."></option>
+        <option value="Reviewed trial period and return policy."></option>
+        <option value="Reviewed loss/damage coverage."></option>
+      </datalist>
+    </div>
 
   </div>
 </details>
@@ -1553,17 +1620,13 @@ window.SNB = (()=>{
     hamPostCustomAD: [],
 
     // NEW: Delivery (Assessment)
-    deliveryFitOn: false,
-    deliveryFeedbackOn: false,
-    deliveryProgrammingOn: false,
-    deliveryVCOn: false,
-    deliveryPtResponseOn: false,
-
     deliveryFit: [],
     deliveryFeedback: [],
     deliveryProgramming: [],
     deliveryVC: [],
     deliveryPtResponse: [],
+    deliveryInstructions: [],
+    deliveryPurchase: [],
 
     assessCustom: [],
 
@@ -1633,14 +1696,6 @@ window.SNB = (()=>{
         "cannot fix in office",
         "needs to be sent for repair"],
 
-    // NEW: Default text for Delivery section (Assessment)
-    DELIVERY_DEFAULTS: {
-      fit: "I fit the hearing aids and earmolds.",
-      feedback: "Ran feedback.",
-      programming: "I set the hearing aids to best fit settings and experience level to #3.",
-      vc: "The VC was not enabled.",
-      ptResponse: "Pt noted improved sound quality and comfort and understands expectations."
-    },
 
     AUDIO_DEG: ["normal","mild","moderate","moderately-severe","severe","profound"],
     AUDIO_TYPE: ["sensorineural","conductive","mixed","rising","sloping","flat","cookie bite","high frequency"], // used elsewhere
@@ -1736,11 +1791,18 @@ HA_COUPLING: [
       ]
     },
 
-    // HAD:
-    // otoscopy, Delivery section, Plan
-    'hearing aid delivery': {
-      mainOpen: ['sec-objective','sec-assessment','sec-plan'],
-      subOpen:  [
+'hearing aid delivery': {
+      // Keep Subjective open now
+      mainOpen: [
+        'sec-subjective',
+        'sec-objective',
+        'sec-assessment',
+        'sec-plan'
+      ],
+      // Only open patient reports + otoscopy + delivery
+      // (History will remain closed unless opened manually)
+      subOpen: [
+        'patientreports-sub',
         'otoscopy-sub',
         'delivery-assess-sub'
       ]
@@ -3038,35 +3100,22 @@ if(state.impressionStatus === 'onfile'){
 // =====================
 // DELIVERY LINES (NEW)
 // =====================
-const dDefaults = S.consts.DELIVERY_DEFAULTS;
-let anyDelivery = false;
-
-function addDeliveryBlock(flag, arr, def){
-  if(!flag) return;
-  anyDelivery = true;
-  const src = (arr && arr.length) ? arr : [def];
-  src.forEach(l=>{
+function pushDeliveryLines(arr){
+  if(!arr || !arr.length) return;
+  arr.forEach(l=>{
     if(!l || !l.trim()) return;
     const t = l.trim();
     linesA.push(t.endsWith('.') ? t : t + '.');
   });
 }
 
-addDeliveryBlock(state.deliveryFitOn,         state.deliveryFit,         dDefaults.fit);
-addDeliveryBlock(state.deliveryFeedbackOn,    state.deliveryFeedback,    dDefaults.feedback);
-addDeliveryBlock(state.deliveryProgrammingOn, state.deliveryProgramming, dDefaults.programming);
-addDeliveryBlock(state.deliveryVCOn,          state.deliveryVC,          dDefaults.vc);
-addDeliveryBlock(state.deliveryPtResponseOn,  state.deliveryPtResponse,  dDefaults.ptResponse);
-
-// Always include these two for delivery visits or any time Delivery lines are used
-const isDeliveryAppt =
-  state.apptType === 'hearing aid delivery' ||
-  state.apptType === 're-delivery appointment';
-
-if(anyDelivery || isDeliveryAppt){
-  linesA.push('Instructed on use and care.');
-  linesA.push('Reviewed purchase agreement and warranty information.');
-}
+pushDeliveryLines(state.deliveryFit);
+pushDeliveryLines(state.deliveryFeedback);
+pushDeliveryLines(state.deliveryProgramming);
+pushDeliveryLines(state.deliveryVC);
+pushDeliveryLines(state.deliveryPtResponse);
+pushDeliveryLines(state.deliveryInstructions);
+pushDeliveryLines(state.deliveryPurchase);
 
     // HA maintenance (options + custom on same line)
     function maintDesc(set, customArr){
@@ -3623,8 +3672,6 @@ if(anyDelivery || isDeliveryAppt){
 makeButtons('ha-style-row', S.consts.HA_STYLES, state.haStyle);
 makeButtons('ha-coupling-row', S.consts.HA_COUPLING, state.haCoupling);
 makeButtons('order-coupling-row', S.consts.HA_COUPLING, state.orderCoupling);
- // NEW: Delivery
-makeButtons('delivery-opts-row', S.consts.DELIVERY_OPTS, state.delivery);
 
 
   // Recommendation ear scope
@@ -3788,29 +3835,6 @@ if(haTech){
       });
     });
 
-        // Delivery toggles (fit, feedback/REM, programming, VC/programs, patient response)
-    const deliveryToggleMap = {
-      fit: 'deliveryFitOn',
-      feedback: 'deliveryFeedbackOn',
-      programming: 'deliveryProgrammingOn',
-      vc: 'deliveryVCOn',
-      ptresponse: 'deliveryPtResponseOn'
-    };
-
-    document
-      .querySelectorAll('#delivery-assess-sub button[data-delivery-toggle]')
-      .forEach(btn => {
-        const key = btn.dataset.deliveryToggle;
-        const stateKey = deliveryToggleMap[key];
-        if(!stateKey) return;
-
-        btn.addEventListener('click', () => {
-          state[stateKey] = !state[stateKey];
-          btn.classList.toggle('toggled', state[stateKey]);
-          S.rebuild();
-        });
-      });
-
 
 // Tube type: slim tube vs receiver
 document
@@ -3868,12 +3892,14 @@ document
     wireLiveTextarea('ham-post-AS-custom','hamPostCustomAS');
     wireLiveTextarea('ham-post-AD-custom','hamPostCustomAD');
 
-    // NEW: Delivery textareas
+    // NEW: Delivery text boxes (single-line)
     wireLiveTextarea('delivery-fit','deliveryFit');
     wireLiveTextarea('delivery-feedback','deliveryFeedback');
     wireLiveTextarea('delivery-programming','deliveryProgramming');
     wireLiveTextarea('delivery-vc','deliveryVC');
     wireLiveTextarea('delivery-ptresponse','deliveryPtResponse');
+    wireLiveTextarea('delivery-instructions','deliveryInstructions');
+    wireLiveTextarea('delivery-purchase','deliveryPurchase');
 
     wireLiveTextarea('custom-assessment','assessCustom');
   }
@@ -3964,6 +3990,7 @@ function wirePlan(){
         document.querySelectorAll('input[type="text"],input[type="number"]').forEach(i=>i.value='');
         document.querySelectorAll('textarea').forEach(t=>t.value='');
         document.querySelectorAll('select').forEach(s=>s.selectedIndex = 0);
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb=>cb.checked = false);
 
         // Auto-open all sections (all main cards + subcards)
         document.querySelectorAll('details').forEach(d=>{
