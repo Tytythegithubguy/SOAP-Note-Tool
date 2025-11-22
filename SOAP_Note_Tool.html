@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOAP Note Tool — v6.0.1</title>
+<title>SOAP Note Tool — v6.1</title>
 <style>
 :root {
   /* Hybrid theme: slightly darker background, soft light cards, strong blue accents */
@@ -550,7 +550,7 @@ textarea {
 </head>
 <body>
 <div class="wrap">
-  <h1>SOAP Note Tool — Version 6.0.1</h1>
+  <h1>SOAP Note Tool — Version 6.1</h1>
   <div class="app">
 
     <!-- LEFT -->
@@ -1218,6 +1218,23 @@ textarea {
   </div>
 </details>
 
+<!-- NEW: Delivery Section -->
+<details class="subcard" id="delivery-assess-sub" open>
+  <summary>Delivery <span class="chev">▶</span></summary>
+  <div class="inner">
+
+    <label class="small">Delivery details</label>
+    <div id="delivery-opts-row" class="row"></div>
+
+    <div class="row" style="margin-top:8px;">
+      <textarea id="delivery-custom" rows="2"
+        placeholder="Additional delivery notes"></textarea>
+    </div>
+
+  </div>
+</details>
+
+
 <!-- NEW: Hearing Aid Maintenance -->
 <details class="subcard" id="ham-sub" open>
   <summary>Hearing Aid Maintenance <span class="chev">▶</span></summary>
@@ -1480,6 +1497,10 @@ window.SNB = (()=>{
     hamPostCustomAS: [],
     hamPostCustomAD: [],
 
+    // NEW: Delivery section
+    delivery: new Set(),
+    deliveryCustom: [],
+
     assessCustom: [],
 
     /* PLAN */
@@ -1547,6 +1568,38 @@ window.SNB = (()=>{
         "still sounds dead",
         "cannot fix in office",
         "needs to be sent for repair"],
+
+    // NEW: Delivery phrases (Assessment)
+    DELIVERY_OPTS: [
+      {
+        label: "Fit HAs & earmolds",
+        value: "I fit the hearing aids and earmolds."
+      },
+      {
+        label: "Ran feedback",
+        value: "Ran feedback."
+      },
+      {
+        label: "Best fit / exp #3",
+        value: "I set the hearing aids to best fit settings and experience level to #3."
+      },
+      {
+        label: "VC not enabled",
+        value: "The VC was not enabled."
+      },
+      {
+        label: "Pt noted improvement",
+        value: "Pt noted improved sound quality and comfort and understands expectations."
+      },
+      {
+        label: "Use & care counseling",
+        value: "Instructed on use and care."
+      },
+      {
+        label: "Reviewed purchase & warranty",
+        value: "Reviewed purchase agreement and warranty information."
+      }
+    ],
     AUDIO_DEG: ["normal","mild","moderate","moderately-severe","severe","profound"],
     AUDIO_TYPE: ["sensorineural","conductive","mixed","rising","sloping","flat","cookie bite","high frequency"], // used elsewhere
 
@@ -1642,12 +1695,12 @@ HA_COUPLING: [
     },
 
     // HAD:
-    // otoscopy, (future) Delivery section, Plan
+    // otoscopy, Delivery section, Plan
     'hearing aid delivery': {
       mainOpen: ['sec-objective','sec-assessment','sec-plan'],
       subOpen:  [
-        'otoscopy-sub'
-        // 'delivery-assess-sub'  // when we build it
+        'otoscopy-sub',
+        'delivery-assess-sub'
       ]
     },
 
@@ -1686,15 +1739,15 @@ HA_COUPLING: [
     },
 
     // Re-Del:
-    // Same as HACK but with Delivery report section (when built)
+    // Same as HACK but with Delivery report section
     're-delivery appointment': {
       mainOpen: ['sec-subjective','sec-objective','sec-assessment','sec-plan'],
       subOpen:  [
         'otoscopy-sub',
         'hacond-sub',
         'ham-sub',
-        'ham-post-sub'
-        // 'delivery-assess-sub' // future
+        'ham-post-sub',
+        'delivery-assess-sub'
       ]
     }
   };
@@ -1711,9 +1764,9 @@ HA_COUPLING: [
       'hacond-sub',
       'ins-sub',
       'ha-rec-sub',
+      'delivery-assess-sub',
       'ham-sub',
       'ham-post-sub'
-      // 'delivery-assess-sub'  // future, safe if missing
     ];
 
     // Auto open/close the main cards
@@ -2940,6 +2993,25 @@ if(state.impressionStatus === 'onfile'){
   linesA.push(`I did not take impressions; we will order with impressions on file.`);
 }
 
+// =====================
+// DELIVERY LINES (NEW)
+// =====================
+if (state.delivery && state.delivery.size){
+  [...state.delivery].forEach(txt => {
+    if(!txt || !txt.trim()) return;
+    const t = txt.trim();
+    linesA.push(t.endsWith('.') ? t : t + '.');
+  });
+}
+
+if (state.deliveryCustom && state.deliveryCustom.length){
+  state.deliveryCustom.forEach(l => {
+    if(!l || !l.trim()) return;
+    const t = l.trim();
+    linesA.push(t.endsWith('.') ? t : t + '.');
+  });
+}
+
     // HA maintenance (options + custom on same line)
     function maintDesc(set, customArr){
       const parts = [];
@@ -3495,6 +3567,9 @@ if(state.impressionStatus === 'onfile'){
 makeButtons('ha-style-row', S.consts.HA_STYLES, state.haStyle);
 makeButtons('ha-coupling-row', S.consts.HA_COUPLING, state.haCoupling);
 makeButtons('order-coupling-row', S.consts.HA_COUPLING, state.orderCoupling);
+ // NEW: Delivery
+makeButtons('delivery-opts-row', S.consts.DELIVERY_OPTS, state.delivery);
+
 
   // Recommendation ear scope
   document.querySelectorAll('button[data-recscope]').forEach(btn=>{
@@ -3713,6 +3788,9 @@ document
 
     wireLiveTextarea('ham-post-AS-custom','hamPostCustomAS');
     wireLiveTextarea('ham-post-AD-custom','hamPostCustomAD');
+
+    // NEW: Delivery custom notes
+    wireLiveTextarea('delivery-custom','deliveryCustom');
 
     wireLiveTextarea('custom-assessment','assessCustom');
   }
