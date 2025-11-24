@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOAP Note Tool — v6.2.1</title>
+<title>SOAP Note Tool — v6.3</title>
 <style>
 :root {
   /* Hybrid theme: slightly darker background, soft light cards, strong blue accents */
@@ -559,7 +559,7 @@ textarea {
 </head>
 <body>
 <div class="wrap">
-  <h1>SOAP Note Tool — Version 6.2.1</h1>
+  <h1>SOAP Note Tool — Version 6.3</h1>
   <div class="app">
 
     <!-- LEFT -->
@@ -1026,12 +1026,15 @@ textarea {
       />
       <datalist id="ha-model-list">
         <option value="Evolv AI 1000"></option>
-        <option value="Evolv AI 1200"></option>
         <option value="Genesis AI 12"></option>
-        <option value="Genesis AI 20"></option>
+        <option value="Omega AI 16"></option>
+        <option value="Omega AI 20"></option>
+        <option value="Omega AI 24"></option>
         <option value="Audeo L30"></option>
         <option value="Audeo L50"></option>
-        <option value="ReSound Key 2"></option>
+        <option value="Key 2"></option>
+        <option value="Key 3"></option>
+        <option value="Intent 1"></option>
       </datalist>
     </div>
 
@@ -1044,11 +1047,20 @@ textarea {
         placeholder="e.g., champagne"
       />
       <datalist id="ha-color-list">
-        <option value="champagne"></option>
-        <option value="black"></option>
-        <option value="silver"></option>
         <option value="beige"></option>
-        <option value="graphite"></option>
+        <option value="black"></option>
+        <option value="brown"></option>
+        <option value="champagne"></option>
+        <option value="dark brown"></option>
+        <option value="espresso"></option>
+        <option value="graphite gray"></option>
+        <option value="light beige"></option>
+        <option value="light brown"></option>
+        <option value="medium brown"></option>
+        <option value="silver"></option>
+        <option value="slate"></option>
+        <option value="sterling"></option>
+        <option value="white"></option>
       </datalist>
     </div>
   </div>
@@ -1064,9 +1076,10 @@ textarea {
       style="max-width: 360px;"
     />
     <datalist id="order-style-list">
-      <option value="behind-the-ear"></option>
       <option value="power behind-the-ear"></option>
+      <option value="behind-the-ear"></option>
       <option value="receiver-in-the-canal"></option>
+      <option value="micro receiver-in-the-canal"></option>
       <option value="in-the-ear"></option>
       <option value="in-the-canal"></option>
       <option value="completely-in-the-canal"></option>
@@ -1127,8 +1140,6 @@ textarea {
         <option value="">—</option>
         <option value="soft">soft</option>
         <option value="hard">hard</option>
-        <option value="silicone">silicone</option>
-        <option value="acrylic">acrylic</option>
       </select>
 
       <label class="small mt-6">Ear mold color (AS)</label>
@@ -1281,9 +1292,6 @@ textarea {
         <option value="Set to best-fit and experience level 1."></option>
         <option value="Set to best-fit and experience level 2."></option>
         <option value="Set to best-fit and experience level 3."></option>
-        <option value="Increased overall gain by 10 dB."></option>
-        <option value="Lowered MPO by 5 dB."></option>
-        <option value="Increased high frequencies for clarity."></option>
       </datalist>
     </div>
 
@@ -1299,8 +1307,6 @@ textarea {
       <datalist id="del-vc-list">
         <option value="The VC was not enabled."></option>
         <option value="Volume control was enabled."></option>
-        <option value="Programs set: All-around, Restaurant, Music."></option>
-        <option value="Programs set: Speech-in-noise, Music, TV."></option>
       </datalist>
     </div>
 
@@ -1315,7 +1321,6 @@ textarea {
       />
       <datalist id="del-ptr-list">
         <option value="Pt noted improved sound quality and comfort."></option>
-        <option value="Pt reported improved clarity."></option>
         <option value="Pt reported sounds were too loud initially but improved with adjustment."></option>
         <option value="Pt continues to have difficulty in noise; additional counseling given."></option>
       </datalist>
@@ -1332,9 +1337,6 @@ textarea {
       />
       <datalist id="del-inst-list">
         <option value="Instructed on use and care."></option>
-        <option value="Reviewed insertion and removal."></option>
-        <option value="Reviewed charging instructions."></option>
-        <option value="Reviewed cleaning and maintenance."></option>
       </datalist>
     </div>
 
@@ -1349,8 +1351,6 @@ textarea {
       />
       <datalist id="del-pur-list">
         <option value="Reviewed purchase agreement and warranty information."></option>
-        <option value="Reviewed trial period and return policy."></option>
-        <option value="Reviewed loss/damage coverage."></option>
       </datalist>
     </div>
 
@@ -4082,6 +4082,17 @@ document
     });
   }
 
+function sortDatalist(id) {
+  const dl = document.getElementById(id);
+  if (!dl) return;
+
+  const values = Array.from(dl.querySelectorAll("option"))
+    .map(o => o.value)
+    .sort((a, b) => a.localeCompare(b));
+
+  dl.innerHTML = values.map(v => `<option value="${v}"></option>`).join("");
+}
+
 
   /* ============================
      INIT
@@ -4093,6 +4104,11 @@ document
     wirePlan();
     wireNoteControls();
     wireTemplates();
+    sortDatalist('ha-mfg-list');
+    sortDatalist('ha-model-list');
+    sortDatalist('ha-color-list');
+    sortDatalist('mold-color-list');
+    sortDatalist('rtc-reason-list');
     S.rebuild();
   }
 
