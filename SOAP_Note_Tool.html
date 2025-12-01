@@ -4044,9 +4044,9 @@ const delClr = document.getElementById('delivery-clear');
 if(delClr){
   delClr.addEventListener('click', ()=>{
     clearDeliveryFields();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 }
+
 
 
   /* ============================
@@ -4155,6 +4155,7 @@ if(delClr){
         });
 
         S.rebuild();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       });
     }
   }
