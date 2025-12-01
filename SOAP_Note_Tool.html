@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOAP Note Tool — v6.3</title>
+<title>SOAP Note Tool — v6.3.1</title>
 <style>
 :root {
   /* Hybrid theme: slightly darker background, soft light cards, strong blue accents */
@@ -559,7 +559,7 @@ textarea {
 </head>
 <body>
 <div class="wrap">
-  <h1>SOAP Note Tool — Version 6.3</h1>
+  <h1>SOAP Note Tool — Version 6.3.1</h1>
   <div class="app">
 
     <!-- LEFT -->
@@ -2115,20 +2115,6 @@ PLAN_ITEMS: {
         { type: 'setInput', id: 'order-style', value: 'in-the-ear' },
         { type: 'setInput', id: 'order-color', value: 'beige' },
 
-        // Custom full-shell style “ear mold” AU
-        { type: 'setSelect', id: 'order-mold-type-AS',     value: 'full shell' },
-        { type: 'setSelect', id: 'order-mold-type-AD',     value: 'full shell' },
-        { type: 'setSelect', id: 'order-mold-material-AS', value: 'hard' },
-        { type: 'setSelect', id: 'order-mold-material-AD', value: 'hard' },
-        { type: 'setInput',  id: 'mold-color-AS',          value: 'beige' },
-        { type: 'setInput',  id: 'mold-color-AD',          value: 'beige' },
-
-        // Coupling: treat as “ear mold”
-        {
-          type: 'toggleOption',
-          containerId: 'order-coupling-row',
-          value: 'ear mold'
-        }
       ]
     },
 
@@ -2152,19 +2138,6 @@ PLAN_ITEMS: {
         { type: 'setInput', id: 'order-style', value: 'in-the-canal' },
         { type: 'setInput', id: 'order-color', value: 'beige' },
 
-        // Custom canal “ear molds” AU
-        { type: 'setSelect', id: 'order-mold-type-AS',     value: 'canal' },
-        { type: 'setSelect', id: 'order-mold-type-AD',     value: 'canal' },
-        { type: 'setSelect', id: 'order-mold-material-AS', value: 'hard' },
-        { type: 'setSelect', id: 'order-mold-material-AD', value: 'hard' },
-        { type: 'setInput',  id: 'mold-color-AS',          value: 'beige' },
-        { type: 'setInput',  id: 'mold-color-AD',          value: 'beige' },
-
-        {
-          type: 'toggleOption',
-          containerId: 'order-coupling-row',
-          value: 'ear mold'
-        }
       ]
     },
 
@@ -2702,27 +2675,44 @@ if(state.subjCustom.length)
       linesO.push(`Medical clearance from ${state.clearanceDoc}.`);
     }
 
-    // 🔹 Hearing Aid Condition – single line, AU if same
-    const hacAS = [...state.hacAS];
-    const hacAD = [...state.hacAD];
+  // 🔹 Hearing Aid Condition – single line, AU if same
+  const hacAS = [...state.hacAS];
+  const hacAD = [...state.hacAD];
 
-    if(hacAS.length || hacAD.length){
-      const sameHAC =
-        hacAS.length && hacAD.length &&
-        hacAS.length === hacAD.length &&
-        hacAS.every(v => hacAD.includes(v));
+  // Make "filters plugged" singular when we're talking about a single ear
+  function singularizeFilters(text, scope){
+    if(!text || scope === 'AU') return text;
+    return text
+      .replace(/\bfilters plugged\b/gi, 'filter plugged')
+      .replace(/\bfilters appear partially plugged\b/gi, 'filter appears partially plugged');
+  }
 
-      if(sameHAC){
-        const cond = S.utils.joinAnd(hacAS);
-        // Example: "Hearing aid condition: appears clean, AU."
-        linesO.push(`Hearing aid condition: ${cond}, AU.`);
-      } else {
-        const parts = [];
-        if(hacAS.length) parts.push(`${S.utils.joinAnd(hacAS)}, AS`);
-        if(hacAD.length) parts.push(`${S.utils.joinAnd(hacAD)}, AD`);
-        linesO.push(`Hearing aid condition: ${parts.join('; ')}.`);
+  if(hacAS.length || hacAD.length){
+    const sameHAC =
+      hacAS.length && hacAD.length &&
+      hacAS.length === hacAD.length &&
+      hacAS.every(v => hacAD.includes(v));
+
+    if(sameHAC){
+      // Both ears same → keep plural
+      let cond = S.utils.joinAnd(hacAS);
+      cond = singularizeFilters(cond, 'AU'); // no change for AU
+      linesO.push(`Hearing aid condition: ${cond}, AU.`);
+    } else {
+      const parts = [];
+      if(hacAS.length){
+        let condAS = S.utils.joinAnd(hacAS);
+        condAS = singularizeFilters(condAS, 'AS');
+        parts.push(`${condAS}, AS`);
       }
+      if(hacAD.length){
+        let condAD = S.utils.joinAnd(hacAD);
+        condAD = singularizeFilters(condAD, 'AD');
+        parts.push(`${condAD}, AD`);
+      }
+      linesO.push(`Hearing aid condition: ${parts.join('; ')}.`);
     }
+  }
     // (hacCustomAS/AD no longer output here – boxes were removed)
 
 
@@ -2955,9 +2945,35 @@ const o = state.order;
 (function buildPatientChoseLine(){
   const cv = [...state.orderCoupling];
 
+  // Use the *per-ear* mold fields now (AS/AD)
+  const moldTypeAS      = o.moldTypeAS && o.moldTypeAS.trim();
+  const moldTypeAD      = o.moldTypeAD && o.moldTypeAD.trim();
+  const moldMaterialAS  = o.moldMaterialAS && o.moldMaterialAS.trim();
+  const moldMaterialAD  = o.moldMaterialAD && o.moldMaterialAD.trim();
+
+  // Derive a "common" mold type / material, based on scope & matching values
+  let moldType = '';
+  let moldMaterial = '';
+
+  if (moldTypeAS && moldTypeAD && moldTypeAS === moldTypeAD) {
+    moldType = moldTypeAS;        // same both ears
+  } else if (o.scope === 'AS' && moldTypeAS) {
+    moldType = moldTypeAS;
+  } else if (o.scope === 'AD' && moldTypeAD) {
+    moldType = moldTypeAD;
+  }
+
+  if (moldMaterialAS && moldMaterialAD && moldMaterialAS === moldMaterialAD) {
+    moldMaterial = moldMaterialAS;
+  } else if (o.scope === 'AS' && moldMaterialAS) {
+    moldMaterial = moldMaterialAS;
+  } else if (o.scope === 'AD' && moldMaterialAD) {
+    moldMaterial = moldMaterialAD;
+  }
+
   const hasOrderCore =
     o.mfg || o.model || o.style || o.color ||
-    o.moldType || o.moldMaterial ||
+    moldType || moldMaterial ||
     o.moldColorAS || o.moldColorAD ||
     cv.length;
 
@@ -2985,12 +3001,12 @@ const o = state.order;
     line += 'hearing aid';
   }
 
-  // Color of HA shell
+  // Hearing aid shell color
   if(o.color && o.color.trim()){
     line += ` in “${o.color.trim()}”`;
   }
 
-  // Coupling / ear molds
+  // Coupling / ear molds (no receiver wording here)
   let withPhrase = '';
 
   if(cv.length){
@@ -2998,10 +3014,7 @@ const o = state.order;
     const leftColor  = o.moldColorAS && o.moldColorAS.trim();
     const rightColor = o.moldColorAD && o.moldColorAD.trim();
 
-    const moldType     = o.moldType && o.moldType.trim();       // e.g. "half shell"
-    const moldMaterial = o.moldMaterial && o.moldMaterial.trim(); // e.g. "soft"
-
-    // Helper to build a descriptive ear mold base (without color)
+    // Build a descriptive ear-mold base from common type/material
     function buildMoldBase(isRIC){
       let base = '';
       if(moldMaterial) base += moldMaterial + ' ';
@@ -3021,26 +3034,24 @@ const o = state.order;
       if(leftColor && rightColor &&
          leftColor.toLowerCase() === rightColor.toLowerCase()){
         // Same color both ears → compress
-        withPhrase = `${base} in “${leftColor}”`;
+        withPhrase = base
+          ? `${base} in “${leftColor}”`
+          : `ear molds in “${leftColor}”`;
       } else if(leftColor || rightColor){
         // Different per-ear colors
         const parts = [];
+        const singleBase = (base || 'ear mold').replace('ear molds','ear mold');
+
         if(leftColor){
-          parts.push(
-            base.replace('ear molds','ear mold')
-                .replace('RIC ear mold','RIC ear mold')  // safety
-                .replace('ear molds','ear mold') + ` in “${leftColor}” (AS)`
-          );
+          parts.push(`${singleBase} in “${leftColor}” (AS)`);
         }
         if(rightColor){
-          parts.push(
-            base.replace('ear molds','ear mold') + ` in “${rightColor}” (AD)`
-          );
+          parts.push(`${singleBase} in “${rightColor}” (AD)`);
         }
         withPhrase = parts.join(', ');
       } else {
-        // No mold color, just describe style/material
-        withPhrase = base;
+        // No color, just style/material
+        withPhrase = base || 'ear molds';
       }
     } else {
       // Any future coupling types
@@ -3125,6 +3136,7 @@ const o = state.order;
 
   linesA.push(line);
 })();
+
 
 // Extra order details
 if(o.extraDetails && o.extraDetails.trim()){
