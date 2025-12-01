@@ -3016,7 +3016,7 @@ const o = state.order;
     line += ` in “${o.color.trim()}”`;
   }
 
-  // Coupling / ear molds
+  // Coupling / ear molds (no receiver wording here)
   let withPhrase = '';
 
   if(cv.length){
@@ -3086,6 +3086,67 @@ const o = state.order;
 
   linesA.push(line);
 })();
+
+// Receiver / slim tube order line with AU vs AS/AD logic
+(function buildReceiverOrderLine(){
+  if(!o.tubeType) return;
+
+  const hasRecAS = (o.recLenAS || o.recPwrAS);
+  const hasRecAD = (o.recLenAD || o.recPwrAD);
+
+  if(!hasRecAS && !hasRecAD) return;
+
+  const isSlim = (o.tubeType === 'slim tube');
+
+  // Helper to build per-ear detail
+  function buildRecDetails(len, pwr){
+    const bits = [];
+    if(len) bits.push(`length #${len}`);
+    if(pwr) bits.push(`${pwr} gain`);
+    return bits.join(', ');
+  }
+
+  // If both ears have identical receiver data, use AU
+  if(
+    hasRecAS && hasRecAD &&
+    o.recLenAS === o.recLenAD &&
+    o.recPwrAS === o.recPwrAD
+  ){
+    const details = buildRecDetails(o.recLenAS, o.recPwrAS);
+    const noun = isSlim ? 'slim tubes' : 'receivers';
+
+    let line = `I will order ${noun}`;
+    if(details) line += ` (${details})`;
+    line += ', AU.';
+
+    linesA.push(line);
+    return;
+  }
+
+  // Otherwise, specify AS and AD separately
+  const parts = [];
+  if(hasRecAS){
+    const details = buildRecDetails(o.recLenAS, o.recPwrAS);
+    const noun = isSlim ? 'slim tube' : 'receiver';
+    parts.push(`AS: ${details ? details + ' ' + noun : noun}`);
+  }
+  if(hasRecAD){
+    const details = buildRecDetails(o.recLenAD, o.recPwrAD);
+    const noun = isSlim ? 'slim tube' : 'receiver';
+    parts.push(`AD: ${details ? details + ' ' + noun : noun}`);
+  }
+
+  const pluralNoun = isSlim ? 'slim tubes' : 'receivers';
+  let line = `I will order ${pluralNoun}`;
+  if(parts.length){
+    line += ` (${parts.join('; ')}).`;
+  } else {
+    line += '.';
+  }
+
+  linesA.push(line);
+})();
+
 
 // Extra order details
 if(o.extraDetails && o.extraDetails.trim()){
