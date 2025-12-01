@@ -2955,9 +2955,35 @@ const o = state.order;
 (function buildPatientChoseLine(){
   const cv = [...state.orderCoupling];
 
+  // Use the *per-ear* mold fields now (AS/AD)
+  const moldTypeAS      = o.moldTypeAS && o.moldTypeAS.trim();
+  const moldTypeAD      = o.moldTypeAD && o.moldTypeAD.trim();
+  const moldMaterialAS  = o.moldMaterialAS && o.moldMaterialAS.trim();
+  const moldMaterialAD  = o.moldMaterialAD && o.moldMaterialAD.trim();
+
+  // Derive a "common" mold type / material, based on scope & matching values
+  let moldType = '';
+  let moldMaterial = '';
+
+  if (moldTypeAS && moldTypeAD && moldTypeAS === moldTypeAD) {
+    moldType = moldTypeAS;        // same both ears
+  } else if (o.scope === 'AS' && moldTypeAS) {
+    moldType = moldTypeAS;
+  } else if (o.scope === 'AD' && moldTypeAD) {
+    moldType = moldTypeAD;
+  }
+
+  if (moldMaterialAS && moldMaterialAD && moldMaterialAS === moldMaterialAD) {
+    moldMaterial = moldMaterialAS;
+  } else if (o.scope === 'AS' && moldMaterialAS) {
+    moldMaterial = moldMaterialAS;
+  } else if (o.scope === 'AD' && moldMaterialAD) {
+    moldMaterial = moldMaterialAD;
+  }
+
   const hasOrderCore =
     o.mfg || o.model || o.style || o.color ||
-    o.moldType || o.moldMaterial ||
+    moldType || moldMaterial ||
     o.moldColorAS || o.moldColorAD ||
     cv.length;
 
@@ -2985,7 +3011,7 @@ const o = state.order;
     line += 'hearing aid';
   }
 
-  // Color of HA shell
+  // Hearing aid shell color
   if(o.color && o.color.trim()){
     line += ` in “${o.color.trim()}”`;
   }
@@ -2998,10 +3024,7 @@ const o = state.order;
     const leftColor  = o.moldColorAS && o.moldColorAS.trim();
     const rightColor = o.moldColorAD && o.moldColorAD.trim();
 
-    const moldType     = o.moldType && o.moldType.trim();       // e.g. "half shell"
-    const moldMaterial = o.moldMaterial && o.moldMaterial.trim(); // e.g. "soft"
-
-    // Helper to build a descriptive ear mold base (without color)
+    // Build a descriptive ear-mold base from common type/material
     function buildMoldBase(isRIC){
       let base = '';
       if(moldMaterial) base += moldMaterial + ' ';
@@ -3021,26 +3044,24 @@ const o = state.order;
       if(leftColor && rightColor &&
          leftColor.toLowerCase() === rightColor.toLowerCase()){
         // Same color both ears → compress
-        withPhrase = `${base} in “${leftColor}”`;
+        withPhrase = base
+          ? `${base} in “${leftColor}”`
+          : `ear molds in “${leftColor}”`;
       } else if(leftColor || rightColor){
         // Different per-ear colors
         const parts = [];
+        const singleBase = (base || 'ear mold').replace('ear molds','ear mold');
+
         if(leftColor){
-          parts.push(
-            base.replace('ear molds','ear mold')
-                .replace('RIC ear mold','RIC ear mold')  // safety
-                .replace('ear molds','ear mold') + ` in “${leftColor}” (AS)`
-          );
+          parts.push(`${singleBase} in “${leftColor}” (AS)`);
         }
         if(rightColor){
-          parts.push(
-            base.replace('ear molds','ear mold') + ` in “${rightColor}” (AD)`
-          );
+          parts.push(`${singleBase} in “${rightColor}” (AD)`);
         }
         withPhrase = parts.join(', ');
       } else {
-        // No mold color, just describe style/material
-        withPhrase = base;
+        // No color, just style/material
+        withPhrase = base || 'ear molds';
       }
     } else {
       // Any future coupling types
@@ -3059,66 +3080,6 @@ const o = state.order;
     line += ', AD.';
   } else if(scope === 'AU'){
     line += ', AU.';
-  } else {
-    line += '.';
-  }
-
-  linesA.push(line);
-})();
-
-// Receiver / slim tube order line with AU vs AS/AD logic
-(function buildReceiverOrderLine(){
-  if(!o.tubeType) return;
-
-  const hasRecAS = (o.recLenAS || o.recPwrAS);
-  const hasRecAD = (o.recLenAD || o.recPwrAD);
-
-  if(!hasRecAS && !hasRecAD) return;
-
-  const isSlim = (o.tubeType === 'slim tube');
-
-  // Helper to build per-ear detail
-  function buildRecDetails(len, pwr){
-    const bits = [];
-    if(len) bits.push(`length #${len}`);
-    if(pwr) bits.push(`${pwr} gain`);
-    return bits.join(', ');
-  }
-
-  // If both ears have identical receiver data, use AU
-  if(
-    hasRecAS && hasRecAD &&
-    o.recLenAS === o.recLenAD &&
-    o.recPwrAS === o.recPwrAD
-  ){
-    const details = buildRecDetails(o.recLenAS, o.recPwrAS);
-    const noun = isSlim ? 'slim tubes' : 'receivers';
-
-    let line = `I will order ${noun}`;
-    if(details) line += ` (${details})`;
-    line += ', AU.';
-
-    linesA.push(line);
-    return;
-  }
-
-  // Otherwise, specify AS and AD separately
-  const parts = [];
-  if(hasRecAS){
-    const details = buildRecDetails(o.recLenAS, o.recPwrAS);
-    const noun = isSlim ? 'slim tube' : 'receiver';
-    parts.push(`AS: ${details ? details + ' ' + noun : noun}`);
-  }
-  if(hasRecAD){
-    const details = buildRecDetails(o.recLenAD, o.recPwrAD);
-    const noun = isSlim ? 'slim tube' : 'receiver';
-    parts.push(`AD: ${details ? details + ' ' + noun : noun}`);
-  }
-
-  const pluralNoun = isSlim ? 'slim tubes' : 'receivers';
-  let line = `I will order ${pluralNoun}`;
-  if(parts.length){
-    line += ` (${parts.join('; ')}).`;
   } else {
     line += '.';
   }
