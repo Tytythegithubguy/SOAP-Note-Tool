@@ -4040,12 +4040,13 @@ document
       });
     }
 
-    const delClr = document.getElementById('delivery-clear');
-    if(delClr){
-      delClr.addEventListener('click', ()=>{
-        clearDeliveryFields();
-      });
-    }
+const delClr = document.getElementById('delivery-clear');
+if(delClr){
+  delClr.addEventListener('click', ()=>{
+    clearDeliveryFields();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
 
 
   /* ============================
