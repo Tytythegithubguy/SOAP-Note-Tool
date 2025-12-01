@@ -2702,27 +2702,44 @@ if(state.subjCustom.length)
       linesO.push(`Medical clearance from ${state.clearanceDoc}.`);
     }
 
-    // 🔹 Hearing Aid Condition – single line, AU if same
-    const hacAS = [...state.hacAS];
-    const hacAD = [...state.hacAD];
+  // 🔹 Hearing Aid Condition – single line, AU if same
+  const hacAS = [...state.hacAS];
+  const hacAD = [...state.hacAD];
 
-    if(hacAS.length || hacAD.length){
-      const sameHAC =
-        hacAS.length && hacAD.length &&
-        hacAS.length === hacAD.length &&
-        hacAS.every(v => hacAD.includes(v));
+  // Make "filters plugged" singular when we're talking about a single ear
+  function singularizeFilters(text, scope){
+    if(!text || scope === 'AU') return text;
+    return text
+      .replace(/\bfilters plugged\b/gi, 'filter plugged')
+      .replace(/\bfilters appear partially plugged\b/gi, 'filter appears partially plugged');
+  }
 
-      if(sameHAC){
-        const cond = S.utils.joinAnd(hacAS);
-        // Example: "Hearing aid condition: appears clean, AU."
-        linesO.push(`Hearing aid condition: ${cond}, AU.`);
-      } else {
-        const parts = [];
-        if(hacAS.length) parts.push(`${S.utils.joinAnd(hacAS)}, AS`);
-        if(hacAD.length) parts.push(`${S.utils.joinAnd(hacAD)}, AD`);
-        linesO.push(`Hearing aid condition: ${parts.join('; ')}.`);
+  if(hacAS.length || hacAD.length){
+    const sameHAC =
+      hacAS.length && hacAD.length &&
+      hacAS.length === hacAD.length &&
+      hacAS.every(v => hacAD.includes(v));
+
+    if(sameHAC){
+      // Both ears same → keep plural
+      let cond = S.utils.joinAnd(hacAS);
+      cond = singularizeFilters(cond, 'AU'); // no change for AU
+      linesO.push(`Hearing aid condition: ${cond}, AU.`);
+    } else {
+      const parts = [];
+      if(hacAS.length){
+        let condAS = S.utils.joinAnd(hacAS);
+        condAS = singularizeFilters(condAS, 'AS');
+        parts.push(`${condAS}, AS`);
       }
+      if(hacAD.length){
+        let condAD = S.utils.joinAnd(hacAD);
+        condAD = singularizeFilters(condAD, 'AD');
+        parts.push(`${condAD}, AD`);
+      }
+      linesO.push(`Hearing aid condition: ${parts.join('; ')}.`);
     }
+  }
     // (hacCustomAS/AD no longer output here – boxes were removed)
 
 
