@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOAP Note Tool — v6.4.1</title>
+<title>SOAP Note Tool — v6.5</title>
 <style>
 :root {
   /* Hybrid theme: slightly darker background, soft light cards, strong blue accents */
@@ -559,7 +559,7 @@ textarea {
 </head>
 <body>
 <div class="wrap">
-  <h1>SOAP Note Tool — Version 6.4.1</h1>
+  <h1>SOAP Note Tool — Version 6.5</h1>
   <div class="app">
 
     <!-- LEFT -->
@@ -1523,10 +1523,11 @@ textarea {
     <textarea id="noteArea" readonly></textarea>
     <div class="note-hint">This note updates automatically as you make selections.</div>
 
-    <div class="note-controls">
-      <button class="btn" id="copy-note">Copy Note</button>
-      <button class="btn reset" id="clear-note">Clear Note</button>
-    </div>
+<div class="note-controls">
+  <button class="btn" id="toggle-shorthand">Shorthand OFF</button>
+  <button class="btn" id="copy-note">Copy Note</button>
+  <button class="btn reset" id="clear-note">Clear Note</button>
+</div>
 
   </div>
 </div>
@@ -1542,6 +1543,7 @@ textarea {
 window.SNB = (()=>{
 
   const S = {};
+  const NL = '\n';
   const state = {
 
     /* SUBJECTIVE */
@@ -1672,7 +1674,8 @@ window.SNB = (()=>{
     rtcUnit: '',
     rtcReason: '',
     rtcAsNeeded: false,
-    planCustom: []
+    planCustom: [],
+    shorthandMode: false
   };
 
   S.state = state;
@@ -1805,6 +1808,109 @@ PLAN_ITEMS: {
       return arr.slice(0,-1).join(', ') + ', or ' + arr[arr.length-1];
     }
   };
+
+  // Convert full, expanded note text into a shorthand / abbreviated version
+  function toShorthandNote(text){
+    if(!text) return text;
+
+    let out = text;
+
+    // SOAP headings
+    out = out.replace(/^Subjective:/m, 'S:');
+    out = out.replace(/^Objective:/m, 'O:');
+    out = out.replace(/^Assessment:/m, 'A:');
+    out = out.replace(/^Plan:/m, 'P:');
+
+    // Common phrase-level abbreviations
+    out = out.replace(/\bThe patient is here for\b/gi, 'Pt here for');
+    out = out.replace(/\bThe patient\b/gi, 'Pt');
+    out = out.replace(/\bPatient reports\b/gi, 'Pt c/o');
+
+    //appointment type
+    out = out.replace(/\bcomprehensive hearing test\b/gi, 'CHT');
+    out = out.replace(/\bhearing aid evaluation\b/gi, 'HAE');
+    out = out.replace(/\bhearing aid consultation\b/gi, 'HAC');
+    out = out.replace(/\bhearing aid delivery\b/gi, 'HAD');
+    out = out.replace(/\bin-warranty hearing aid check and clean\b/gi, 'HACK I/W');
+    out = out.replace(/\bout-of-warranty hearing aid check and clean\b/gi, 'HACK O/W');
+    out = out.replace(/\bannual hearing test\b/gi, 'Annual test');
+    out = out.replace(/\bre-delivery appointment\b/gi, 'Re-Del');
+  
+
+    // History
+    out = out.replace(/\bDenies history of\b/gi, 'Denies');
+    out = out.replace(/\bHistory of\b/gi, 'Hx:');
+
+    // Otoscopy / Audiogram
+    out = out.replace(/\bOtoscopy\b/gi, 'Oto');
+    out = out.replace(/\bAudiogram was performed today\. Results indicate\b/gi, 'Audio:');
+    out = out.replace(/\bAudiogram from\b/gi, 'Audio (ext) from');
+    out = out.replace(/\bAudiogram\b/gi, 'Audio');
+    out = out.replace(/\bsensorineural\b/gi, 'SN');
+    out = out.replace(/\bhearing loss\b/gi, 'HL');
+
+    // Hearing aids / ears
+    out = out.replace(/\bhearing aids\b/gi, "HA's");
+    out = out.replace(/\bhearing aid\b/gi, 'HA');
+    // (AS / AD / AU already shorthand, so we leave them)
+
+    // Medical clearance / insurance
+    out = out.replace(/\bMedical clearance\b/gi, 'Rx');
+    out = out.replace(/\bOut-of-pocket:/gi, 'OOP:');
+    out = out.replace(/\bAuthorization:/gi, 'Auth:');
+    out = out.replace(/\bInsurance:/gi, 'Ins:');
+    out = out.replace(/\bBenefit:/gi, 'Ben:');
+    out = out.replace(/\bInsurance\b/gi, 'Ins');
+    // HA recommendation
+    out = out.replace(/\bhearing aid recommendation\b/gi, 'HA Rec');
+
+    //Hearing aid order
+    out = out.replace(/\bhearing aid order\b/gi, 'HA order');
+    out = out.replace(/\bhearing aid details\b/gi, 'HA details');
+    out = out.replace(/\bmanufacturer\b/gi, 'mfg');
+  
+    //hearing aid type/style
+    out = out.replace(/\bbehind-the-ear\b/gi, 'BTE');
+    out = out.replace(/\bpower behind-the-ear\b/gi, 'Power BTE');
+    out = out.replace(/\breceiver-in-the-canal\b/gi, 'RIC');
+    out = out.replace(/\bin-the-ear\b/gi, 'ITE');
+    out = out.replace(/\bin-the-canal\b/gi, 'ITC');
+    out = out.replace(/\bcompletely-in-the-canal\b/gi, 'CIC');
+    out = out.replace(/\binvisible-in-the-canal\b/gi, 'IIC');
+    out = out.replace(/\bear mold\b/gi, 'EM');
+
+    // Plan / follow up
+    out = out.replace(/\bFollow up\b/gi, 'F/U');
+    out = out.replace(/\bReturn to clinic\b/gi, 'RTC');
+    // RTC already shorthand; leave as-is
+
+    // Small word-level abbreviations
+    out = out.replace(/\bwith\b/gi, 'w/');
+    out = out.replace(/\bwithout\b/gi, 'w/o');
+    out = out.replace(/\bappointment\b/gi, 'appt');
+    out = out.replace(/\bapproximately\b/gi, '~');
+
+    //Other
+    out = out.replace(/\bvolume control\b/gi, 'VC');
+    out = out.replace(/\bexperience\b/gi, 'exp');
+    
+    // Impressions
+    out = out.replace(/\bimpressions\b/gi, 'imps');
+    out = out.replace(/\bwithout complication\b/gi, 'w/o comp');
+
+    // Maintenance blocks
+    out = out.replace(/\bHearing aid maintenance\b/gi, 'HA maint');
+    out = out.replace(/\bPost-maintenance status\b/gi, 'Post-maint stat');
+    out = out.replace(/\bmaintenance\b/gi, 'maint');
+    out = out.replace(/\bstatus\b/gi, 'stat');
+
+
+
+
+
+    return out;
+  }
+
 
   /* ============================
      VISIT LAYOUTS (attach to appt type buttons)
@@ -3301,9 +3407,7 @@ pushDeliveryLines(state.deliveryPurchase);
        FINAL NOTE OUTPUT
        ============================ */
 
-    const NL = "\n";
-
-    const finalNote =
+    const fullNote =
       ''+NL+
       'Subjective:'+NL+
       (linesS.length ? linesS.map(l=>'- '+l).join(NL) : '')+NL+NL+
@@ -3314,7 +3418,10 @@ pushDeliveryLines(state.deliveryPurchase);
       'Plan:'+NL+
       (linesP.length ? linesP.map(l=>'- '+l).join(NL) : '');
 
-    const ta=document.getElementById('noteArea');
+    // If shorthand mode is on, transform the full note into an abbreviated version
+    const finalNote = state.shorthandMode ? toShorthandNote(fullNote) : fullNote;
+
+    const ta = document.getElementById('noteArea');
     const nearBottom = (ta.scrollTop + ta.clientHeight) >= (ta.scrollHeight - 10);
     const prev = ta.scrollTop;
     ta.value = finalNote;
@@ -4126,6 +4233,7 @@ if(delClr){
   function wireNoteControls(){
     const copyBtn = document.getElementById('copy-note');
     const clearBtn = document.getElementById('clear-note');
+    const shorthandBtn = document.getElementById('toggle-shorthand');
 
     if(copyBtn){
       copyBtn.addEventListener('click', async ()=>{
@@ -4154,8 +4262,23 @@ if(delClr){
           d.open = true;
         });
 
+        // Reset shorthand button UI
+        if(shorthandBtn){
+          shorthandBtn.classList.remove('toggled');
+          shorthandBtn.textContent = 'Shorthand OFF';
+        }
+
         S.rebuild();
         window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+    if(shorthandBtn){
+      shorthandBtn.addEventListener('click', ()=>{
+        state.shorthandMode = !state.shorthandMode;
+        shorthandBtn.classList.toggle('toggled', state.shorthandMode);
+        shorthandBtn.textContent = state.shorthandMode ? 'Shorthand ON' : 'Shorthand OFF';
+        S.rebuild();
       });
     }
   }
