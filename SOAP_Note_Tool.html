@@ -3,81 +3,95 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOAP Note Tool — v6.6</title>
+<title>SOAP Note Tool — v6.7</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  /* Hybrid theme: slightly darker background, soft light cards, strong blue accents */
-  --bg: #d4dbe3;
-  --bg-gradient-top: #e5ebf3;
-  --bg-gradient-bottom: #c3ccd8;
+  /* Light background with blue accent */
+  --bg: #e5e7eb;
+  --bg-gradient-top: #f3f4f6;
+  --bg-gradient-bottom: #e5e7eb;
 
-  --card: #f9fafb;
-  --card-sub: #f3f4f6;
+  --card: #ffffff;
+  --card-sub: #f9fafb;
 
   --muted: #4b5563;
-  --muted-soft: #6b7280;
+  --muted-soft: #9ca3af;
 
-  --accent: #1d4ed8;   /* main navy blue */
-  --accent2: #2563eb;  /* hover/secondary blue */
-  --accent3: #0b2f6b;  /* darkest blue (ON state) */
+  /* Blue accents */
+  --accent: #2563eb;      /* main blue */
+  --accent2: #3b82f6;     /* hover/secondary */
+  --accent3: #1d4ed8;     /* darkest (ON state) */
 
-  --border: #cbd2da;
+  --border: #d1d5db;
   --border-strong: #9ca3af;
 
-  --radius: 8px;
+  --radius: 6px;
 }
 
-/* Base layout */
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-  background: radial-gradient(circle at top, var(--bg-gradient-top) 0, var(--bg-gradient-bottom) 55%, #b2bccb 100%);
+  font-family: "Nunito", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  background: linear-gradient(to bottom, var(--bg-gradient-top), var(--bg-gradient-bottom));
   color: #111827;
 }
 
-/* Main wrapper */
 .wrap {
-  max-width: 1440px;
+  max-width: 1500px;
   margin: 0 auto;
-  padding: 18px 18px 28px;
+  padding: 12px 16px 20px;
 }
 
-/* App columns */
 .app {
   display: flex;
-  gap: 18px;
+  gap: 12px;
   align-items: flex-start;
 }
 
-/* Left column = builders */
 .left {
-  width: 58%;
-  margin-right: 2%;
+  width: 75%;
 }
 
-/* Right column = SOAP note */
 .right {
-  width: 40%;
+  width: 25%;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+h4 {
+  margin-top: 8px;
+  margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 /* Cards / panels */
 .card {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 14px 18px;
-  margin-bottom: 14px;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
 }
 
 /* Subcards inside sections */
 .subcard {
   background: var(--card-sub);
-  border-radius: 10px;
+  border-radius: 6px;
   border: 1px solid #d1d5db;
-  padding: 8px 10px;
-  margin: 10px 0;
+  padding: 6px 8px;
+  margin: 6px 0;
 }
 
 /* Card headers / summary (details) */
@@ -93,6 +107,7 @@ details.subcard > summary {
   justify-content: space-between;
   padding: 6px 0;
 }
+
 
 /* Remove default triangle */
 details summary::-webkit-details-marker {
@@ -139,14 +154,14 @@ label,
 /* Inputs / textareas */
 input[type="text"],
 input[type="number"],
-textarea,
-select {
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 4px 6px;
+select,
+textarea {
+  font-family: inherit;
   font-size: 13px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
   box-sizing: border-box;
-  background: #ffffff;
 }
 
 /* Make selects visually consistent */
@@ -190,19 +205,40 @@ textarea {
   padding-top: 6px;
 }
 
+/* 2x2 grid for the four main sections */
+.section-grid {
+  display: grid;
+  /* Two columns, but each must be at least 380px wide */
+  grid-template-columns: repeat(2, minmax(380px, 1fr));
+  gap: 14px;
+}
+
+@media (max-width: 900px) {
+  .section-grid {
+    grid-template-columns: 1fr; /* stack S/O/A/P on narrow windows */
+  }
+}
+
+
+/* So cards inside grid don't add extra bottom margin */
+.section-grid .card {
+  margin-bottom: 0;
+}
+
+
 /* Main action buttons (Copy Note, Clear Note, Clear sections, etc.) */
 .btn {
   background: linear-gradient(to bottom, var(--accent2), var(--accent));
-  color: #fff;
+  color: #ffffff;
   border: 1px solid var(--accent2);
   border-radius: var(--radius);
-  padding: 8px 12px;
-  font-size: 13px;
+  padding: 6px 10px;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
   text-transform: uppercase;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.35);
+  box-shadow: 0 2px 5px rgba(15, 23, 42, 0.2);
   transition:
     background 0.15s,
     box-shadow 0.15s,
@@ -211,13 +247,13 @@ textarea {
 }
 
 .btn:hover {
-  background: linear-gradient(to bottom, #3b82f6, var(--accent2));
-  box-shadow: 0 3px 7px rgba(15, 23, 42, 0.45);
+  background: linear-gradient(to bottom, var(--accent3), var(--accent2));
+  box-shadow: 0 3px 7px rgba(15, 23, 42, 0.25);
 }
 
 .btn:active {
   transform: translateY(1px);
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.4);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.25);
 }
 
 /* Global toggled state for buttons that behave like toggles (outside .row as well) */
@@ -310,23 +346,18 @@ textarea {
 .row {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin: 4px 0 8px;
+  gap: 4px;
+  margin: 2px 0 4px;
 }
 
-/* === OPTION BUTTONS (history, patient reports, etc.) ===
-   These are the smaller pill/toggle buttons inside .row.
-   OFF: light gray
-   HOVER: medium blue
-   ON: dark rich blue
-*/
+/* Small pill builder buttons */
 .row .btn {
   background: #f3f4f6;
   color: #111827;
   border: 1px solid #d1d5db;
-  border-radius: 16px;
-  padding: 6px 10px;
-  font-size: 13px;
+  border-radius: 14px;
+  padding: 4px 8px;
+  font-size: 12px;
   font-weight: 500;
   text-transform: none;
   letter-spacing: 0;
@@ -339,7 +370,6 @@ textarea {
   border-color: var(--accent2);
 }
 
-/* ON state (strong contrast) */
 .row .btn.toggled {
   background: var(--accent3);
   color: #ffffff;
@@ -425,14 +455,15 @@ textarea {
   height: calc(100vh - 200px);
   min-height: 420px;
   overflow: auto;
-  padding: 10px;
+  padding: 8px;
   border-radius: var(--radius);
   border: 1px solid var(--border-strong);
   background: #ffffff;
   white-space: pre-wrap;
-  font-size: 14px;
-  line-height: 1.5;
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.4;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
 }
 
 /* Tiny helper text under note */
@@ -559,12 +590,12 @@ textarea {
 </head>
 <body>
 <div class="wrap">
-  <h1>SOAP Note Tool — Version 6.6</h1>
+  <h1>SOAP Note Tool — Version 6.7</h1>
   <div class="app">
 
     <!-- LEFT -->
     <div class="left">
-
+<div class="section-grid">
       <!-- SUBJECTIVE -->
 <details class="card" id="sec-subjective" open>
   <summary>Subjective <span class="chev">▶</span></summary>
@@ -1648,6 +1679,7 @@ textarea {
 
   </div>
 </details>
+</div>
 
 </div> <!-- end LEFT column -->
 
