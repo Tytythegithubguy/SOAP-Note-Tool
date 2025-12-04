@@ -68,30 +68,74 @@ h1 {
   font-weight: 700;
 }
 
-h4 {
-  margin-top: 8px;
-  margin-bottom: 4px;
-  font-size: 14px;
-  font-weight: 600;
+/* Main section titles: Subjective / Objective / Assessment / Plan */
+.card > summary,
+.card h3 {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: #1e3a8a !important; /* deep blue */
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #cbd5e1;
 }
 
+
+/* Sub-section headers inside each card */
+h4 {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 10px 0 6px;
+  color: #1e293b;  /* slate-800 */
+  position: relative;
+}
+
+h4::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 70%;
+  background: #3b82f6;
+  border-radius: 2px;
+  opacity: 0.8;
+}
+
+
 /* Cards / panels */
+/* PRIMARY BLOCKS (S/O/A/P) */
 .card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px 12px;
-  margin-bottom: 10px;
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+  background: linear-gradient(to bottom, #ffffff, #f8fafc);
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.06),
+    0 1px 2px rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: #2563eb;
+  border-radius: 10px 0 0 10px;
+  opacity: 0.9;
 }
 
 /* Subcards inside sections */
 .subcard {
-  background: var(--card-sub);
+  background: #f1f5f9;
+  border: 1px solid #d4d4d8;
   border-radius: 6px;
-  border: 1px solid #d1d5db;
-  padding: 6px 8px;
-  margin: 6px 0;
+  padding: 8px 10px;
+  margin: 8px 0;
 }
 
 /* Card headers / summary (details) */
@@ -211,6 +255,9 @@ textarea {
   /* Two columns, but each must be at least 380px wide */
   grid-template-columns: repeat(2, minmax(380px, 1fr));
   gap: 14px;
+  padding: 4px 6px;
+  border-radius: 12px;
+  background: rgba(241, 245, 249, 0.4);
 }
 
 @media (max-width: 900px) {
