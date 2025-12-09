@@ -138,18 +138,74 @@ h4::before {
   margin: 8px 0;
 }
 
-/* Card headers / summary (details) */
-details.card > summary,
-details.subcard > summary {
+/* MAIN sections: Subjective / Objective / Assessment / Plan */
+details.card > summary {
   list-style: none;
   cursor: pointer;
-  font-size: 15px;
-  font-weight: 600;
-  color: #111827;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e3a8a;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 0;
+
+  padding: 8px 12px;
+  margin: -6px -6px 10px;
+  border-radius: 12px;
+  background: #e0ebff; /* stronger blue band */
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+/* OPEN main section */
+details.card[open] > summary {
+  background: #dbeafe; /* light blue */
+  color: #1d4ed8;
+}
+
+/* COLLAPSED main section */
+details.card:not([open]) > summary {
+  background: #e0e7ff; /* slightly darker */
+  color: #1e3a8a;
+}
+
+/* SUB-SECTIONS: Otoscopy, Audiogram, Insurance, etc. */
+details.subcard > summary {
+  list-style: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 5px 10px;
+  margin: -4px -4px 8px;
+  border-radius: 8px;
+  background: #f3f4f6;  /* soft grey band */
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+/* OPEN sub-section */
+details.subcard[open] > summary {
+  background: #e5f1ff;  /* very light blue hint */
+  color: #1d4ed8;
+}
+
+/* COLLAPSED sub-section */
+details.subcard:not([open]) > summary {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+details.subcard {
+  margin-left: 6px;
 }
 
 
@@ -158,10 +214,17 @@ details summary::-webkit-details-marker {
   display: none;
 }
 
-/* Chevron */
+/* Chevron icon */
 .chev {
   font-size: 13px;
   color: var(--muted-soft);
+  transition: transform 0.15s, color 0.15s;
+}
+
+/* Rotate chevron when open (▶ turns into ▼) */
+details[open] > summary .chev {
+  transform: rotate(90deg);
+  color: #1d4ed8;
 }
 
 /* Inner content of subcards */
@@ -1558,8 +1621,10 @@ textarea {
         placeholder="VC or program details"
       />
       <datalist id="del-vc-list">
-        <option value="The volume control was not enabled."></option>
         <option value="The volume control was enabled."></option>
+        <option value="The volume control was not enabled."></option>
+        <option value="The volume control was enabled and synced together"></option>
+        <option value="The volume control was enabled and seperated."></option>
       </datalist>
     </div>
 
@@ -4063,7 +4128,7 @@ pushDeliveryLines(state.deliveryPurchase);
     setDeliveryField('delivery-programming',
       'Set to best-fit and experience level 3.');
     setDeliveryField('delivery-vc',
-      'The volume control was not enabled.');
+      'The volume control was enabled.');
     setDeliveryField('delivery-ptresponse',
       'Pt noted improved sound quality and comfort.');
     setDeliveryField('delivery-instructions',
