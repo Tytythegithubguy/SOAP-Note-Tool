@@ -258,18 +258,25 @@ label,
   color: var(--muted-soft);
 }
 
-/* Inputs / textareas */
 input[type="text"],
 input[type="number"],
-select,
-textarea {
-  font-family: inherit;
-  font-size: 13px;
-  padding: 4px 6px;
-  border-radius: 4px;
+textarea,
+select {
   border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 4px 6px;
+  font-size: 13px;
   box-sizing: border-box;
+  background: #ffffff;
+  width: 100%;          /* fill the available column so you see more text */
 }
+
+textarea {
+  white-space: normal;  /* wrap text inside the box */
+  resize: vertical;     /* you can drag to see more if needed */
+  overflow-y: auto;
+}
+
 
 /* Make selects visually consistent */
 select {
@@ -720,6 +727,18 @@ textarea {
   }
 }
 
+/* Make the "Additional ..." boxes full-width and span any grids */
+#custom-objective,
+#custom-plan {
+  width: 100%;
+  display: block;
+}
+
+/* If parent containers ever become grid layouts, span across both columns */
+#objective-body > .row:last-of-type,
+#plan-body > .row:last-of-type {
+  grid-column: 1 / -1;
+}
 
 
 </style>
