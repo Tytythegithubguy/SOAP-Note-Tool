@@ -149,7 +149,27 @@ details.subcard > summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 0;
+
+  padding: 6px 10px;
+  margin: -4px -4px 8px;        /* lets the header bar span almost full card width */
+  border-radius: 10px;
+  background: #e5edff;          /* default soft blue bar */
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+/* Open state: slightly lighter blue */
+details.card[open] > summary,
+details.subcard[open] > summary {
+  background: #eff6ff;
+}
+
+/* Collapsed state: neutral grey bar */
+details.card:not([open]) > summary,
+details.subcard:not([open]) > summary {
+  background: #e5e7eb;
+  color: #374151;
 }
 
 
@@ -158,10 +178,17 @@ details summary::-webkit-details-marker {
   display: none;
 }
 
-/* Chevron */
+/* Chevron icon */
 .chev {
   font-size: 13px;
   color: var(--muted-soft);
+  transition: transform 0.15s, color 0.15s;
+}
+
+/* Rotate chevron when open (▶ turns into ▼) */
+details[open] > summary .chev {
+  transform: rotate(90deg);
+  color: #1d4ed8;
 }
 
 /* Inner content of subcards */
@@ -4065,7 +4092,7 @@ pushDeliveryLines(state.deliveryPurchase);
     setDeliveryField('delivery-programming',
       'Set to best-fit and experience level 3.');
     setDeliveryField('delivery-vc',
-      'The volume control was not enabled.');
+      'The volume control was enabled.');
     setDeliveryField('delivery-ptresponse',
       'Pt noted improved sound quality and comfort.');
     setDeliveryField('delivery-instructions',
