@@ -249,11 +249,9 @@ textarea {
   padding-top: 6px;
 }
 
-/* 2x2 grid for the four main sections */
 .section-grid {
   display: grid;
-  /* Two columns, but each must be at least 380px wide */
-  grid-template-columns: repeat(2, minmax(380px, 1fr));
+  grid-template-columns: minmax(0, 1fr);  /* 1 column full width */
   gap: 14px;
   padding: 4px 6px;
   border-radius: 12px;
@@ -630,6 +628,35 @@ textarea {
   flex: 1 1 auto !important;
   box-sizing: border-box !important;
 }
+
+/* Two-column layout for subcards in Objective & Assessment */
+#objective-body,
+#assessment-body {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 16px;
+}
+
+/* Each subcard fills its grid cell */
+#objective-body > .subcard,
+#assessment-body > .subcard {
+  height: 100%;
+}
+
+/* Anything that's a plain .row child (like the extra textarea at the end of Assessment)
+   should span both columns so it doesn't get squished */
+#assessment-body > .row {
+  grid-column: 1 / -1;
+}
+
+/* Responsive: on narrow windows, stack them again */
+@media (max-width: 1000px) {
+  #objective-body,
+  #assessment-body {
+    grid-template-columns: 1fr;
+  }
+}
+
 
 
 </style>
@@ -1660,17 +1687,23 @@ textarea {
 <!-- PLAN -->
 <details class="card" id="sec-plan" open>
   <summary>Plan <span class="chev">▶</span></summary>
-  <div class="card-body" id="plan-body">
+<div class="card-body" id="plan-body">
 
-    <h4>Plan Items</h4>
+  <h4>Plan Items</h4>
 
-    <label class="small">Provider tasks</label>
-    <div id="plan-provider" class="row"></div>
+  <div class="grid-2">
+    <div>
+      <label class="small">Provider tasks</label>
+      <div id="plan-provider" class="row"></div>
+    </div>
 
-    <label class="small">Patient tasks</label>
-    <div id="plan-patient" class="row"></div>
+    <div>
+      <label class="small">Patient tasks</label>
+      <div id="plan-patient" class="row"></div>
+    </div>
+  </div>
 
-    <h4>RTC Builder</h4>
+  <h4>RTC Builder</h4>
 
     <div class="grid-3">
 
