@@ -2086,10 +2086,12 @@ window.SNB = (()=>{
 
     // v6.8: grouped display for existing maintenance options (no output changes)
     HAM_GROUPS: [
-        { title: "Cleaning", options: ["cleaned", "vacuumed microphones"] },
-        { title: "Parts / Consumables", options: ["wax guard replaced", "tubing replaced", "dome replaced", "ear hook replaced", "receiver replaced", "battery replaced"] },
-        { title: "Software", options: ["firmware updated"] }
+        { title: "Cleaning", options: ["cleaned", "vacuumed microphones", "brushed", "debris removed"] },
+        { title: "Parts / Consumables", options: ["wax guard replaced", "filters replaced", "domes replaced", "retention lock replaced", "sport lock replaced", "tubing replaced", "ear hook replaced"] },
+        { title: "Hardware", options: ["receiver replaced", "microphone cover replaced", "battery door replaced", "battery replaced"] },
+        { title: "Software", options: ["settings adjusted", "firmware updated", "feedback manager run"] }
       ],
+
 
     HAM_POST_GROUPS: [
         { title: "Sound check", options: ["sounds good", "still sounds weak", "still sounds dead"] },
@@ -3820,6 +3822,49 @@ pushDeliveryLines(state.deliveryPurchase);
     'ha-coupling-row': 2
   };
 
+// Render a simple (flat) set of buttons into a container (uses Set for state)
+// NOTE: This is required by many sections (audio, otoscopy, HA condition, etc.)
+function makeButtons(containerID, options, set){
+  const el = document.getElementById(containerID);
+  if(!el) return;
+  el.innerHTML = '';
+
+  const max = S.maxSelect && S.maxSelect[containerID];
+
+  (options || []).forEach(opt=>{
+    const b = document.createElement('button');
+    b.className = 'btn';
+
+    const label = opt && typeof opt === 'object' ? (opt.label ?? opt.value) : opt;
+    const value = opt && typeof opt === 'object' ? (opt.value ?? opt.label) : opt;
+
+    b.dataset.value = value;
+
+    if(set && set.has && set.has(value)) b.classList.add('toggled');
+    b.textContent = label;
+
+    b.addEventListener('click', ()=>{
+      if(!set || !set.has) return;
+
+      if(set.has(value)){
+        set.delete(value);
+        b.classList.remove('toggled');
+      }else{
+        if(max && set.size >= max){
+          const first = set.values().next().value;
+          if(first !== undefined) set.delete(first);
+        }
+        set.add(value);
+        b.classList.add('toggled');
+      }
+      S.rebuild();
+    });
+
+    el.appendChild(b);
+  });
+}
+
+  
 // v6.8: render buttons in labeled groups (same underlying values / same Set)
 function makeButtonsGrouped(containerID, groups, set){
   const el = document.getElementById(containerID);
@@ -4896,6 +4941,7 @@ function sortDatalist(id) {
 
 </body>
 </html>
+
 
 
 
