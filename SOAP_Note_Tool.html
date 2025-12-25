@@ -545,6 +545,22 @@ textarea {
   color: #6b7280;
 }
 
+/* Grouped button categories (v6.8) */
+.btn-group {
+  margin: 6px 0 10px;
+  padding: 6px 8px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.55);
+}
+
+.btn-group-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #334155;
+  margin: 0 0 6px;
+}
+  
 /* Fixed SOAP note on the right */
 .right .card {
   position: fixed;
@@ -2068,6 +2084,17 @@ window.SNB = (()=>{
         "cannot fix in office",
         "needs to be sent for repair"],
 
+    // v6.8: grouped display for existing maintenance options (no output changes)
+    HAM_GROUPS: [
+        { title: "Cleaning", options: ["cleaned", "vacuumed microphones"] },
+        { title: "Parts / Consumables", options: ["wax guard replaced", "tubing replaced", "dome replaced", "ear hook replaced", "receiver replaced", "battery replaced"] },
+        { title: "Software", options: ["firmware updated"] }
+      ],
+
+    HAM_POST_GROUPS: [
+        { title: "Sound check", options: ["sounds good", "still sounds weak", "still sounds dead"] },
+        { title: "Next step", options: ["cannot fix in office", "needs to be sent for repair"] }
+      ],
 
     AUDIO_DEG: ["normal","mild","moderate","moderately-severe","severe","profound"],
     AUDIO_TYPE: ["sensorineural","conductive","mixed","rising","sloping","flat","cookie bite","high frequency"], // used elsewhere
@@ -3793,43 +3820,47 @@ pushDeliveryLines(state.deliveryPurchase);
     'ha-coupling-row': 2
   };
 
-  function makeButtons(containerID, options, set){
-    const el = document.getElementById(containerID);
-    if(!el) return;
-    el.innerHTML = '';
+// v6.8: render buttons in labeled groups (same underlying values / same Set)
+function makeButtonsGrouped(containerID, groups, set){
+  const el = document.getElementById(containerID);
+  if(!el) return;
+  el.innerHTML = '';
 
-    const max = S.maxSelect && S.maxSelect[containerID];
+  const max = S.maxSelect && S.maxSelect[containerID];
 
-    options.forEach(opt=>{
+  groups.forEach(g=>{
+    const wrap = document.createElement('div');
+    wrap.className = 'btn-group';
+
+    const title = document.createElement('div');
+    title.className = 'btn-group-title';
+    title.textContent = g.title || '';
+    wrap.appendChild(title);
+
+    (g.options || []).forEach(opt=>{
       const b = document.createElement('button');
       b.className = 'btn';
 
-      // Support both string and object
       const label = opt.label || opt;
       const value = opt.value || opt;
 
-      // expose underlying value for template engine
       b.dataset.value = value;
-
       if(set.has(value)) b.classList.add('toggled');
       b.textContent = label;
 
       b.addEventListener('click', ()=>{
         if(set.has(value)){
-          // Turn OFF
           set.delete(value);
           b.classList.remove('toggled');
         } else {
           if(max === 1){
-            // Single-select: clear others, select this one
             set.clear();
             el.querySelectorAll('.btn.toggled')
               .forEach(x=>x.classList.remove('toggled'));
             set.add(value);
             b.classList.add('toggled');
           } else {
-            // Multi-select with optional cap
-            if(max && set.size >= max) return; // already at cap
+            if(max && set.size >= max) return;
             set.add(value);
             b.classList.add('toggled');
           }
@@ -3837,9 +3868,12 @@ pushDeliveryLines(state.deliveryPurchase);
         S.rebuild();
       });
 
-      el.appendChild(b);
+      wrap.appendChild(b);
     });
-  }
+
+    el.appendChild(wrap);
+  });
+}
 
   function copySet(from, to){
     to.clear();
@@ -4625,16 +4659,15 @@ document
     });
   });
 
-    /* HA Maintenance */
-    /* HA Maintenance */
-    makeButtons('ham-AS', S.consts.HAM_OPTS, state.hamAS);
-    makeButtons('ham-AD', S.consts.HAM_OPTS, state.hamAD);
+    makeButtonsGrouped('ham-AS', S.consts.HAM_GROUPS, state.hamAS);
+    makeButtonsGrouped('ham-AD', S.consts.HAM_GROUPS, state.hamAD);
+
 
     const hamCopy = document.querySelector('[data-copy="ham-AS-to-AD"]');
     if(hamCopy){
       hamCopy.addEventListener('click', ()=>{
         copySet(state.hamAS, state.hamAD);
-        makeButtons('ham-AD', S.consts.HAM_OPTS, state.hamAD);
+        makeButtonsGrouped('ham-AD', S.consts.HAM_GROUPS, state.hamAD);
         S.rebuild();
       });
     }
@@ -4643,14 +4676,15 @@ document
     wireLiveTextarea('ham-AD-custom','hamCustomAD');
 
     /* HA Post-maintenance */
-    makeButtons('ham-post-AS', S.consts.HAM_POST_OPTS, state.hamPostAS);
-    makeButtons('ham-post-AD', S.consts.HAM_POST_OPTS, state.hamPostAD);
+    makeButtonsGrouped('ham-post-AS', S.consts.HAM_POST_GROUPS, state.hamPostAS);
+    makeButtonsGrouped('ham-post-AD', S.consts.HAM_POST_GROUPS, state.hamPostAD);
+
 
     const hamPostCopy = document.querySelector('[data-copy="ham-post-AS-to-AD"]');
     if(hamPostCopy){
       hamPostCopy.addEventListener('click', ()=>{
         copySet(state.hamPostAS, state.hamPostAD);
-        makeButtons('ham-post-AD', S.consts.HAM_POST_OPTS, state.hamPostAD);
+        makeButtonsGrouped('ham-post-AD', S.consts.HAM_POST_GROUPS, state.hamPostAD);
         S.rebuild();
       });
     }
@@ -4862,5 +4896,6 @@ function sortDatalist(id) {
 
 </body>
 </html>
+
 
 
