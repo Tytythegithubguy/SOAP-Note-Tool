@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOAP Note Tool — v6.7.7</title>
+<title>SOAP Note Tool — v6.7.8</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -746,7 +746,7 @@ textarea {
 </head>
 <body>
 <div class="wrap">
-  <h1>SOAP Note Tool — Version 6.7.5</h1>
+  <h1>SOAP Note Tool — Version 6.7.8</h1>
   <div class="app">
 
     <!-- LEFT -->
@@ -763,7 +763,6 @@ textarea {
     <button class="btn template-btn" data-template="smart-HAD">Smart HAD</button>
   <button class="btn template-btn" data-template="smart-HACK-IW">Smart HACK I/W</button>
   <button class="btn template-btn" data-template="smart-HACK-OW">Smart HACK O/W</button>
-  <button class="btn template-btn" data-template="smart-HAE">Smart HAE</button>
   <button class="btn template-btn" data-template="smart-HAE-MCAL-RDY">HAE MCAL Ready</button>
   <button class="btn template-btn" data-template="smart-HAE-MCAL-NR">HAE MCAL Not Ready</button>
   <button class="btn template-btn" data-template="smart-CHT">Smart CHT</button>
@@ -2449,31 +2448,8 @@ S.utils = {
       ]
     },
 
-    'smart-HAE': {
-      label: 'Smart HAE baseline',
-      clearFirst: true,
-      openDetails: [
-        'sec-subjective','sec-objective','sec-assessment','sec-plan',
-        'otoscopy-sub','audiogram-assess-sub','ha-rec-sub','ins-sub'
-      ],
-      actions: [
-        { type: 'clickRaw', selector: '#apptButtons button[data-appt="hearing aid evaluation"]' },
-
-        // RTC 4 weeks for delivery
-        { type: 'setInput', id: 'rtc-time', value: '4' },
-        { type: 'setInput', id: 'rtc-reason', value: 'a hearing aid delivery' },
-        { type: 'clickRaw', selector: 'button[data-rtcunit="weeks"]' },
-        { type: 'clickRaw', selector: '#rtc-asneeded' },
-
-        // Plan (Provider): submit auth + request Rx (common defaults)
-        { type: 'toggleOption', containerId: 'plan-provider', value: "We will submit authorization to the patient's insurance company" },
-        { type: 'toggleOption', containerId: 'plan-provider', value: 'We will request a medical clearance from the PCP or ENT' }
-      ]
-    },
-
-
     'smart-HAE-MCAL-RDY': {
-      label: 'HAE MCAL Ready — Evolv AI 1000 + 100% up to $1510',
+      label: 'HAE MCAL Ready — Evolv AI 1000 (BTE/RIC), delivery call',
       clearFirst: true,
       openDetails: [
         'sec-subjective','sec-objective','sec-assessment','sec-plan',
@@ -2482,29 +2458,32 @@ S.utils = {
       actions: [
         { type: 'clickRaw', selector: '#apptButtons button[data-appt="hearing aid evaluation"]' },
 
-        // Recommendation: BTE or RIC + Starkey Evolv AI 1000
+        // Otoscopy: clear canals + unremarkable TM (AS then copy to AD)
+        { type: 'toggleOption', containerId: 'oto-AS-canal', value: 'clear' },
+        { type: 'toggleOption', containerId: 'oto-AS-tm', value: 'unremarkable' },
+        { type: 'clickRaw', selector: '[data-copy="oto-AS-to-AD"]' },
+
+        // Recommend BTE + RIC
         { type: 'toggleOption', containerId: 'ha-style-row', value: 'behind-the-ear' },
         { type: 'toggleOption', containerId: 'ha-style-row', value: 'receiver-in-the-canal' },
-        { type: 'setInput', id: 'ha-tech', value: 'Starkey Evolv AI 1000' },
 
-        // Insurance: Medi-Cal baseline
+        // Default product
+        { type: 'setInput', id: 'order-mfg', value: 'Starkey' },
+        { type: 'setInput', id: 'order-model', value: 'Evolv AI 1000' },
+
+        // Insurance defaults
         { type: 'setInput', id: 'ins-company', value: 'Medi-Cal' },
         { type: 'setInput', id: 'ins-benefit', value: '100% covered up to $1510' },
         { type: 'setInput', id: 'ins-oop', value: '$0' },
 
-        // Plan: RTC 4 weeks for delivery + or as needed
-        { type: 'setInput', id: 'rtc-time', value: '4' },
-        { type: 'setInput', id: 'rtc-reason', value: 'a hearing aid delivery' },
-        { type: 'clickRaw', selector: 'button[data-rtcunit="weeks"]' },
-        { type: 'clickRaw', selector: '#rtc-asneeded' },
-
-        // Provider plan: READY submit order
-        { type: 'toggleOption', containerId: 'plan-provider', value: 'I will submit the order to the manufacturer with options noted above' }
+        // Plan provider: ready submit order + delivery call
+        { type: 'toggleOption', containerId: 'plan-provider', value: 'I will submit the order to the manufacturer with options noted above' },
+        { type: 'toggleOption', containerId: 'plan-provider', value: 'RTC 4-6 weeks for a Delivery appt. We will call when the hearing aids are received' }
       ]
     },
 
     'smart-HAE-MCAL-NR': {
-      label: 'HAE MCAL Not Ready — Evolv AI 1000 + 100% up to $1510',
+      label: 'HAE MCAL Not Ready — Evolv AI 1000 (BTE/RIC)',
       clearFirst: true,
       openDetails: [
         'sec-subjective','sec-objective','sec-assessment','sec-plan',
@@ -2513,42 +2492,54 @@ S.utils = {
       actions: [
         { type: 'clickRaw', selector: '#apptButtons button[data-appt="hearing aid evaluation"]' },
 
-        // Recommendation: BTE or RIC + Starkey Evolv AI 1000
+        // Otoscopy: clear canals + unremarkable TM (AS then copy to AD)
+        { type: 'toggleOption', containerId: 'oto-AS-canal', value: 'clear' },
+        { type: 'toggleOption', containerId: 'oto-AS-tm', value: 'unremarkable' },
+        { type: 'clickRaw', selector: '[data-copy="oto-AS-to-AD"]' },
+
+        // Recommend BTE + RIC
         { type: 'toggleOption', containerId: 'ha-style-row', value: 'behind-the-ear' },
         { type: 'toggleOption', containerId: 'ha-style-row', value: 'receiver-in-the-canal' },
-        { type: 'setInput', id: 'ha-tech', value: 'Starkey Evolv AI 1000' },
 
-        // Insurance: Medi-Cal baseline
+        // Default product
+        { type: 'setInput', id: 'order-mfg', value: 'Starkey' },
+        { type: 'setInput', id: 'order-model', value: 'Evolv AI 1000' },
+
+        // Insurance defaults
         { type: 'setInput', id: 'ins-company', value: 'Medi-Cal' },
         { type: 'setInput', id: 'ins-benefit', value: '100% covered up to $1510' },
         { type: 'setInput', id: 'ins-oop', value: '$0' },
 
-        // Plan: RTC 4 weeks for delivery + or as needed
-        { type: 'setInput', id: 'rtc-time', value: '4' },
-        { type: 'setInput', id: 'rtc-reason', value: 'a hearing aid delivery' },
-        { type: 'clickRaw', selector: 'button[data-rtcunit="weeks"]' },
-        { type: 'clickRaw', selector: '#rtc-asneeded' },
-
-        // Provider plan: NOT READY submit order
+        // Plan provider: not ready submit order (no delivery call)
         { type: 'toggleOption', containerId: 'plan-provider', value: 'When auth is received, I will submit the order to the manufacturer with options noted above' }
       ]
     },
 
     'smart-HAC': {
-      label: 'Smart HAC baseline',
+      label: 'Smart HAC — Omega 24 (RIC + dome), ready + delivery call',
       clearFirst: true,
       openDetails: [
         'sec-subjective','sec-objective','sec-assessment','sec-plan',
-        'otoscopy-sub','audiogram-assess-sub','ha-rec-sub'
+        'otoscopy-sub','audiogram-assess-sub','ha-rec-sub','ins-sub'
       ],
       actions: [
         { type: 'clickRaw', selector: '#apptButtons button[data-appt="hearing aid consultation"]' },
 
-        // RTC 2 weeks follow up (editable)
-        { type: 'setInput', id: 'rtc-time', value: '2' },
-        { type: 'setInput', id: 'rtc-reason', value: 'a follow up' },
-        { type: 'clickRaw', selector: 'button[data-rtcunit="weeks"]' },
-        { type: 'clickRaw', selector: '#rtc-asneeded' }
+        // Otoscopy: clear canals + unremarkable TM (AS then copy to AD)
+        { type: 'toggleOption', containerId: 'oto-AS-canal', value: 'clear' },
+        { type: 'toggleOption', containerId: 'oto-AS-tm', value: 'unremarkable' },
+        { type: 'clickRaw', selector: '[data-copy="oto-AS-to-AD"]' },
+
+        // Recommend RIC + Dome
+        { type: 'toggleOption', containerId: 'ha-style-row', value: 'receiver-in-the-canal' },
+        { type: 'toggleOption', containerId: 'ha-coupling-row', value: 'dome' },
+
+        // Omega 24
+        { type: 'setInput', id: 'order-model', value: 'Omega 24' },
+
+        // Plan provider: ready submit order + delivery call
+        { type: 'toggleOption', containerId: 'plan-provider', value: 'I will submit the order to the manufacturer with options noted above' },
+        { type: 'toggleOption', containerId: 'plan-provider', value: 'RTC 4-6 weeks for a Delivery appt. We will call when the hearing aids are received' }
       ]
     },
 
@@ -2558,22 +2549,24 @@ S.utils = {
       clearFirst: true,
       openDetails: [
         'sec-subjective','sec-objective','sec-assessment','sec-plan',
-        'delivery-assess-sub','ham-sub','ham-post-sub'
+        'otoscopy-sub','delivery-assess-sub','ham-sub','ham-post-sub'
       ],
       actions: [
         { type: 'clickRaw', selector: '#apptButtons button[data-appt="hearing aid delivery"]' },
 
+        // Otoscopy: clear canals + unremarkable TM (AS then copy to AD)
+        { type: 'toggleOption', containerId: 'oto-AS-canal', value: 'clear' },
+        { type: 'toggleOption', containerId: 'oto-AS-tm', value: 'unremarkable' },
+        { type: 'clickRaw', selector: '[data-copy="oto-AS-to-AD"]' },
+
         // Standard delivery preset (fills common delivery text)
         { type: 'clickRaw', selector: '#delivery-standard' },
 
-        // Default RTC: 2 weeks follow up (editable)
+        // Default RTC: 2 weeks follow up (editable) + "or as needed"
         { type: 'setInput', id: 'rtc-time', value: '2' },
         { type: 'setInput', id: 'rtc-reason', value: 'a follow up' },
         { type: 'clickRaw', selector: 'button[data-rtcunit="weeks"]' },
-        { type: 'clickRaw', selector: '#rtc-asneeded' },
-
-        // Provider plan: default to "not ready submit order" (editable)
-        { type: 'toggleOption', containerId: 'plan-provider', value: 'When auth is received, I will submit the order to the manufacturer with options noted above' }
+        { type: 'clickRaw', selector: '#rtc-asneeded' }
       ]
     },
 
@@ -2590,18 +2583,18 @@ S.utils = {
 
         // Condition: needs cleaning (set on AS then copy to AD)
         { type: 'toggleOption', containerId: 'hac-AS', value: 'appears dirty' },
-        { type: 'toggleOption', containerId: 'hac-AS', value: 'filters plugged' },
         { type: 'clickRaw', selector: '[data-copy="hac-AS-to-AD"]' },
 
-        // Maintenance: cleaned (set on AS then copy to AD)
+        // Maintenance: cleaned + vacuumed microphones (set on AS then copy to AD)
         { type: 'toggleOption', containerId: 'ham-AS', value: 'cleaned' },
+        { type: 'toggleOption', containerId: 'ham-AS', value: 'vacuumed microphones' },
         { type: 'clickRaw', selector: '[data-copy="ham-AS-to-AD"]' },
 
         // Post: sounds good (set on AS then copy to AD)
         { type: 'toggleOption', containerId: 'ham-post-AS', value: 'sounds good' },
         { type: 'clickRaw', selector: '[data-copy="ham-post-AS-to-AD"]' },
 
-        // Plan: RTC 6 months for clean & check
+        // Plan: RTC 6 months for clean & check + "or as needed"
         { type: 'setInput', id: 'rtc-time', value: '6' },
         { type: 'setInput', id: 'rtc-reason', value: 'a clean and check' },
         { type: 'clickRaw', selector: 'button[data-rtcunit="months"]' },
@@ -2611,7 +2604,7 @@ S.utils = {
 
     
     'smart-HACK-OW': {
-      label: 'Smart HACK O/W — Cleaned, sounds good + eligible for new',
+      label: 'Smart HACK O/W — Cleaned, sounds good + eligible new',
       clearFirst: true,
       openDetails: [
         'sec-subjective','sec-objective','sec-assessment','sec-plan',
@@ -2622,19 +2615,21 @@ S.utils = {
 
         // Condition: needs cleaning (set on AS then copy to AD)
         { type: 'toggleOption', containerId: 'hac-AS', value: 'appears dirty' },
-        { type: 'toggleOption', containerId: 'hac-AS', value: 'filters plugged' },
         { type: 'clickRaw', selector: '[data-copy="hac-AS-to-AD"]' },
 
-        // Maintenance: cleaned (set on AS then copy to AD)
+        // Maintenance: cleaned + vacuumed microphones (set on AS then copy to AD)
         { type: 'toggleOption', containerId: 'ham-AS', value: 'cleaned' },
+        { type: 'toggleOption', containerId: 'ham-AS', value: 'vacuumed microphones' },
         { type: 'clickRaw', selector: '[data-copy="ham-AS-to-AD"]' },
 
         // Post: sounds good (set on AS then copy to AD)
         { type: 'toggleOption', containerId: 'ham-post-AS', value: 'sounds good' },
         { type: 'clickRaw', selector: '[data-copy="ham-post-AS-to-AD"]' },
 
-        // Plan: eligible for new (uses existing Plan Patient item) + RTC 1 year annual hearing test
-        { type: 'toggleOption', containerId: 'plan-patient', value: 'Pt may be eligible for new HA’s, RTC for an annual hearing test to start the process' },
+        // Plan patient: eligible for new (O/W default)
+        { type: 'toggleOption', containerId: 'plan-patient', value: "Pt may be eligible for new HA’s, RTC for an annual hearing test to start the process" },
+
+        // RTC 1 year annual + "or as needed"
         { type: 'setInput', id: 'rtc-time', value: '1' },
         { type: 'setInput', id: 'rtc-reason', value: 'an annual hearing test' },
         { type: 'clickRaw', selector: 'button[data-rtcunit="years"]' },
@@ -2643,7 +2638,7 @@ S.utils = {
     },
 
     'smart-1FU': {
-      label: 'Smart 1st F/U — Cleaned, sounds good',
+      label: 'Smart 1st F/U — Clean, cleaned, sounds good',
       clearFirst: true,
       openDetails: [
         'sec-subjective','sec-objective','sec-assessment','sec-plan',
@@ -2652,19 +2647,20 @@ S.utils = {
       actions: [
         { type: 'clickRaw', selector: '#apptButtons button[data-appt="first follow-up appointment"]' },
 
-        // Condition: appears clean (AS -> copy to AD)
+        // Condition: appears clean (set on AS then copy to AD)
         { type: 'toggleOption', containerId: 'hac-AS', value: 'appears clean' },
         { type: 'clickRaw', selector: '[data-copy="hac-AS-to-AD"]' },
 
-        // Maintenance: cleaned (AS -> copy to AD)
+        // Maintenance: cleaned (set on AS then copy to AD)
         { type: 'toggleOption', containerId: 'ham-AS', value: 'cleaned' },
+        { type: 'toggleOption', containerId: 'ham-AS', value: 'vacuumed microphones' },
         { type: 'clickRaw', selector: '[data-copy="ham-AS-to-AD"]' },
 
-        // Post: sounds good (AS -> copy to AD)
+        // Post: sounds good (set on AS then copy to AD)
         { type: 'toggleOption', containerId: 'ham-post-AS', value: 'sounds good' },
         { type: 'clickRaw', selector: '[data-copy="ham-post-AS-to-AD"]' },
 
-        // Plan: RTC 6 months for clean & check + or as needed
+        // Plan: RTC 6 months + "or as needed"
         { type: 'setInput', id: 'rtc-time', value: '6' },
         { type: 'setInput', id: 'rtc-reason', value: 'a clean and check' },
         { type: 'clickRaw', selector: 'button[data-rtcunit="months"]' },
