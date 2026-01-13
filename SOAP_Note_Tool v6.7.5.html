@@ -1,0 +1,5038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>SOAP Note Tool — v6.7.5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Light background with blue accent */
+  --bg: #e5e7eb;
+  --bg-gradient-top: #f3f4f6;
+  --bg-gradient-bottom: #e5e7eb;
+
+  --card: #ffffff;
+  --card-sub: #f9fafb;
+
+  --muted: #4b5563;
+  --muted-soft: #9ca3af;
+
+  /* Blue accents */
+  --accent: #2563eb;      /* main blue */
+  --accent2: #3b82f6;     /* hover/secondary */
+  --accent3: #1d4ed8;     /* darkest (ON state) */
+
+  --border: #d1d5db;
+  --border-strong: #9ca3af;
+
+  --radius: 6px;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Nunito", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  background: linear-gradient(to bottom, var(--bg-gradient-top), var(--bg-gradient-bottom));
+  color: #111827;
+}
+
+.wrap {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 12px 16px 20px;
+}
+
+.app {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.left {
+  width: 75%;
+}
+
+.right {
+  width: 25%;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* Main section titles: Subjective / Objective / Assessment / Plan */
+.card > summary,
+.card h3 {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: #1e3a8a !important; /* deep blue */
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #cbd5e1;
+}
+
+
+/* Sub-section headers inside each card */
+h4 {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 10px 0 6px;
+  color: #1e293b;  /* slate-800 */
+  position: relative;
+}
+
+h4::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 70%;
+  background: #3b82f6;
+  border-radius: 2px;
+  opacity: 0.8;
+}
+
+
+/* Cards / panels */
+/* PRIMARY BLOCKS (S/O/A/P) */
+.card {
+  background: linear-gradient(to bottom, #ffffff, #f8fafc);
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.06),
+    0 1px 2px rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: #2563eb;
+  border-radius: 10px 0 0 10px;
+  opacity: 0.9;
+}
+
+/* Subcards inside sections */
+.subcard {
+  background: #f1f5f9;
+  border: 1px solid #d4d4d8;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin: 8px 0;
+}
+
+/* MAIN sections: Subjective / Objective / Assessment / Plan */
+details.card > summary {
+  list-style: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e3a8a;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 8px 12px;
+  margin: -6px -6px 10px;
+  border-radius: 12px;
+  background: #e0ebff; /* stronger blue band */
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+/* OPEN main section */
+details.card[open] > summary {
+  background: #dbeafe; /* light blue */
+  color: #1d4ed8;
+}
+
+/* COLLAPSED main section */
+details.card:not([open]) > summary {
+  background: #e0e7ff; /* slightly darker */
+  color: #1e3a8a;
+}
+
+/* SUB-SECTIONS: Otoscopy, Audiogram, Insurance, etc. */
+details.subcard > summary {
+  list-style: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 5px 10px;
+  margin: -4px -4px 8px;
+  border-radius: 8px;
+  background: #f3f4f6;  /* soft grey band */
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+/* OPEN sub-section */
+details.subcard[open] > summary {
+  background: #e5f1ff;  /* very light blue hint */
+  color: #1d4ed8;
+}
+
+/* COLLAPSED sub-section */
+details.subcard:not([open]) > summary {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+details.subcard {
+  margin-left: 6px;
+}
+
+
+/* Remove default triangle */
+details summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Chevron icon */
+.chev {
+  font-size: 13px;
+  color: var(--muted-soft);
+  transition: transform 0.15s, color 0.15s;
+}
+
+/* Rotate chevron when open (▶ turns into ▼) */
+details[open] > summary .chev {
+  transform: rotate(90deg);
+  color: #1d4ed8;
+}
+
+/* Inner content of subcards */
+.inner {
+  margin-top: 6px;
+}
+
+/* Generic card body wrapper */
+.card-body {
+  margin-top: 6px;
+}
+
+.card h2 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Labels & small text */
+label,
+.section-label,
+.small {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.muted {
+  font-size: 12px;
+  color: var(--muted-soft);
+}
+
+input[type="text"],
+input[type="number"],
+textarea,
+select {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 4px 6px;
+  font-size: 13px;
+  box-sizing: border-box;
+  background: #ffffff;
+  width: 100%;          /* fill the available column so you see more text */
+}
+
+textarea {
+  white-space: normal;  /* wrap text inside the box */
+  resize: vertical;     /* you can drag to see more if needed */
+  overflow-y: auto;
+}
+
+
+/* Make selects visually consistent */
+select {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+/* Free textarea defaults */
+textarea {
+  width: 100%;
+  resize: vertical;
+}
+
+/* Legacy collapsible buttons (if any are still used) */
+.section-btn {
+  width: 100%;
+  text-align: left;
+  background: #eef1f7;
+  border: 1px solid var(--border);
+  padding: 8px 10px;
+  margin: 8px 0;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #111827;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.section-btn:hover {
+  background: #e0e7f6;
+  border-color: var(--border-strong);
+}
+
+.section-content {
+  display: none;
+  padding-top: 6px;
+}
+
+.section-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);  /* 1 column full width */
+  gap: 14px;
+  padding: 4px 6px;
+  border-radius: 12px;
+  background: rgba(241, 245, 249, 0.4);
+}
+
+@media (max-width: 900px) {
+  .section-grid {
+    grid-template-columns: 1fr; /* stack S/O/A/P on narrow windows */
+  }
+}
+
+
+/* So cards inside grid don't add extra bottom margin */
+.section-grid .card {
+  margin-bottom: 0;
+}
+
+
+/* Main action buttons (Copy Note, Clear Note, Clear sections, etc.) */
+.btn {
+  background: linear-gradient(to bottom, var(--accent2), var(--accent));
+  color: #ffffff;
+  border: 1px solid var(--accent2);
+  border-radius: var(--radius);
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(15, 23, 42, 0.2);
+  transition:
+    background 0.15s,
+    box-shadow 0.15s,
+    transform 0.08s,
+    border-color 0.15s;
+}
+
+.btn:hover {
+  background: linear-gradient(to bottom, var(--accent3), var(--accent2));
+  box-shadow: 0 3px 7px rgba(15, 23, 42, 0.25);
+}
+
+.btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.25);
+}
+
+/* Global toggled state for buttons that behave like toggles (outside .row as well) */
+.btn.toggled {
+  background: var(--accent3);
+  border-color: #020617;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.35), 0 3px 7px rgba(15, 23, 42, 0.5);
+}
+
+/* Secondary / reset buttons */
+.btn.reset {
+  background: #4b5563;
+  border-color: #374151;
+  color: #fff;
+}
+
+.btn.reset:hover {
+  background: #374151;
+}
+
+/* Row for generate / clear note buttons */
+.btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* AS/AD two-column layout */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 16px;
+}
+
+/* 3-column layout for orders section */
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px 16px;
+}
+
+/* Area where the two "COPY ▶  ◀ COPY" buttons live */
+.copy-arrows {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.copy-arrows .spacer {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Make Left (AS) + Copy row and Right (AD) label the same height 
+   so the two columns align cleanly */
+.hist-grid > div:first-child .copy-arrows,
+.hist-grid > div:nth-child(2) > .small:first-child {
+  min-height: 32px; /* tweak this number if you want tighter / looser spacing */
+}
+
+/* Make the AS/AD headers line up nicely */
+.grid-2 > div {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Treat the first .small in each column like a header row */
+.grid-2 > div > .small:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+/* AS/AD grids that have a COPY button in the left column */
+.asad-grid > div:first-child .copy-arrows,
+.asad-grid > div:nth-child(2) > .small:first-child {
+  min-height: 32px; /* adjust if you want tighter/looser spacing */
+}
+
+/* Slightly tighter spacing under COPY rows in AS/AD grids */
+.asad-grid .copy-arrows {
+  margin-bottom: 2px;
+}
+
+/* Rows that hold the many option buttons */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 2px 0 4px;
+}
+
+/* Small pill builder buttons */
+.row .btn {
+  background: #f3f4f6;
+  color: #111827;
+  border: 1px solid #d1d5db;
+  border-radius: 14px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  box-shadow: none;
+}
+
+.row .btn:hover {
+  background: var(--accent2);
+  color: #ffffff;
+  border-color: var(--accent2);
+}
+
+.row .btn.toggled {
+  background: var(--accent3);
+  color: #ffffff;
+  border-color: var(--accent3);
+}
+
+/* If any sections use .toggle instead of .btn, match the same behavior */
+.toggle {
+  background: #f3f4f6;
+  color: #111827;
+  border: 1px solid #d1d5db;
+  border-radius: 16px;
+  font-size: 13px;
+  padding: 6px 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border 0.15s, transform 0.08s;
+}
+
+.toggle:hover {
+  background: var(--accent2);
+  color: #ffffff;
+  border-color: var(--accent2);
+}
+
+.toggle.active {
+  background: var(--accent3);
+  color: #ffffff;
+  border-color: var(--accent3);
+}
+
+/* Chips for custom lines (objective/assessment/plan) */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  color: #111827;
+  font-size: 12px;
+}
+
+.chip > button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0 2px;
+  font-size: 12px;
+  line-height: 1;
+  color: #6b7280;
+}
+
+/* Fixed SOAP note on the right */
+.right .card {
+  position: fixed;
+  top: 16px;
+  right: 24px;
+  width: 40%;
+  max-width: 520px;
+}
+
+/* Note header inside right card */
+.right header {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+/* Scrollable note area */
+#noteArea {
+  display: block;
+  width: 100%;
+  max-height: calc(100vh - 200px);
+  height: calc(100vh - 200px);
+  min-height: 420px;
+  overflow: auto;
+  padding: 8px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-strong);
+  background: #ffffff;
+  white-space: pre-wrap;
+  font-size: 13px;
+  line-height: 1.4;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
+/* Tiny helper text under note */
+.note-hint {
+  font-size: 12px;
+  color: var(--muted-soft);
+  margin-top: 6px;
+}
+
+/* Note controls (Copy Note / Clear Note) */
+.note-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+/* Basic responsive fallback if the window gets too narrow */
+@media (max-width: 1100px) {
+  .app {
+    flex-direction: column;
+  }
+
+  .left,
+  .right {
+    width: 100%;
+    margin-right: 0;
+  }
+
+  .right .card {
+    position: static;
+    width: 100%;
+    max-width: none;
+    margin-top: 10px;
+  }
+
+  #noteArea {
+    max-height: 400px;
+    height: 400px;
+  }
+}
+
+/* --- MAKE PLAN BUTTONS MATCH ALL OTHER TOGGLE BUTTONS --- */
+
+/* OFF state (light gray) */
+#plan-body .btn {
+  background: #f3f4f6 !important;
+  color: #111827 !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 16px !important;
+  padding: 6px 10px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  box-shadow: none !important;
+}
+
+/* HOVER state (medium blue) */
+#plan-body .btn:hover {
+  background: var(--accent2) !important;
+  color: #ffffff !important;
+  border-color: var(--accent2) !important;
+}
+
+/* ON state (dark blue) */
+#plan-body .btn.toggled {
+  background: var(--accent3) !important;
+  color: #ffffff !important;
+  border-color: var(--accent3) !important;
+}
+
+.mt-4 { margin-top: 4px; }
+.mt-6 { margin-top: 6px; }
+.mt-8 { margin-top: 8px; }
+.mt-10 { margin-top: 10px; }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+
+.patient-order .grid-2 > div,
+.patient-order .grid-3 > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.patient-order input,
+.patient-order select,
+.patient-order textarea {
+  width: 100%;
+}
+
+.patient-order label.small {
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.patient-order h4 {
+  margin-top: 12px;
+  margin-bottom: 8px;
+}
+
+.patient-order .row {
+  align-items: center;
+  gap: 10px;
+}
+
+.patient-order .btn {
+  margin-right: 4px;
+}
+
+/* ===== DELIVERY FULL-WIDTH INPUT FIX ===== */
+#delivery-assess-sub .row input[type="text"],
+#delivery-assess-sub .row textarea {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: 1 1 auto !important;
+  box-sizing: border-box !important;
+}
+
+/* Two-column layout for subcards in Objective & Assessment */
+#objective-body,
+#assessment-body {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 16px;
+}
+
+/* Each subcard fills its grid cell */
+#objective-body > .subcard,
+#assessment-body > .subcard {
+  height: 100%;
+}
+
+/* Anything that's a plain .row child (like the extra textarea at the end of Assessment)
+   should span both columns so it doesn't get squished */
+#assessment-body > .row {
+  grid-column: 1 / -1;
+}
+
+/* Responsive: on narrow windows, stack them again */
+@media (max-width: 1000px) {
+  #objective-body,
+  #assessment-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Make the "Additional ..." boxes full-width and span any grids */
+#custom-objective,
+#custom-plan {
+  width: 100%;
+  display: block;
+}
+
+/* If parent containers ever become grid layouts, span across both columns */
+#objective-body > .row:last-of-type,
+#plan-body > .row:last-of-type {
+  grid-column: 1 / -1;
+}
+
+
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <h1>SOAP Note Tool — Version 6.7.5</h1>
+  <div class="app">
+
+    <!-- LEFT -->
+    <div class="left">
+<div class="section-grid">
+      <!-- SUBJECTIVE -->
+<details class="card" id="sec-subjective" open>
+  <summary>Subjective <span class="chev">▶</span></summary>
+  <div class="card-body" id="subjective-body">
+
+
+    <h4>Appointment Type</h4>
+    <div id="apptButtons" class="row">
+      <button class="btn" data-appt="comprehensive hearing test">CHT</button>
+      <button class="btn" data-appt="hearing aid evaluation">HAE</button>
+      <button class="btn" data-appt="hearing aid consultation">HAC</button>
+      <button class="btn" data-appt="hearing aid delivery">HAD</button>
+      <button class="btn" data-appt="in-warranty hearing aid check and clean">HACK I/W</button>
+      <button class="btn" data-appt="out-of-warranty hearing aid check and clean">HACK O/W</button>
+      <button class="btn" data-appt="first follow-up appointment">1st F/U</button>
+      <button class="btn" data-appt="Annual hearing test">Annual test</button>
+      <button class="btn" data-appt="re-delivery appointment">Re-Del</button>
+    </div>
+
+
+    <h4>Smart Start (one-click baseline)</h4>
+    <div class="row">
+      <button class="btn template-btn" data-template="smart-CHT">Smart CHT</button>
+      <button class="btn template-btn" data-template="smart-HAE">Smart HAE</button>
+      <button class="btn template-btn" data-template="smart-HAC">Smart HAC</button>
+      <button class="btn template-btn" data-template="smart-HAD">Smart HAD</button>
+      <button class="btn template-btn" data-template="smart-HACK-IW">Smart HACK I/W</button>
+      <button class="btn template-btn" data-template="smart-HACK-OW">Smart HACK O/W</button>
+      <button class="btn template-btn" data-template="smart-1FU">Smart 1st F/U</button>
+      <button class="btn template-btn" data-template="smart-Annual">Smart Annual</button>
+      <button class="btn template-btn" data-template="smart-ReDel">Smart Re-Del</button>
+    </div>
+    <div class="note-hint" style="margin-top:4px;">
+      These clear the note, pick the visit type, open the right sections, and prefill a few common Plan/RTC items.
+    </div>
+
+
+    <div class="grid-2">
+      <div>
+        <label class="small">Companion</label>
+        <input type="text" id="subjective-companion" placeholder="e.g., with spouse John"/>
+      </div>
+    </div>
+
+    <h4>History</h4>
+    <div class="grid-2 asad-grid">
+      <div>
+        <div class="copy-arrows">
+          <span class="small">Left (AS)</span>
+          <button class="btn" data-copy="hist-AS-to-AD">Copy ▶</button>
+        </div>
+        <div id="hist-AS" class="row"></div>
+      </div>
+
+      <div>
+        <span class="small">Right (AD)</span>
+        <div id="hist-AD" class="row"></div>
+      </div>
+    </div>
+
+    <label class="small">General (applies to both ears)</label>
+    <div id="hist-general" class="row"></div>
+
+    <div class="row" style="height:8px;"></div>
+
+    <div class="grid-2">
+      <div>
+        <label class="small">Additional history</label>
+        <input type="text" id="hist-additional" placeholder="e.g., gradual onset over 5 years"/>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <label class="small">History of hearing aid use</label>
+        <input type="text" id="hist-hause" placeholder="e.g., prior HA use for 3 years"/>
+      </div>
+    </div>
+
+    <div class="row">
+      <button class="btn" id="btn-history-all">Denies all</button>
+      <button class="btn reset" id="btn-history-clear">Clear history</button>
+    </div>
+
+    <h4>Patient Reports</h4>
+    <div class="grid-2 asad-grid">
+      <div>
+        <div class="copy-arrows">
+          <span class="small">General — Left (AS)</span>
+          <button class="btn" data-copy="rgen-AS-to-AD">Copy ▶</button>
+        </div>
+        <div id="reports-gen-AS" class="row"></div>
+
+        <div class="copy-arrows">
+          <span class="small">Hearing Aid — Left (AS)</span>
+          <button class="btn" data-copy="rha-AS-to-AD">Copy ▶</button>
+        </div>
+               <div id="reports-ha-AS" class="row"></div>
+        <!-- Removed per-ear AS custom textarea -->
+
+      </div>
+
+      <div>
+        <span class="small">General — Right (AD)</span>
+        <div id="reports-gen-AD" class="row"></div>
+
+        <div class="copy-arrows">
+          <span class="small">Hearing Aid — Right (AD)</span>
+          <button class="btn spacer" type="button" tabindex="-1" aria-hidden="true">Copy ▶</button>
+        </div>
+        <div id="reports-ha-AD" class="row"></div>
+        <!-- Removed per-ear AD custom textarea -->
+
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:8px;">
+      <textarea id="custom-subjective" rows="3"
+        placeholder="Additional Subjective info"></textarea>
+    </div>
+
+  </div>
+</details>
+
+<!-- OBJECTIVE -->
+<details class="card" id="sec-objective" open>
+  <summary>Objective <span class="chev">▶</span></summary>
+  <div class="card-body" id="objective-body">
+
+    <details class="subcard" id="otoscopy-sub" open>
+      <summary>Otoscopy <span class="chev">▶</span></summary>
+      <div class="inner">
+        <div class="grid-2 asad-grid">
+
+          <div>
+            <div class="copy-arrows">
+              <span class="small">Left (AS)</span>
+              <button class="btn" data-copy="oto-AS-to-AD">Copy ▶</button>
+            </div>
+            <label class="small">Canal</label>
+            <div id="oto-AS-canal" class="row"></div>
+
+            <label class="small">TM</label>
+            <div id="oto-AS-tm" class="row"></div>
+
+            <div class="row">
+              <textarea id="oto-AS-custom" rows="3"
+                placeholder="Additional Otoscopy info (AS)"></textarea>
+            </div>
+          </div>
+
+          <div>
+            <span class="small">Right (AD)</span>
+
+            <label class="small">Canal</label>
+            <div id="oto-AD-canal" class="row"></div>
+
+            <label class="small">TM</label>
+            <div id="oto-AD-tm" class="row"></div>
+
+            <div class="row">
+              <textarea id="oto-AD-custom" rows="3"
+                placeholder="Additional Otoscopy info (AD) — live"></textarea>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </details>
+
+    <details class="subcard" id="audiogram-obj-sub" open>
+      <summary>Audiogram (Outside Report) <span class="chev">▶</span></summary>
+      <div class="inner">
+
+        <div class="row">
+          <input type="text" id="audio-obj-src" placeholder="Doctor/Company (optional)"/>
+        </div>
+
+        <div class="grid-2 asad-grid">
+
+          <div>
+            <div class="copy-arrows">
+              <span class="small">Left (AS)</span>
+              <button class="btn" data-copy="aobj-AS-to-AD">Copy ▶</button>
+            </div>
+
+            <label class="small">Degree (max 2)</label>
+            <div id="audio-obj-AS-deg" class="row"></div>
+
+            <label class="small">Type (max 1)</label>
+            <div id="audio-obj-AS-type" class="row"></div>
+
+            <label class="small">Configuration (max 1)</label>
+            <div id="audio-obj-AS-conf" class="row"></div>
+
+            <div class="row">
+              <textarea id="audio-obj-AS-custom" rows="3"
+                placeholder="Additional Audiogram info (AS)"></textarea>
+            </div>
+
+          </div>
+
+          <div>
+            <span class="small">Right (AD)</span>
+
+            <label class="small">Degree (max 2)</label>
+            <div id="audio-obj-AD-deg" class="row"></div>
+
+            <label class="small">Type (max 1)</label>
+            <div id="audio-obj-AD-type" class="row"></div>
+
+            <label class="small">Configuration (max 1)</label>
+            <div id="audio-obj-AD-conf" class="row"></div>
+
+            <div class="row">
+              <textarea id="audio-obj-AD-custom" rows="3"
+                placeholder="Additional Audiogram info (AD)"></textarea>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </details>
+
+    
+<!-- Medical Clearance now ABOVE Hearing Aid Condition -->
+<details class="subcard" id="clearance-sub" open>
+  <summary>Medical Clearance <span class="chev">▶</span></summary>
+  <div class="inner">
+
+    <div class="row">
+      <label class="small">Doctor</label>
+      <input
+        type="text"
+        id="clearance-doc"
+        placeholder="e.g. Dr. Smith"
+      />
+    </div>
+
+    <div class="row" style="margin-top:8px;">
+      <label class="small">Status</label>
+      <div class="row">
+        <button class="btn" data-clearance="received">Received</button>
+        <button class="btn" data-clearance="not">Not received</button>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:8px;">
+      <label class="small">Ear(s)</label>
+      <div class="row">
+        <button class="btn" data-clear-ear="AS">AS</button>
+        <button class="btn" data-clear-ear="AD">AD</button>
+      </div>
+      <span class="small" style="display:block;margin-top:4px;">
+        Select both for AU in the note.
+      </span>
+    </div>
+
+  </div>
+</details>
+
+<details class="subcard" id="hacond-sub" open>
+  <summary>Hearing Aid Condition <span class="chev">▶</span></summary>
+  <div class="inner grid-2 asad-grid">
+
+    <div>
+      <div class="copy-arrows">
+        <span class="small">Left (AS)</span>
+        <button class="btn" data-copy="hac-AS-to-AD">Copy ▶</button>
+      </div>
+
+      <div id="hac-AS" class="row"></div>
+      <!-- Removed AS custom box -->
+    </div>
+
+    <div>
+      <span class="small">Right (AD)</span>
+      <div id="hac-AD" class="row"></div>
+      <!-- Removed AD custom box -->
+    </div>
+
+  </div>
+</details>
+
+<div class="row" style="margin-top:8px;">
+  <textarea id="custom-objective" rows="3"
+    placeholder="Additional Objective info"></textarea>
+</div>
+
+  </div>
+</details>
+
+<!-- ASSESSMENT -->
+<details class="card" id="sec-assessment" open>
+  <summary>Assessment <span class="chev">▶</span></summary>
+  <div class="card-body" id="assessment-body">
+
+    <details class="subcard" id="audiogram-assess-sub" open>
+      <summary>In-Office Audiogram <span class="chev">▶</span></summary>
+      <div class="inner grid-2 asad-grid">
+
+        <div>
+          <div class="copy-arrows">
+            <span class="small">Left (AS)</span>
+            <button class="btn" data-copy="audio-AS-to-AD">Copy ▶</button>
+          </div>
+
+          <label class="small">Degree (max 2)</label>
+          <div id="audio-AS-deg" class="row"></div>
+
+          <label class="small">Type (max 1)</label>
+          <div id="audio-AS-type" class="row"></div>
+
+          <label class="small">Configuration (max 1)</label>
+          <div id="audio-AS-conf" class="row"></div>
+
+          <div class="row">
+            <textarea id="audio-AS-custom" rows="3"
+              placeholder="Additional Audiogram info (AS)"></textarea>
+          </div>
+
+        </div>
+
+        <div>
+          <span class="small">Right (AD)</span>
+
+          <label class="small">Degree (max 2)</label>
+          <div id="audio-AD-deg" class="row"></div>
+
+          <label class="small">Type (max 1)</label>
+          <div id="audio-AD-type" class="row"></div>
+
+          <label class="small">Configuration (max 1)</label>
+          <div id="audio-AD-conf" class="row"></div>
+
+          <div class="row">
+            <textarea id="audio-AD-custom" rows="3"
+              placeholder="Additional Audiogram info (AD)"></textarea>
+          </div>
+
+        </div>
+
+      </div>
+    </details>
+
+    <!-- INSURANCE MOVED UP HERE as requested -->
+<details class="subcard" id="ins-sub" open>
+      <summary>Insurance Information<span class="chev">▶</span></summary>
+      <div class="inner">
+
+        <!-- Basic free-text fields (same behavior as before) -->
+        <div class="row">
+          <input type="text" id="ins-company" placeholder="Insurance Company"/>
+        </div>
+
+        <div class="row">
+          <input type="text" id="ins-benefit"
+                 placeholder="Hearing Aid Benefit / allowed amount (can auto-fill from estimator)"/>
+        </div>
+
+        <div class="row">
+          <input type="text" id="ins-oop"
+                 placeholder="Estimated Out-of-Pocket (can auto-fill from estimator)"/>
+        </div>
+
+        <div class="row">
+          <button class="btn" data-auth="authorized">Authorized</button>
+          <button class="btn" data-auth="pending">Pending</button>
+          <button class="btn" data-auth="denied">Denied</button>
+        </div>
+
+        <hr/>
+
+        <!-- ==========================
+             Insurance Estimator (spreadsheet-style)
+             ========================== -->
+        <h4>Insurance Estimator</h4>
+
+        <!-- Top area: inputs laid out in two columns for more room -->
+        <div class="grid-2" style="align-items:flex-start; gap:10px; margin-bottom:10px;">
+
+          <!-- LEFT COLUMN: Claim / Benefit / OOP -->
+          <div>
+            <label class="small">Total Claim $ (billed)</label>
+            <input type="number"
+                   id="ins-est-claim"
+                   min="0"
+                   step="1"
+                   placeholder="e.g., 8900"
+                   style="width:100%; margin-bottom:6px;">
+
+            <label class="small">Benefit Amount $</label>
+            <input type="number"
+                   id="ins-est-benefit"
+                   min="0"
+                   step="1"
+                   placeholder="e.g., 5000"
+                   style="width:100%; margin-bottom:4px;">
+            <div class="muted small" style="margin-bottom:8px;">
+              If blank, estimator will treat benefit as the allowed amount.
+            </div>
+
+            <label class="small">Out of Pocket Max Remaining $</label>
+            <input type="number"
+                   id="ins-est-oop"
+                   min="0"
+                   step="1"
+                   placeholder="e.g., 2000"
+                   style="width:100%; margin-bottom:4px;">
+            <div class="muted small">
+              If unknown, leave 0 and the estimator will not cap by OOP max.
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN: Contracted discount + custom options -->
+          <div>
+            <label class="small">Select Contracted Discount</label>
+            <select id="ins-est-contract" style="width:100%; margin-bottom:8px;">
+              <option value="full">None / Full Amount</option>
+              <option value="anthem70">Anthem Commercial PPO (70% Contracted)</option>
+              <option value="healthnet60">Health Net Commercial PPO (60% Contracted)</option>
+              <option value="customPct">Custom Amount %</option>
+              <option value="customAmt">Custom Amount $</option>
+            </select>
+
+            <label class="small">Custom contract options</label>
+            <input type="number"
+                   id="ins-est-custom-pct"
+                   min="0"
+                   step="0.01"
+                   placeholder="Custom contract discount %"
+                   style="width:100%; margin-bottom:4px;">
+            <input type="number"
+                   id="ins-est-custom-amt"
+                   min="0"
+                   step="1"
+                   placeholder="Custom contract discount $"
+                   style="width:100%; margin-bottom:4px;">
+            <div class="muted small">
+              Use one or the other as needed when “Custom” is selected.
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Row: Co-pay / Co-insurance / Deductible -->
+        <div class="grid-3" style="align-items:flex-start; margin-top:4px;">
+          <div>
+            <label class="small">Co-Pay $</label>
+            <input type="number"
+                   id="ins-est-copay"
+                   min="0"
+                   step="1"
+                   placeholder="0"
+                   style="width:100%;">
+          </div>
+
+          <div>
+            <label class="small">Co-insurance % (patient portion)</label>
+            <input type="number"
+                   id="ins-est-coins"
+                   min="0"
+                   step="0.01"
+                   placeholder="e.g., 20"
+                   style="width:100%; margin-bottom:4px;">
+            <div class="muted small">
+              You can enter 0.2 or 20 – both will be interpreted as 20%.
+            </div>
+          </div>
+
+          <div>
+            <label class="small">Deductible Remaining $</label>
+            <input type="number"
+                   id="ins-est-ded"
+                   min="0"
+                   step="1"
+                   placeholder="e.g., 600"
+                   style="width:100%;">
+          </div>
+        </div>
+
+        <!-- Row: outputs -->
+        <div class="grid-3" style="align-items:flex-start; margin-top:10px;">
+          <div>
+            <label class="small">Allowed Amount</label>
+            <div class="small" id="ins-est-allowed-display" style="min-height:20px;"></div>
+          </div>
+
+          <div>
+            <label class="small">Estimated Insurance Responsibility</label>
+            <div class="small" id="ins-est-ins" style="min-height:20px;"></div>
+          </div>
+
+          <div>
+            <label class="small">Estimated Patient Responsibility</label>
+            <div class="small" id="ins-est-pt" style="min-height:20px;"></div>
+          </div>
+        </div>
+
+        <!-- Apply button -->
+        <div class="row" style="margin-top:10px;">
+          <button class="btn" type="button" id="ins-est-apply">
+            Apply to Benefit &amp; OOP fields
+          </button>
+        </div>
+  </details>
+
+<details class="subcard" id="ha-rec-sub" open>
+  <summary>Hearing Aid Recommendation & Patient Choice <span class="chev">▶</span></summary>
+  <div class="inner">
+
+    <!-- =====================
+         RECOMMENDATION
+         ===================== -->
+    <h4>Recommendation</h4>
+
+    <div class="row">
+      <label class="small">Ear(s) (recommendation)</label>
+      <div class="row">
+        <button class="btn" data-recscope="AS">AS</button>
+        <button class="btn" data-recscope="AD">AD</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <label class="small">Style (recommendation)</label>
+      <div class="row" id="ha-style-row"></div>
+    </div>
+
+    <div class="row">
+      <label class="small">Coupling (recommendation)</label>
+      <div class="row" id="ha-coupling-row"></div>
+    </div>
+
+    <div class="row">
+      <label class="small">Hearing aid details</label>
+      <input
+        type="text"
+        id="ha-tech"
+        placeholder="e.g., Starkey Evolv AI 1000"
+      />
+    </div>
+
+    <hr class="sep"/>
+
+    <!-- =====================
+         PATIENT ORDER
+         ===================== -->
+<h4>Patient Order</h4>
+
+  <!-- ORDER TEMPLATES -->
+  <div class="row mt-4">
+    <label class="small">Order templates</label>
+    <div class="row">
+      <button class="btn template-btn" data-template="Evolv AI 1000 BTE w/ EM">
+        Evolv AI 1000 BTE w/ EM
+      </button>
+      <button class="btn template-btn" data-template="evolv-ric-domes-50">
+        Evolv AI 1000 RIC
+      </button>
+
+      <button class="btn template-btn" data-template="evolv-ric-ricmolds-60">
+        Evolv AI 1000 RIC w/ RIC molds
+      </button>
+
+      <button class="btn template-btn" data-template="key2-ite">
+        Key 2 ITE
+      </button>
+
+      <button class="btn template-btn" data-template="key2-itc">
+        Key 2 ITC
+      </button>
+      <!-- Add more order templates here in the future -->
+      <!-- <button class="btn template-btn" data-template="order-medi-cal-ric">Medi-Cal RIC Order</button> -->
+    </div>
+  </div>
+
+
+<div class="patient-order">
+
+  <!-- Ear scope -->
+  <div class="row mt-6">
+    <label class="small">Ear(s) (order)</label>
+    <div class="row">
+      <button class="btn" data-orderscope="AS">AS</button>
+      <button class="btn" data-orderscope="AD">AD</button>
+    </div>
+  </div>
+
+  <!-- Basic device details -->
+  <div class="grid-3 mt-8">
+    <div>
+      <label class="small">Manufacturer</label>
+      <input
+        type="text"
+        id="order-mfg"
+        list="ha-mfg-list"
+        placeholder="e.g., Starkey"
+      />
+      <datalist id="ha-mfg-list">
+        <option value="Starkey"></option>
+        <option value="Phonak"></option>
+        <option value="Oticon"></option>
+        <option value="ReSound"></option>
+        <option value="Signia"></option>
+        <option value="Widex"></option>
+      </datalist>
+    </div>
+
+    <div>
+      <label class="small">Model</label>
+      <input
+        type="text"
+        id="order-model"
+        list="ha-model-list"
+        placeholder="e.g., Evolv AI 1000"
+      />
+      <datalist id="ha-model-list">
+        <option value="Evolv AI 1000"></option>
+        <option value="Genesis AI 12"></option>
+        <option value="Omega AI 16"></option>
+        <option value="Omega AI 20"></option>
+        <option value="Omega AI 24"></option>
+        <option value="Audeo L30"></option>
+        <option value="Audeo L50"></option>
+        <option value="Key 2"></option>
+        <option value="Key 3"></option>
+        <option value="Intent 1"></option>
+      </datalist>
+    </div>
+
+    <div>
+      <label class="small">Hearing aid color</label>
+      <input
+        type="text"
+        id="order-color"
+        list="ha-color-list"
+        placeholder="e.g., champagne"
+      />
+      <datalist id="ha-color-list">
+        <option value="beige"></option>
+        <option value="black"></option>
+        <option value="brown"></option>
+        <option value="champagne"></option>
+        <option value="dark brown"></option>
+        <option value="espresso"></option>
+        <option value="graphite gray"></option>
+        <option value="light beige"></option>
+        <option value="light brown"></option>
+        <option value="medium brown"></option>
+        <option value="silver"></option>
+        <option value="slate"></option>
+        <option value="sterling"></option>
+        <option value="white"></option>
+      </datalist>
+    </div>
+  </div>
+
+  <!-- Ordered style -->
+  <div class="row mt-8">
+    <label class="small">Ordered style (Pt chose)</label>
+    <input
+      type="text"
+      id="order-style"
+      list="order-style-list"
+      placeholder="e.g. behind-the-ear"
+      style="max-width: 360px;"
+    />
+    <datalist id="order-style-list">
+      <option value="power behind-the-ear"></option>
+      <option value="behind-the-ear"></option>
+      <option value="receiver-in-the-canal"></option>
+      <option value="micro receiver-in-the-canal"></option>
+      <option value="in-the-ear"></option>
+      <option value="in-the-canal"></option>
+      <option value="completely-in-the-canal"></option>
+      <option value="invisible-in-the-canal"></option>
+    </datalist>
+  </div>
+
+  <!-- Coupling & Receivers -->
+  <h4 class="mt-16">Coupling & Receivers (order)</h4>
+
+  <!-- Tube/receiver type -->
+  <div class="row mt-6">
+    <label class="small">Tube / receiver type</label>
+    <div class="row">
+      <button class="btn" data-ordertube="receiver">Receiver</button>
+      <button class="btn" data-ordertube="slim tube">Slim tube</button>
+    </div>
+  </div>
+
+  <!-- AS / AD receiver + mold inputs -->
+  <div class="grid-2 mt-10">
+
+    <!-- Left Ear -->
+    <div>
+      <div class="copy-arrows">
+        <span class="small"><strong>Left (AS)</strong></span>
+        <button class="btn" id="copy-coupling-AS-to-AD">Copy ▶</button>
+      </div>
+
+      <label class="small mt-6">Receiver/slim tube length — AS</label>
+      <select id="rec-len-AS">
+        <option value="">—</option>
+        <option>0</option><option>1</option><option>2</option>
+        <option>3</option><option>4</option><option>5</option>
+      </select>
+
+      <label class="small mt-6">Receiver power (AS)</label>
+      <input
+        type="text"
+        id="rec-pwr-AS"
+        placeholder="e.g., 50"
+      />
+
+      <label class="small mt-6">Ear mold style (AS)</label>
+      <select id="order-mold-type-AS">
+        <option value="">—</option>
+        <option value="canal">canal</option>
+        <option value="canal lock">canal lock</option>
+        <option value="helix">helix</option>
+        <option value="half shell">half shell</option>
+        <option value="3/4 shell">3/4 shell</option>
+        <option value="skeleton">skeleton</option>
+        <option value="full shell">full shell</option>
+      </select>
+
+      <label class="small mt-6">Ear mold material (AS)</label>
+      <select id="order-mold-material-AS">
+        <option value="">—</option>
+        <option value="soft">soft</option>
+        <option value="hard">hard</option>
+      </select>
+
+      <label class="small mt-6">Ear mold color (AS)</label>
+      <input
+        type="text"
+        id="mold-color-AS"
+        list="mold-color-list"
+        placeholder="Left (AS)"
+      />
+    </div>
+
+    <!-- Right Ear -->
+    <div>
+      <div class="copy-arrows">
+        <span class="small"><strong>Right (AD)</strong></span>
+        <!-- dummy button to match Copy ▶ height on the left -->
+        <button class="btn" style="visibility:hidden; pointer-events:none;">Copy ▶</button>
+      </div>
+
+      <label class="small mt-6">Receiver/slim tube length — AD</label>
+      <select id="rec-len-AD">
+        <option value="">—</option>
+        <option>0</option><option>1</option><option>2</option>
+        <option>3</option><option>4</option><option>5</option>
+      </select>
+
+      <label class="small mt-6">Receiver power (AD)</label>
+      <input
+        type="text"
+        id="rec-pwr-AD"
+        placeholder="e.g., 60"
+      />
+
+      <label class="small mt-6">Ear mold style (AD)</label>
+      <select id="order-mold-type-AD">
+        <option value="">—</option>
+        <option value="canal">canal</option>
+        <option value="canal lock">canal lock</option>
+        <option value="helix">helix</option>
+        <option value="half shell">half shell</option>
+        <option value="3/4 shell">3/4 shell</option>
+        <option value="skeleton">skeleton</option>
+        <option value="full shell">full shell</option>
+      </select>
+
+      <label class="small mt-6">Ear mold material (AD)</label>
+      <select id="order-mold-material-AD">
+        <option value="">—</option>
+        <option value="soft">soft</option>
+        <option value="hard">hard</option>
+      </select>
+
+      <label class="small mt-6">Ear mold color (AD)</label>
+      <input
+        type="text"
+        id="mold-color-AD"
+        list="mold-color-list"
+        placeholder="Right (AD)"
+      />
+    </div>
+
+  </div>
+
+  <datalist id="mold-color-list">
+    <option value="clear"></option>
+    <option value="champagne"></option>
+    <option value="brown"></option>
+    <option value="black"></option>
+    <option value="beige"></option>
+  </datalist>
+
+  <!-- Coupling style toggle buttons -->
+  <div class="row mt-10">
+    <label class="small">Coupling style (order)</label>
+    <div class="row" id="order-coupling-row"></div>
+  </div>
+
+  <!-- Extra details -->
+  <div class="row mt-10">
+    <label class="small">Extra order details (live)</label>
+    <textarea
+      id="order-extra"
+      rows="3"
+      placeholder="e.g., Soft ear molds due to Pt’s hearing loss."
+    ></textarea>
+  </div>
+
+</div>
+
+    <h4>Impressions</h4>
+    <div class="row">
+      <button class="btn" data-impression="taken">Impression</button>
+      <button class="btn" data-impression="onfile">Imp on file</button>
+    </div>
+
+  </div>
+</details>
+
+<!-- NEW: Delivery Section -->
+<details class="subcard" id="delivery-assess-sub" open>
+  <summary>Delivery <span class="chev">▶</span></summary>
+  <div class="inner">
+
+        <!-- v6.4: Delivery presets -->
+    <div class="row" style="margin-bottom:6px;">
+      <button class="btn" id="delivery-standard">Standard delivery</button>
+      <button class="btn reset" id="delivery-clear">Clear delivery</button>
+    </div>
+
+
+    <!-- Fit / coupling -->
+    <div class="row">
+      <input
+        type="text"
+        id="delivery-fit"
+        list="del-fit-list"
+        class="full"
+        placeholder="Fit/coupling details"
+      />
+      <datalist id="del-fit-list">
+        <option value="I fit the hearing aids."></option>
+        <option value="I fit the hearing aids and earmolds."></option>
+        <option value="I fit the hearing aids with domes."></option>
+        <option value="I fit the hearing aids with custom earmolds."></option>
+        <option value="I fit the hearing aids with #3, 50g receivers and 7mm closed domes."></option>
+        <option value="I fit the hearing aids with #3, 50g receivers and canal lock ear molds."></option>
+      </datalist>
+    </div>
+
+    <!-- Feedback / REM -->
+    <div class="row">
+      <input
+        type="text"
+        id="delivery-feedback"
+        list="del-feedback-list"
+        class="full"
+        placeholder="Feedback or REM details"
+      />
+      <datalist id="del-feedback-list">
+        <option value="Ran feedback."></option>
+        <option value="Ran feedback and REM."></option>
+        <option value="Ran REM and adjusted gain to target."></option>
+        <option value="Ran feedback; stable fitting achieved."></option>
+      </datalist>
+    </div>
+
+    <!-- Programming / experience -->
+    <div class="row">
+      <input
+        type="text"
+        id="delivery-programming"
+        list="del-programming-list"
+        class="full"
+        placeholder="Programming details"
+      />
+      <datalist id="del-programming-list">
+        <option value="Set to best-fit and experience level 1."></option>
+        <option value="Set to best-fit and experience level 2."></option>
+        <option value="Set to best-fit and experience level 3."></option>
+      </datalist>
+    </div>
+
+    <!-- VC / programs -->
+    <div class="row">
+      <input
+        type="text"
+        id="delivery-vc"
+        list="del-vc-list"
+        class="full"
+        placeholder="VC or program details"
+      />
+      <datalist id="del-vc-list">
+        <option value="The volume control was enabled."></option>
+        <option value="The volume control was not enabled."></option>
+        <option value="The volume control was enabled and synced together"></option>
+        <option value="The volume control was enabled and seperated."></option>
+      </datalist>
+    </div>
+
+    <!-- Patient response -->
+    <div class="row">
+      <input
+        type="text"
+        id="delivery-ptresponse"
+        list="del-ptr-list"
+        class="full"
+        placeholder="Patient response"
+      />
+      <datalist id="del-ptr-list">
+        <option value="Pt noted improved sound quality and comfort."></option>
+        <option value="Pt reported sounds were too loud initially but improved with adjustment."></option>
+        <option value="Pt continues to have difficulty in noise; additional counseling given."></option>
+      </datalist>
+    </div>
+
+    <!-- Instructions -->
+    <div class="row">
+      <input
+        type="text"
+        id="delivery-instructions"
+        list="del-inst-list"
+        class="full"
+        placeholder="Instructions provided"
+      />
+      <datalist id="del-inst-list">
+        <option value="Instructed on use and care."></option>
+      </datalist>
+    </div>
+
+    <!-- Purchase agreement / warranty -->
+    <div class="row">
+      <input
+        type="text"
+        id="delivery-purchase"
+        list="del-pur-list"
+        class="full"
+        placeholder="Purchase agreement/warranty info"
+      />
+      <datalist id="del-pur-list">
+        <option value="Reviewed purchase agreement and warranty information."></option>
+      </datalist>
+    </div>
+
+  </div>
+</details>
+
+<!-- NEW: Hearing Aid Maintenance -->
+<details class="subcard" id="ham-sub" open>
+  <summary>Hearing Aid Maintenance <span class="chev">▶</span></summary>
+  <div class="inner grid-2 asad-grid">
+
+    <div>
+      <div class="copy-arrows">
+        <span class="small">Left (AS)</span>
+        <button class="btn" data-copy="ham-AS-to-AD">Copy ▶</button>
+      </div>
+
+      <div id="ham-AS" class="row"></div>
+
+      <div class="row">
+        <textarea id="ham-AS-custom" rows="2"
+          placeholder="Additional HA maintenance info (AS)"></textarea>
+      </div>
+    </div>
+
+    <div>
+      <span class="small">Right (AD)</span>
+
+      <div id="ham-AD" class="row"></div>
+
+      <div class="row">
+        <textarea id="ham-AD-custom" rows="2"
+          placeholder="Additional HA maintenance info (AD)"></textarea>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+<!-- NEW: Post-Maintenance Status -->
+<details class="subcard" id="ham-post-sub" open>
+  <summary>Post-Maintenance Status <span class="chev">▶</span></summary>
+  <div class="inner grid-2 asad-grid">
+
+    <div>
+      <div class="copy-arrows">
+        <span class="small">Left (AS)</span>
+        <button class="btn" data-copy="ham-post-AS-to-AD">Copy ▶</button>
+      </div>
+
+      <div id="ham-post-AS" class="row"></div>
+
+      <div class="row">
+        <textarea id="ham-post-AS-custom" rows="2"
+          placeholder="Post-maintenance notes (AS)"></textarea>
+      </div>
+    </div>
+
+    <div>
+      <span class="small">Right (AD)</span>
+
+      <div id="ham-post-AD" class="row"></div>
+
+      <div class="row">
+        <textarea id="ham-post-AD-custom" rows="2"
+          placeholder="Post-maintenance notes (AD)"></textarea>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+    <div class="row" style="margin-top:8px;">
+      <textarea id="custom-assessment" rows="3"
+        placeholder="Additional Assessment info"></textarea>
+    </div>
+
+  </div>
+</details>
+
+<!-- PLAN -->
+<details class="card" id="sec-plan" open>
+  <summary>Plan <span class="chev">▶</span></summary>
+<div class="card-body" id="plan-body">
+
+  <h4>Plan Items</h4>
+
+  <div class="grid-2">
+    <div>
+      <label class="small">Provider tasks</label>
+      <div id="plan-provider" class="row"></div>
+    </div>
+
+    <div>
+      <label class="small">Patient tasks</label>
+      <div id="plan-patient" class="row"></div>
+    </div>
+  </div>
+
+  <h4>RTC Builder</h4>
+
+    <div class="grid-3">
+
+      <!-- TIME INPUT COLUMN -->
+      <div>
+        <label class="small">Timeframe</label>
+        <input type="number" id="rtc-time" placeholder="e.g., 2"/>
+
+<label class="small mt-4">Reason</label>
+<input
+  type="text"
+  id="rtc-reason"
+  list="rtc-reason-list"
+  placeholder="e.g., a follow up"
+/>
+
+<datalist id="rtc-reason-list">
+  <option value="an annual hearing test"></option>
+  <option value="a follow up"></option>
+  <option value="a hearing aid check and clean"></option>
+  <option value="a hearing aid consultation"></option>
+  <option value="a hearing aid delivery"></option>
+  <option value="a hearing aid evaluation"></option>
+  <option value="a re-delivery"></option>
+  <option value="a reprogramming"></option>
+</datalist>
+
+      <!-- UNIT BUTTONS COLUMN -->
+      <div>
+        <label class="small">Unit</label>
+        <div class="row">
+          <button class="btn" data-rtcunit="weeks">Week(s)</button>
+          <button class="btn" data-rtcunit="months">Month(s)</button>
+          <button class="btn" data-rtcunit="years">Year(s)</button>
+        </div>
+      </div>
+
+      <!-- AS-NEEDED + CLEAR COLUMN -->
+      <div>
+        <label class="small">Other</label>
+        <div class="row">
+          <button class="btn" id="rtc-asneeded">or as needed</button>
+          <button class="btn reset" id="rtc-clear">Clear RTC</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row" style="margin-top:8px;">
+      <textarea id="custom-plan" rows="3"
+        placeholder="Additional Plan info"></textarea>
+    </div>
+
+  </div>
+</details>
+</div>
+
+</div> <!-- end LEFT column -->
+
+
+<!-- RIGHT COLUMN -->
+<div class="right">
+  <div class="card">
+    <header>Generated SOAP Note</header>
+    <textarea id="noteArea" readonly></textarea>
+    <div class="note-hint">This note updates automatically as you make selections.</div>
+
+<div class="note-controls">
+  <button class="btn" id="toggle-shorthand">Shorthand OFF</button>
+  <button class="btn" id="copy-note">Copy Note</button>
+  <button class="btn reset" id="clear-note">Clear Note</button>
+</div>
+
+  </div>
+</div>
+
+</div><!-- END APP -->
+</div><!-- END WRAP -->
+
+<script>
+/* ===============================================
+   SOAP NOTE BUILDER — CLEAN BASE JS
+   =============================================== */
+
+window.SNB = (()=>{
+
+  const S = {};
+  const NL = '\n';
+  const state = {
+
+    /* SUBJECTIVE */
+    apptType: '',
+    companion: '',
+    historyAS: new Set(),
+    historyAD: new Set(),
+    historyGeneral: new Set(),
+    historyDeniesAll: false,
+    historyAdditional: '',
+    historyHAUse: '',
+
+    repGenAS: new Set(),
+    repGenAD: new Set(),
+    repHAAS: new Set(),
+    repHAAD: new Set(),
+
+    repCustomAS: [],
+    repCustomAD: [],
+    subjCustom: [],
+
+    /* OBJECTIVE */
+    otoAScanal: new Set(),
+    otoAStm: new Set(),
+    otoADcanal: new Set(),
+    otoADtm: new Set(),
+    otoCustomAS: [],
+    otoCustomAD: [],
+
+    audioObjSrc: '',
+    audioObjASdeg: new Set(),
+    audioObjADdeg: new Set(),
+    audioObjAStype: new Set(),
+    audioObjADtype: new Set(),
+    audioObjASconf: new Set(),
+    audioObjADconf: new Set(),
+    audioObjCustomAS: [],
+    audioObjCustomAD: [],
+
+
+    hacAS: new Set(),
+    hacAD: new Set(),
+    hacCustomAS: [],
+    hacCustomAD: [],
+
+    clearance: '',
+    clearanceDoc: '',
+    clearanceAS: false,
+    clearanceAD: false,
+
+    objCustom: [],
+
+
+    /* ASSESSMENT */
+    audioASdeg: new Set(),
+    audioADdeg: new Set(),
+    audioAStype: new Set(),
+    audioADtype: new Set(),
+    audioASconf: new Set(),
+    audioADconf: new Set(),
+    audioCustomAS: [],
+    audioCustomAD: [],
+
+
+    insCompany: '',
+    insBenefit: '',
+    insOOP: '',
+    insurance: { status: null },
+
+    haStyle: new Set(),
+    haRecAS: false,           // left ear recommended?
+    haRecAD: false,           // right ear recommended?
+    haTech: '',               // "Hearing aid details" text
+    haCoupling: new Set(),    // dome / custom ear mold
+    orderCoupling: new Set(),
+
+    order: {
+      mfg: '',
+      model: '',
+      style: '',
+      color: '',
+      scope: '',              // AS, AD, or AU (also derived from buttons)
+
+      // Receiver / tube details
+      recLenAS: '',
+      recLenAD: '',
+      recPwrAS: '',
+      recPwrAD: '',
+      tubeType: '',           // "slim tube" or "receiver"
+
+      // Ear mold style/material/color — independent per ear
+      moldTypeAS: '',
+      moldTypeAD: '',
+      moldMaterialAS: '',
+      moldMaterialAD: '',
+      moldColorAS: '',
+      moldColorAD: '',
+
+      extraDetails: ''        // optional extra line for order
+    },
+
+    hamAS: new Set(),
+    hamAD: new Set(),
+    hamCustomAS: [],
+    hamCustomAD: [],
+
+    hamPostAS: new Set(),
+    hamPostAD: new Set(),
+    hamPostCustomAS: [],
+    hamPostCustomAD: [],
+
+    // NEW: Delivery (Assessment)
+    deliveryFit: [],
+    deliveryFeedback: [],
+    deliveryProgramming: [],
+    deliveryVC: [],
+    deliveryPtResponse: [],
+    deliveryInstructions: [],
+    deliveryPurchase: [],
+
+    assessCustom: [],
+
+    /* PLAN */
+    planReferral: new Set(),
+    planProvider: new Set(),
+    planPatient: new Set(),
+    rtcTime: '',
+    rtcUnit: '',
+    rtcReason: '',
+    rtcAsNeeded: false,
+    planCustom: [],
+    shorthandMode: false
+  };
+
+  S.state = state;
+
+  S.consts = {
+    HIST_ASAD: [
+      "decreased hearing",
+      "tinnitus",
+      { label: "sudden loss", value: "sudden hearing loss within the previous 90 days" },
+      { label: "pain", value: "pain or discomfort in the ear" },
+      { label: "drainage", value: "drainage from the ear" },
+      "noise exposure",
+      "head injury"
+    ],
+    HIST_GENERAL: [
+      "vertigo/dizziness"
+    ],
+    REPORTS_GENERAL: [
+      "decreased hearing"
+    ],
+    REPORTS_HA: [
+      "working well","sounds weak","sounds dead","broken","needs a tube change","needs a reprogramming"
+    ],
+    OTO_CANAL: ["clear","non-occluding wax","occluding wax","redness","swelling","object in ear"],
+    OTO_TM: ["normal","unremarkable","dull","retracted","bulging","red","scarred","perforated"],
+     // 🔹 Hearing aid CONDITION (Objective)
+    HAC_OPTS: [
+        "appears clean",
+        "appears dirty",
+        "filters plugged",
+        "filters appear partially plugged",
+        "tubes soft",
+        "tubes hard",
+        "microphones appear clean",
+        "microphones appear clogged",
+        "case in good condition",
+        "case shows cosmetic wear",
+        "battery door intact",
+        "battery door loose"
+    ],
+
+    // 🔹 Hearing aid MAINTENANCE (used later, Plan/Assessment section)
+    HAM_OPTS: [
+        "cleaned",
+        "vacuumed microphones",
+        "wax guard replaced",
+        "tubing replaced",
+        "dome replaced",
+        "ear hook replaced",
+        "receiver replaced",
+        "battery replaced",
+        "firmware updated"
+    ],
+    HAM_POST_OPTS: [
+        "sounds good",
+        "still sounds weak",
+        "still sounds dead",
+        "cannot fix in office",
+        "needs to be sent for repair"],
+
+
+    AUDIO_DEG: ["normal","mild","moderate","moderately-severe","severe","profound"],
+    AUDIO_TYPE: ["sensorineural","conductive","mixed","rising","sloping","flat","cookie bite","high frequency"], // used elsewhere
+
+    // For audiogram modules:
+    AUDIO_TYPE_ONLY: ["sensorineural","conductive","mixed"],
+    AUDIO_CONFIG: ["rising","sloping","flat","cookie bite","high frequency"],
+HA_COUPLING: [
+  { label: "Dome",        value: "dome" },
+  { label: "Ear mold",    value: "ear mold" },
+  { label: "RIC ear mold", value: "RIC ear mold" }
+],
+    
+    HA_STYLES: [
+      { label: "BTE",       value: "behind-the-ear" },
+      { label: "Power BTE", value: "power behind-the-ear" },
+      { label: "RIC",       value: "receiver-in-the-canal" },
+      { label: "ITE",       value: "in-the-ear" },
+      { label: "ITC",       value: "in-the-canal" },
+      { label: "CIC",       value: "completely-in-the-canal" },
+      { label: "IIC",       value: "invisible-in-the-canal" }
+    ],
+
+PLAN_ITEMS: {
+
+  provider: [
+    { label: "ready submit order", value: "I will submit the order to the manufacturer with options noted above" },
+    { label: "not ready submit order", value: "When auth is received, I will submit the order to the manufacturer with options noted above" },
+    { label: "ready submit order +imps", value: "I will send impressions to the manufacturer with options noted above" },
+    { label: "not ready submit order +imps", value: "When auth is received, I will send impressions to the manufacturer with options noted above" },
+
+    // Delivery call moved here
+    { label: "delivery call", value: "RTC 4-6 weeks for a Delivery appt. We will call when the hearing aids are received" },
+
+    // NEW
+    { label: "Request Rx", value: "We will request a medical clearance from the PCP or ENT" },
+    { label: "Submit Auth", value: "We will submit authorization to the patient's insurance company" }
+  ],
+
+  patient: [
+    // Referral items moved here
+    { label: "PCP referral", value: "Follow up with PCP" },
+    { label: "ENT referral", value: "Follow up with ENT" },
+
+    // Existing items
+    { label: "Schedule HAE", value: "RTC for a hearing aid evaluation appointment" },
+    { label: "Annual hearing tests", value: "RTC for annual hearing tests" },
+
+    // Eligible new moved here
+    { label: "eligible new", value: "Pt may be eligible for new HA’s, RTC for an annual hearing test to start the process" },
+
+    // Existing
+    { label: "delivery schedule", value: "RTC 4-6 weeks for a delivery appt." },
+    { label: "think about it", value: "If patient wants to move forward with ordering hearing aids or if they have any other questions, they will contact us." }
+  ]
+}
+  };
+  
+S.utils = {
+    joinAnd(arr){
+      if(!arr.length) return '';
+      if(arr.length === 1) return arr[0];
+      if(arr.length === 2) return arr[0] + ' and ' + arr[1];
+      return arr.slice(0,-1).join(', ') + ', and ' + arr[arr.length-1];
+    },
+    joinOr(arr){
+      if(!arr.length) return '';
+      if(arr.length === 1) return arr[0];
+      if(arr.length === 2) return arr[0] + ' or ' + arr[1];
+      return arr.slice(0,-1).join(', ') + ', or ' + arr[arr.length-1];
+    },
+    formatMoney(n){
+      const num = Number(n);
+      if(!isFinite(num)) return '';
+      return '$' + num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+  };
+
+  // Convert full, expanded note text into a shorthand / abbreviated version
+  function toShorthandNote(text){
+    if(!text) return text;
+
+    let out = text;
+
+    // SOAP headings
+    out = out.replace(/^Subjective:/m, 'S:');
+    out = out.replace(/^Objective:/m, 'O:');
+    out = out.replace(/^Assessment:/m, 'A:');
+    out = out.replace(/^Plan:/m, 'P:');
+
+    // Common phrase-level abbreviations
+    out = out.replace(/\bThe patient is here for\b/gi, 'Pt here for');
+    out = out.replace(/\bThe patient\b/gi, 'Pt');
+    out = out.replace(/\bPatient reports\b/gi, 'Pt c/o');
+
+    //appointment type
+    out = out.replace(/\bcomprehensive hearing test\b/gi, 'CHT');
+    out = out.replace(/\bhearing aid evaluation\b/gi, 'HAE');
+    out = out.replace(/\bhearing aid consultation\b/gi, 'HAC');
+    out = out.replace(/\bhearing aid delivery\b/gi, 'HAD');
+    out = out.replace(/\bin-warranty hearing aid check and clean\b/gi, 'HACK I/W');
+    out = out.replace(/\bout-of-warranty hearing aid check and clean\b/gi, 'HACK O/W');
+    out = out.replace(/\bannual hearing test\b/gi, 'Annual test');
+    out = out.replace(/\bre-delivery appointment\b/gi, 'Re-Del');
+  
+
+    // History
+    out = out.replace(/\bDenies history of\b/gi, 'Denies');
+    out = out.replace(/\bHistory of\b/gi, 'Hx:');
+
+    // Otoscopy / Audiogram
+    out = out.replace(/\bOtoscopy\b/gi, 'Oto');
+    out = out.replace(/\bAudiogram was performed today\. Results indicate\b/gi, 'Audio:');
+    out = out.replace(/\bAudiogram from\b/gi, 'Audio (ext) from');
+    out = out.replace(/\bAudiogram\b/gi, 'Audio');
+    out = out.replace(/\bsensorineural\b/gi, 'SN');
+    out = out.replace(/\bhearing loss\b/gi, 'HL');
+
+    // Hearing aids / ears
+    out = out.replace(/\bhearing aids\b/gi, "HA's");
+    out = out.replace(/\bhearing aid\b/gi, 'HA');
+    // (AS / AD / AU already shorthand, so we leave them)
+
+    // Medical clearance / insurance
+    out = out.replace(/\bMedical clearance\b/gi, 'Rx');
+    out = out.replace(/\bOut-of-pocket:/gi, 'OOP:');
+    out = out.replace(/\bAuthorization:/gi, 'Auth:');
+    out = out.replace(/\bInsurance:/gi, 'Ins:');
+    out = out.replace(/\bBenefit:/gi, 'Ben:');
+    out = out.replace(/\bInsurance\b/gi, 'Ins');
+    // HA recommendation
+    out = out.replace(/\bhearing aid recommendation\b/gi, 'HA Rec');
+
+    //Hearing aid order
+    out = out.replace(/\bhearing aid order\b/gi, 'HA order');
+    out = out.replace(/\bhearing aid details\b/gi, 'HA details');
+    out = out.replace(/\bmanufacturer\b/gi, 'mfg');
+  
+    //hearing aid type/style
+    out = out.replace(/\bbehind-the-ear\b/gi, 'BTE');
+    out = out.replace(/\bpower behind-the-ear\b/gi, 'Power BTE');
+    out = out.replace(/\breceiver-in-the-canal\b/gi, 'RIC');
+    out = out.replace(/\bin-the-ear\b/gi, 'ITE');
+    out = out.replace(/\bin-the-canal\b/gi, 'ITC');
+    out = out.replace(/\bcompletely-in-the-canal\b/gi, 'CIC');
+    out = out.replace(/\binvisible-in-the-canal\b/gi, 'IIC');
+    out = out.replace(/\bear mold\b/gi, 'EM');
+
+    // Plan / follow up
+    out = out.replace(/\bFollow up\b/gi, 'F/U');
+    out = out.replace(/\bReturn to clinic\b/gi, 'RTC');
+    // RTC already shorthand; leave as-is
+
+    // Small word-level abbreviations
+    out = out.replace(/\bwith\b/gi, 'w/');
+    out = out.replace(/\bwithout\b/gi, 'w/o');
+    out = out.replace(/\bappointment\b/gi, 'appt');
+    out = out.replace(/\bapproximately\b/gi, '~');
+
+    //Other
+    out = out.replace(/\bvolume control\b/gi, 'VC');
+    out = out.replace(/\bexperience\b/gi, 'exp');
+    
+    // Impressions
+    out = out.replace(/\bimpressions\b/gi, 'imps');
+    out = out.replace(/\bwithout complication\b/gi, 'w/o comp');
+
+    // Maintenance blocks
+    out = out.replace(/\bHearing aid maintenance\b/gi, 'HA maint');
+    out = out.replace(/\bPost-maintenance status\b/gi, 'Post-maint stat');
+    out = out.replace(/\bmaintenance\b/gi, 'maint');
+    out = out.replace(/\bstatus\b/gi, 'stat');
+
+
+
+
+
+    return out;
+  }
+
+
+  /* ============================
+     VISIT LAYOUTS (attach to appt type buttons)
+     ============================ */
+
+  S.visitLayouts = {
+    // CHT:
+    // History, patient reports, otoscopy, in-office audio, Plan
+    'comprehensive hearing test': {
+      mainOpen: ['sec-subjective','sec-objective','sec-assessment','sec-plan'],
+      subOpen:  ['otoscopy-sub','audiogram-assess-sub']
+    },
+
+    // HAE:
+    // History, patient reports, otoscopy, audiogram (outside),
+    // medical clearance, insurance info, HA Rec/Choice/Imps, Plan
+    'hearing aid evaluation': {
+      mainOpen: ['sec-subjective','sec-objective','sec-assessment','sec-plan'],
+      subOpen:  [
+        'otoscopy-sub',
+        'audiogram-obj-sub',
+        'clearance-sub',
+        'ins-sub',
+        'ha-rec-sub'
+      ]
+    },
+
+    // HAC:
+    // Same as HAE + in-office audio
+    'hearing aid consultation': {
+      mainOpen: ['sec-subjective','sec-objective','sec-assessment','sec-plan'],
+      subOpen:  [
+        'otoscopy-sub',
+        'audiogram-obj-sub',
+        'audiogram-assess-sub',
+        'clearance-sub',
+        'ins-sub',
+        'ha-rec-sub'
+      ]
+    },
+
+'hearing aid delivery': {
+      // Keep Subjective open now
+      mainOpen: [
+        'sec-subjective',
+        'sec-objective',
+        'sec-assessment',
+        'sec-plan'
+      ],
+      // Only open patient reports + otoscopy + delivery
+      // (History will remain closed unless opened manually)
+      subOpen: [
+        'patientreports-sub',
+        'otoscopy-sub',
+        'delivery-assess-sub'
+      ]
+    },
+
+    // HACK I/W:
+    // Patient reports, otoscopy, HA Condition, HA Maintenance, Plan
+    'in-warranty hearing aid check and clean': {
+      mainOpen: ['sec-subjective','sec-objective','sec-assessment','sec-plan'],
+      subOpen:  [
+        'otoscopy-sub',
+        'hacond-sub',
+        'ham-sub',
+        'ham-post-sub'
+      ]
+    },
+
+    // HACK O/W:
+    // Same as above
+    'out-of-warranty hearing aid check and clean': {
+      mainOpen: ['sec-subjective','sec-objective','sec-assessment','sec-plan'],
+      subOpen:  [
+        'otoscopy-sub',
+        'hacond-sub',
+        'ham-sub',
+        'ham-post-sub'
+      ]
+    },
+
+    // Annual test:
+    // History, patient reports, otoscopy, in-office audio, Plan
+    'Annual hearing test': {
+      mainOpen: ['sec-subjective','sec-objective','sec-assessment','sec-plan'],
+      subOpen:  [
+        'otoscopy-sub',
+        'audiogram-assess-sub'
+      ]
+    },
+
+    // Re-Del:
+    // Same as HACK but with Delivery report section
+    're-delivery appointment': {
+      mainOpen: ['sec-subjective','sec-objective','sec-assessment','sec-plan'],
+      subOpen:  [
+        'otoscopy-sub',
+        'hacond-sub',
+        'ham-sub',
+        'ham-post-sub',
+        'delivery-assess-sub'
+      ]
+    }
+  };
+
+  function applyVisitLayout(apptType){
+    const layout = S.visitLayouts[apptType];
+
+    const allMain = ['sec-subjective','sec-objective','sec-assessment','sec-plan'];
+    const allSub  = [
+      'otoscopy-sub',
+      'audiogram-obj-sub',
+      'audiogram-assess-sub',
+      'clearance-sub',
+      'hacond-sub',
+      'ins-sub',
+      'ha-rec-sub',
+      'delivery-assess-sub',
+      'ham-sub',
+      'ham-post-sub'
+    ];
+
+    // Auto open/close the main cards
+    allMain.forEach(id=>{
+      const el = document.getElementById(id);
+      if(!el || el.tagName.toLowerCase() !== 'details') return;
+      if(layout){
+        el.open = layout.mainOpen.includes(id);
+      } else {
+        // if no layout, leave as-is (no forced close)
+      }
+    });
+
+    // Auto open/close the subcards inside Objective/Assessment
+    allSub.forEach(id=>{
+      const el = document.getElementById(id);
+      if(!el || el.tagName.toLowerCase() !== 'details') return;
+      if(layout){
+        el.open = layout.subOpen.includes(id);
+      } else {
+        // no-op when no layout
+      }
+    });
+  }
+
+
+  /* ============================
+     TEMPLATES (v6.0-dev)
+     ============================ */
+
+  // How to add your own later:
+  // 1) Copy one of these blocks
+  // 2) Change the key (e.g. 'appt-HAE')
+  // 3) Adjust openDetails / actions
+  // 4) Add a <button class="btn template-btn" data-template="your-key"> in the HTML
+
+  S.templates = {
+
+    /* ============================
+       SMART START — BASELINE VISITS
+       ============================ */
+    'smart-CHT': {
+      label: 'Smart CHT baseline',
+      clearFirst: true,
+      openDetails: [
+        'sec-subjective','sec-objective','sec-assessment','sec-plan',
+        'otoscopy-sub','audiogram-obj-sub','audiogram-assess-sub'
+      ],
+      actions: [
+        { type: 'clickRaw', selector: '#apptButtons button[data-appt="comprehensive hearing test"]' },
+
+        // RTC 1 year for annual hearing tests (easy default; change as needed)
+        { type: 'setInput', id: 'rtc-time', value: '1' },
+        { type: 'setInput', id: 'rtc-reason', value: 'an annual hearing test' },
+        { type: 'clickRaw', selector: 'button[data-rtcunit="years"]' },
+
+        // Plan (Patient): annual hearing tests
+        { type: 'toggleOption', containerId: 'plan-patient', value: 'RTC for annual hearing tests' }
+      ]
+    },
+
+    'smart-HAE': {
+      label: 'Smart HAE baseline',
+      clearFirst: true,
+      openDetails: [
+        'sec-subjective','sec-objective','sec-assessment','sec-plan',
+        'otoscopy-sub','audiogram-assess-sub','ha-rec-sub','ins-sub'
+      ],
+      actions: [
+        { type: 'clickRaw', selector: '#apptButtons button[data-appt="hearing aid evaluation"]' },
+
+        // RTC 4 weeks for delivery
+        { type: 'setInput', id: 'rtc-time', value: '4' },
+        { type: 'setInput', id: 'rtc-reason', value: 'a hearing aid delivery' },
+        { type: 'clickRaw', selector: 'button[data-rtcunit="weeks"]' },
+
+        // Plan (Provider): submit auth + request Rx (common defaults)
+        { type: 'toggleOption', containerId: 'plan-provider', value: "We will submit authorization to the patient's insurance company" },
+        { type: 'toggleOption', containerId: 'plan-provider', value: 'We will request a medical clearance from the PCP or ENT' }
+      ]
+    },
+
+    'smart-HAC': {
+      label: 'Smart HAC baseline',
+      clearFirst: true,
+      openDetails: [
+        'sec-subjective','sec-objective','sec-assessment','sec-plan',
+        'otoscopy-sub','audiogram-assess-sub','ha-rec-sub'
+      ],
+      actions: [
+        { type: 'clickRaw', selector: '#apptButtons button[data-appt="hearing aid consultation"]' },
+
+        // RTC 2 weeks follow up (editable)
+        { type: 'setInput', id: 'rtc-time', value: '2' },
+        { type: 'setInput', id: 'rtc-reason', value: 'a follow up' },
+        { type: 'clickRaw', selector: 'button[data-rtcunit="weeks"]' }
+      ]
+    },
+
+    'smart-HAD': {
+      label: 'Smart HAD baseline',
+      clearFirst: true,
+      openDetails: [
+        'sec-subjective','sec-objective','sec-assessment','sec-plan',
+        'delivery-assess-sub','ham-sub','ham-post-sub'
+      ],
+      actions: [
+        { type: 'clickRaw', selector: '#apptButtons button[data-appt="hearing aid delivery"]' },
+
+        // RTC 2 weeks follow up (editable)
+        { type: 'setInput', id: 'rtc-time', value: '2' },
+        { type: 'setInput', id: 'rtc-reason', value: 'a follow up' },
+        { type: 'clickRaw', selector: 'button[data-rtcunit="weeks"]' }
+      ]
+    },
+
+    'smart-HACK-IW': {
+      label: 'Smart HACK I/W baseline',
+      clearFirst: true,
+      openDetails: [
+        'sec-subjective','sec-objective','sec-assessment','sec-plan',
+        'otoscopy-sub','hacond-sub','ham-sub','ham-post-sub'
+      ],
+      actions: [
+        { type: 'clickRaw', selector: '#apptButtons button[data-appt="in-warranty hearing aid check and clean"]' }
+      ]
+    },
+
+    'smart-HACK-OW': {
+      label: 'Smart HACK O/W baseline',
+      clearFirst: true,
+      openDetails: [
+        'sec-subjective','sec-objective','sec-assessment','sec-plan',
+        'otoscopy-sub','hacond-sub','ham-sub','ham-post-sub'
+      ],
+      actions: [
+        { type: 'clickRaw', selector: '#apptButtons button[data-appt="out-of-warranty hearing aid check and clean"]' }
+      ]
+    },
+
+    'smart-1FU': {
+      label: 'Smart 1st F/U baseline',
+      clearFirst: true,
+      openDetails: [
+        'sec-subjective','sec-objective','sec-assessment','sec-plan',
+        'otoscopy-sub','hacond-sub','ham-sub','ham-post-sub'
+      ],
+      actions: [
+        { type: 'clickRaw', selector: '#apptButtons button[data-appt="first follow-up appointment"]' },
+
+        { type: 'setInput', id: 'rtc-time', value: '6' },
+        { type: 'setInput', id: 'rtc-reason', value: 'a follow up' },
+        { type: 'clickRaw', selector: 'button[data-rtcunit="months"]' }
+      ]
+    },
+
+    'smart-Annual': {
+      label: 'Smart Annual baseline',
+      clearFirst: true,
+      openDetails: [
+        'sec-subjective','sec-objective','sec-assessment','sec-plan',
+        'otoscopy-sub','audiogram-assess-sub'
+      ],
+      actions: [
+        { type: 'clickRaw', selector: '#apptButtons button[data-appt="Annual hearing test"]' },
+
+        { type: 'setInput', id: 'rtc-time', value: '1' },
+        { type: 'setInput', id: 'rtc-reason', value: 'an annual hearing test' },
+        { type: 'clickRaw', selector: 'button[data-rtcunit="years"]' },
+
+        { type: 'toggleOption', containerId: 'plan-patient', value: 'RTC for annual hearing tests' }
+      ]
+    },
+
+    'smart-ReDel': {
+      label: 'Smart Re-Del baseline',
+      clearFirst: true,
+      openDetails: [
+        'sec-subjective','sec-objective','sec-assessment','sec-plan',
+        'otoscopy-sub','hacond-sub','ham-sub','ham-post-sub','delivery-assess-sub'
+      ],
+      actions: [
+        { type: 'clickRaw', selector: '#apptButtons button[data-appt="re-delivery appointment"]' },
+
+        { type: 'setInput', id: 'rtc-time', value: '2' },
+        { type: 'setInput', id: 'rtc-reason', value: 'a follow up' },
+        { type: 'clickRaw', selector: 'button[data-rtcunit="weeks"]' }
+      ]
+    },
+
+
+    // Example baseline template for a Hearing Aid Evaluation visit
+    'appt-HAE': {
+      label: 'HAE baseline',
+      clearFirst: true,  // runs the same "clear" logic as Clear Note button
+      openDetails: [
+        'sec-subjective',
+        'sec-objective',
+        'sec-assessment',
+        'sec-plan',
+        'audiogram-assess-sub',
+        'ha-rec-sub',
+        'ins-sub'
+      ],
+      actions: [
+        // Prefill RTC 4 weeks
+        { type: 'setInput', id: 'rtc-time', value: '4' },
+        { type: 'clickRaw', selector: 'button[data-rtcunit="weeks"]' }
+        // You can add more here later (e.g. default plan items)
+      ]
+    },
+
+    // Example template for Starkey Evolv AI 1000 BTE with custom ear molds
+'Evolv AI 1000 BTE w/ EM': {
+  label: 'Evolv AI 1000 BTE w/ EM',
+  clearFirst: false, 
+  clearOrderFirst: true,
+  openDetails: [
+    'sec-assessment',
+    'ha-rec-sub'
+  ],
+  actions: [
+    // Order Scope (click AS, then AD → results in AU)
+    { type: 'clickRaw', selector: 'button[data-orderscope="AS"]' },
+    { type: 'clickRaw', selector: 'button[data-orderscope="AD"]' },
+
+    // Basic order info
+    { type: 'setInput', id: 'order-mfg',   value: 'Starkey' },
+    { type: 'setInput', id: 'order-model', value: 'Evolv AI 1000' },
+    { type: 'setInput', id: 'order-style', value: 'behind-the-ear' },
+    { type: 'setInput', id: 'order-color', value: 'champagne' },
+
+    // Ear molds AS
+    { type: 'setSelect', id: 'order-mold-type-AS',     value: 'half shell' },
+    { type: 'setSelect', id: 'order-mold-material-AS', value: 'hard' },
+    { type: 'setInput',  id: 'mold-color-AS',          value: 'clear' },
+
+    // Ear molds AD
+    { type: 'setSelect', id: 'order-mold-type-AD',     value: 'half shell' },
+    { type: 'setSelect', id: 'order-mold-material-AD', value: 'hard' },
+    { type: 'setInput',  id: 'mold-color-AD',          value: 'clear' },
+
+    // Coupling selection (ear mold)
+    { 
+      type: 'toggleOption',
+      containerId: 'order-coupling-row',
+      value: 'ear mold'
+    }
+  ]
+},
+
+    // Evolv AI 1000 RIC with domes, AU, champagne, #3 50 gain receivers
+    'evolv-ric-domes-50': {
+      label: 'Evolv AI 1000 RIC w/domes AU champagne, #3 50 gain',
+      clearFirst: false,
+      clearOrderFirst: true,
+      openDetails: [
+        'sec-assessment',
+        'ha-rec-sub'
+      ],
+      actions: [
+        // AU = click AS then AD
+        { type: 'clickRaw', selector: 'button[data-orderscope="AS"]' },
+        { type: 'clickRaw', selector: 'button[data-orderscope="AD"]' },
+
+        // Basic order info
+        { type: 'setInput', id: 'order-mfg',   value: 'Starkey' },
+        { type: 'setInput', id: 'order-model', value: 'Evolv AI 1000' },
+        { type: 'setInput', id: 'order-style', value: 'receiver-in-the-canal' },
+        { type: 'setInput', id: 'order-color', value: 'champagne' },
+
+        // Tube / receiver type
+        { type: 'clickRaw', selector: 'button[data-ordertube="receiver"]' },
+
+        // Receivers #3 50 AU
+        { type: 'setSelect', id: 'rec-len-AS', value: '3' },
+        { type: 'setSelect', id: 'rec-len-AD', value: '3' },
+        { type: 'setInput',  id: 'rec-pwr-AS', value: '50' },
+        { type: 'setInput',  id: 'rec-pwr-AD', value: '50' },
+
+        // Coupling: domes
+        {
+          type: 'toggleOption',
+          containerId: 'order-coupling-row',
+          value: 'dome'
+        }
+      ]
+    },
+
+    // Evolv AI 1000 RIC with RIC ear molds, AU, champagne, #3 60 gain, skeleton molds
+    'evolv-ric-ricmolds-60': {
+      label: 'Evolv AI 1000 RIC w/RIC EM skeleton, AU champagne, #3 60 gain',
+      clearFirst: false,
+      clearOrderFirst: true,
+      openDetails: [
+        'sec-assessment',
+        'ha-rec-sub'
+      ],
+      actions: [
+        // AU
+        { type: 'clickRaw', selector: 'button[data-orderscope="AS"]' },
+        { type: 'clickRaw', selector: 'button[data-orderscope="AD"]' },
+
+        // Basic order info
+        { type: 'setInput', id: 'order-mfg',   value: 'Starkey' },
+        { type: 'setInput', id: 'order-model', value: 'Evolv AI 1000' },
+        { type: 'setInput', id: 'order-style', value: 'receiver-in-the-canal' },
+        { type: 'setInput', id: 'order-color', value: 'champagne' },
+
+        // Tube / receiver type
+        { type: 'clickRaw', selector: 'button[data-ordertube="receiver"]' },
+
+        // Receivers #3 60 AU
+        { type: 'setSelect', id: 'rec-len-AS', value: '3' },
+        { type: 'setSelect', id: 'rec-len-AD', value: '3' },
+        { type: 'setInput',  id: 'rec-pwr-AS', value: '60' },
+        { type: 'setInput',  id: 'rec-pwr-AD', value: '60' },
+
+        // RIC ear molds with skeleton style (I’m assuming soft/clear; you can tweak)
+        { type: 'setSelect', id: 'order-mold-type-AS',     value: 'skeleton' },
+        { type: 'setSelect', id: 'order-mold-type-AD',     value: 'skeleton' },
+        { type: 'setSelect', id: 'order-mold-material-AS', value: 'soft' },
+        { type: 'setSelect', id: 'order-mold-material-AD', value: 'soft' },
+        { type: 'setInput',  id: 'mold-color-AS',          value: 'clear' },
+        { type: 'setInput',  id: 'mold-color-AD',          value: 'clear' },
+
+        // Coupling: RIC ear molds
+        {
+          type: 'toggleOption',
+          containerId: 'order-coupling-row',
+          value: 'RIC ear mold'
+        }
+      ]
+    },
+
+    // ReSound Key 2 ITE, AU (full-shell style custom)
+    'key2-ite': {
+      label: 'Key 2 ITE AU',
+      clearFirst: false,
+      clearOrderFirst: true,
+      openDetails: [
+        'sec-assessment',
+        'ha-rec-sub'
+      ],
+      actions: [
+        // AU
+        { type: 'clickRaw', selector: 'button[data-orderscope="AS"]' },
+        { type: 'clickRaw', selector: 'button[data-orderscope="AD"]' },
+
+        // Basic order info
+        { type: 'setInput', id: 'order-mfg',   value: 'ReSound' },
+        { type: 'setInput', id: 'order-model', value: 'Key 2' },
+        { type: 'setInput', id: 'order-style', value: 'in-the-ear' },
+        { type: 'setInput', id: 'order-color', value: 'beige' },
+
+      ]
+    },
+
+    // ReSound Key 2 ITC, AU (canal style custom)
+    'key2-itc': {
+      label: 'Key 2 ITC AU',
+      clearFirst: false,
+      clearOrderFirst: true,
+      openDetails: [
+        'sec-assessment',
+        'ha-rec-sub'
+      ],
+      actions: [
+        // AU
+        { type: 'clickRaw', selector: 'button[data-orderscope="AS"]' },
+        { type: 'clickRaw', selector: 'button[data-orderscope="AD"]' },
+
+        // Basic order info
+        { type: 'setInput', id: 'order-mfg',   value: 'ReSound' },
+        { type: 'setInput', id: 'order-model', value: 'Key 2' },
+        { type: 'setInput', id: 'order-style', value: 'in-the-canal' },
+        { type: 'setInput', id: 'order-color', value: 'beige' },
+
+      ]
+    },
+
+
+  };
+
+  function applyTemplate(templateId){
+    const tpl = S.templates[templateId];
+    if(!tpl) return;
+
+    // Optional: clear everything (full app reset, like Clear Note)
+    if(tpl.clearFirst){
+      const clearBtn = document.getElementById('clear-note');
+      if(clearBtn){
+        clearBtn.click();
+      }
+    }
+
+    // Optional: clear only the Patient Order block
+    if(tpl.clearOrderFirst){
+      resetOrderSectionUI();
+    }
+
+    // Open relevant <details> sections
+    if(Array.isArray(tpl.openDetails)){
+      tpl.openDetails.forEach(id=>{
+        const el = document.getElementById(id);
+        if(el && el.tagName && el.tagName.toLowerCase() === 'details'){
+          el.open = true;
+        }
+      });
+    }
+
+    // Run actions
+    if(Array.isArray(tpl.actions)){
+      tpl.actions.forEach(act=>{
+        if(!act || !act.type) return;
+
+        switch(act.type){
+
+          case 'clickRaw': {
+            const btn = document.querySelector(act.selector);
+            if(btn){
+              btn.click(); // let existing handlers manage state/toggles
+            }
+            break;
+          }
+
+          case 'toggleOption': {
+            const container = document.getElementById(act.containerId);
+            if(!container) break;
+            const btn = container.querySelector(`.btn[data-value="${act.value}"]`);
+            if(btn && !btn.classList.contains('toggled')){
+              btn.click();
+            }
+            break;
+          }
+
+          case 'setInput': {
+            const el = document.getElementById(act.id);
+            if(!el) break;
+            el.value = act.value;
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+            break;
+          }
+
+          case 'setTextarea': {
+            const el = document.getElementById(act.id);
+            if(!el) break;
+            el.value = act.value;
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+            break;
+          }
+
+          case 'setSelect': {
+            const el = document.getElementById(act.id);
+            if(!el) break;
+            el.value = act.value;
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+            break;
+          }
+
+          default:
+            break;
+        }
+      });
+    }
+
+    S.rebuild();
+  }
+
+  // Reset all state values without breaking existing Set/Array references
+  function resetState(){
+    // Clear Sets and Arrays, reset primitives
+    for (const [key, value] of Object.entries(state)){
+      if (value instanceof Set){
+        value.clear();
+      } else if (Array.isArray(value)){
+        value.length = 0;
+      } else if (typeof value === 'string'){
+        state[key] = '';
+      } else if (typeof value === 'boolean'){
+        state[key] = false;
+      } else if (typeof value === 'number'){
+        // we use numbers mostly like strings; reset to empty
+        state[key] = '';
+      }
+      // Objects (like order, insurance) are handled explicitly below
+    }
+
+    // Reset nested ORDER object
+    Object.assign(state.order, {
+      mfg: '',
+      model: '',
+      style: '',
+      color: '',
+      scope: '',
+
+      recLenAS: '',
+      recLenAD: '',
+      recPwrAS: '',
+      recPwrAD: '',
+      tubeType: '',
+
+      moldTypeAS: '',
+      moldTypeAD: '',
+      moldMaterialAS: '',
+      moldMaterialAD: '',
+      moldColorAS: '',
+      moldColorAD: '',
+
+      extraDetails: ''
+    });
+
+    // Reset nested INSURANCE object
+    state.insurance.status = null;
+  }
+
+    // Clear only the Patient Order portion (inputs, selects, scope, tube type, coupling)
+  function resetOrderSectionUI(){
+    // Reset order-related state
+    Object.assign(state.order, {
+      mfg: '',
+      model: '',
+      style: '',
+      color: '',
+      scope: '',
+
+      recLenAS: '',
+      recLenAD: '',
+      recPwrAS: '',
+      recPwrAD: '',
+      tubeType: '',
+
+      moldTypeAS: '',
+      moldTypeAD: '',
+      moldMaterialAS: '',
+      moldMaterialAD: '',
+      moldColorAS: '',
+      moldColorAD: '',
+
+      extraDetails: ''
+    });
+
+    // Clear coupling set used for order
+    if (state.orderCoupling && state.orderCoupling.clear){
+      state.orderCoupling.clear();
+    }
+
+    // Clear text inputs
+    [
+      'order-mfg',
+      'order-model',
+      'order-style',
+      'order-color',
+      'rec-pwr-AS',
+      'rec-pwr-AD',
+      'mold-color-AS',
+      'mold-color-AD',
+      'order-extra'
+    ].forEach(id=>{
+      const el = document.getElementById(id);
+      if(el) el.value = '';
+    });
+
+    // Reset selects
+    [
+      'rec-len-AS',
+      'rec-len-AD',
+      'order-mold-type-AS',
+      'order-mold-type-AD',
+      'order-mold-material-AS',
+      'order-mold-material-AD'
+    ].forEach(id=>{
+      const el = document.getElementById(id);
+      if(el) el.selectedIndex = 0;
+    });
+
+    // Clear scope buttons (AS / AD)
+    state.order.scope = '';
+    document.querySelectorAll('button[data-orderscope]').forEach(b=>{
+      b.classList.remove('toggled');
+    });
+
+    // Clear tube / receiver type buttons
+    state.order.tubeType = '';
+    document
+      .querySelectorAll('button[data-order-tube], button[data-ordertube]')
+      .forEach(b => b.classList.remove('toggled'));
+
+    // Clear coupling buttons in the row
+    const cRow = document.getElementById('order-coupling-row');
+    if(cRow){
+      cRow.querySelectorAll('.btn').forEach(b=>b.classList.remove('toggled'));
+    }
+  }
+
+
+  /* ============================
+     HISTORY TEXT LOGIC
+     ============================ */
+  function historyText(){
+    const as = [...state.historyAS];
+    const ad = [...state.historyAD];
+    const gen = [...state.historyGeneral];
+    const allRaw = [...S.consts.HIST_ASAD, ...S.consts.HIST_GENERAL];
+const all = [];
+allRaw.forEach(opt=>{
+  const v = (opt && opt.value) || opt;  // use .value for objects, string as-is
+  if(!all.includes(v)) all.push(v);
+});
+
+    const anyOn = as.length || ad.length || gen.length;
+
+    if(state.historyDeniesAll){
+      const out = [`Denies history of ${all.join(', ')}.`];
+      if(state.historyHAUse.trim()){
+        out.push(`History of hearing aid use: ${state.historyHAUse.trim()}.`);
+      }
+      return out;
+    }
+
+    const parts = [];
+    const asStr = S.utils.joinAnd(as);
+    const adStr = S.utils.joinAnd(ad);
+
+    if(asStr || adStr){
+      if(asStr && adStr && asStr===adStr){
+        parts.push(`${asStr} AU`);
+      } else {
+        if(asStr) parts.push(`${asStr} AS`);
+        if(adStr) parts.push(`${adStr} AD`);
+      }
+    }
+
+    if(gen.length) parts.push(S.utils.joinAnd(gen));
+    if(state.historyAdditional.trim())
+      parts.push(state.historyAdditional.trim());
+
+    const out = [];
+    if(parts.length){
+      out.push(`History of ${parts.join('; ')}.`);
+    }
+
+    if(anyOn){
+      const denies = all.filter(x=>!(as.includes(x) || ad.includes(x) || gen.includes(x)));
+      if(denies.length)
+        out.push(`Denies history of ${denies.join(', ')}.`);
+    }
+
+    if(state.historyHAUse.trim())
+      out.push(`History of hearing aid use: ${state.historyHAUse.trim()}.`);
+
+    return out;
+  }
+
+ 
+    /* ============================
+     RENDER NOTE (FULL SOAP FORMAT)
+     ============================ */
+  S.rebuild = function(){
+
+    const linesS = [];   // Subjective
+    const linesO = [];   // Objective
+    const linesA = [];   // Assessment
+    const linesP = [];   // Plan
+
+    /* ============================
+       SUBJECTIVE
+       ============================ */
+
+    if(state.apptType){
+      const aOrAn = /^[aeiou]/i.test(state.apptType) ? 'an' : 'a';
+      const comp = state.companion ? ` with ${state.companion}` : '';
+      linesS.push(`The patient is here for ${aOrAn} ${state.apptType}${comp}.`);
+    }
+
+    // History block (with denies logic)
+    linesS.push(...historyText());
+
+// Patient Reports
+const genAS = [...state.repGenAS];
+const genAD = [...state.repGenAD];
+const haAS  = [...state.repHAAS];
+const haAD  = [...state.repHAAD];
+
+// General (non–hearing-aid) reports – single line
+if(genAS.length || genAD.length){
+  const sameGen =
+    genAS.length && genAD.length &&
+    genAS.length === genAD.length &&
+    genAS.every(v => genAD.includes(v));
+
+  if(sameGen){
+    const phrase = S.utils.joinAnd(genAS);
+    // Example: "Patient reports decreased hearing AU."
+    linesS.push(`Patient reports ${phrase} AU.`);
+  } else {
+    const parts = [];
+    if(genAS.length) parts.push(`${S.utils.joinAnd(genAS)} AS`);
+    if(genAD.length) parts.push(`${S.utils.joinAnd(genAD)} AD`);
+    // Example: "Patient reports decreased hearing AS; tinnitus AD."
+    linesS.push(`Patient reports ${parts.join('; ')}.`);
+  }
+}
+
+// Hearing-aid related reports – separate line
+if(haAS.length || haAD.length){
+  const sameHA =
+    haAS.length && haAD.length &&
+    haAS.length === haAD.length &&
+    haAS.every(v => haAD.includes(v));
+
+  if(sameHA){
+    const phrase = S.utils.joinAnd(haAS);
+    // Example: "Patient reports hearing aids working well AU."
+    linesS.push(`Patient reports hearing aids ${phrase} AU.`);
+  } else {
+    const parts = [];
+    if(haAS.length) parts.push(`hearing aid ${S.utils.joinAnd(haAS)} AS`);
+    if(haAD.length) parts.push(`hearing aid ${S.utils.joinAnd(haAD)} AD`);
+    // Example: "Patient reports hearing aid working well AS; hearing aid sounds weak AD."
+    linesS.push(`Patient reports ${parts.join('; ')}.`);
+  }
+}
+
+// Global subjective custom lines
+if(state.subjCustom.length)
+  state.subjCustom.forEach(l=>linesS.push(l.endsWith('.')?l:l+'.'));
+
+
+    /* ============================
+       OBJECTIVE
+       ============================ */
+
+    // 🔹 Otoscopy – 1 line per ear: Canal + TM + custom
+    const canalAS = [...state.otoAScanal];
+    const tmAS    = [...state.otoAStm];
+    const canalAD = [...state.otoADcanal];
+    const tmAD    = [...state.otoADtm];
+
+    if(canalAS.length || tmAS.length || state.otoCustomAS.length){
+      const partsAS = [];
+      if(canalAS.length) partsAS.push(`Canal: ${S.utils.joinAnd(canalAS)}`);
+      if(tmAS.length)    partsAS.push(`TM: ${S.utils.joinAnd(tmAS)}`);
+      if(state.otoCustomAS.length){
+        const customAS = state.otoCustomAS
+          .map(l=>l.endsWith('.')?l:l+'.')
+          .join(' ');
+        partsAS.push(customAS);
+      }
+      linesO.push(`Otoscopy (AS): ${partsAS.join('; ')}`);
+    }
+
+    if(canalAD.length || tmAD.length || state.otoCustomAD.length){
+      const partsAD = [];
+      if(canalAD.length) partsAD.push(`Canal: ${S.utils.joinAnd(canalAD)}`);
+      if(tmAD.length)    partsAD.push(`TM: ${S.utils.joinAnd(tmAD)}`);
+      if(state.otoCustomAD.length){
+        const customAD = state.otoCustomAD
+          .map(l=>l.endsWith('.')?l:l+'.')
+          .join(' ');
+        partsAD.push(customAD);
+      }
+      linesO.push(`Otoscopy (AD): ${partsAD.join('; ')}`);
+    }
+
+    // Outside audiogram – single sentence, AU when ears match
+    const prefix = state.audioObjSrc
+      ? `Audiogram from ${state.audioObjSrc}`
+      : `Audiogram`;
+
+    function buildAudioObjEarDesc(degSet, typeSet, confSet, customArr){
+      const order = S.consts.AUDIO_DEG;
+      const degVals = Array.from(degSet);
+      degVals.sort((a,b)=>order.indexOf(a)-order.indexOf(b));
+
+      const typeVals = Array.from(typeSet);
+      const typeVal = typeVals[0] || '';
+
+      const confVals = Array.from(confSet);
+      const confVal = confVals[0] || '';
+
+      const hasDegree = degVals.length > 0;
+      const hasType   = !!typeVal;
+      const hasConf   = !!confVal;
+      const hasCustom = !!(customArr && customArr.length);
+
+      // If absolutely nothing selected/typed, return empty → no line in note
+      if(!hasDegree && !hasType && !hasConf && !hasCustom){
+        return '';
+      }
+
+      // Custom-only case: no degree/type/config, but user typed something
+      if(!hasDegree && !hasType && !hasConf && hasCustom){
+        return customArr
+          .map(l=>l.endsWith('.')?l:l+'.')
+          .join(' ');
+      }
+
+      let degreePhrase = '';
+      if(degVals.length === 1){
+        degreePhrase = degVals[0];
+      } else if(degVals.length >= 2){
+        degreePhrase = `${degVals[0]} to ${degVals[1]}`;
+      }
+
+      const pieces = [];
+
+      // Special case: ONLY "normal" selected, no type/config -> "hearing is within normal limits"
+      if(degVals.length === 1 && degVals[0] === 'normal' && !hasType && !hasConf){
+        pieces.push('hearing is within normal limits');
+      } else {
+      
+        // Build the core "hearing loss" phrase
+        let core = '';
+
+        if(degreePhrase){
+          if(hasConf && hasType){
+            // mild to moderate sloping sensorineural hearing loss
+            core = `${degreePhrase} ${confVal} ${typeVal} hearing loss`;
+          } else if(hasConf){
+            // mild to moderate sloping hearing loss
+            core = `${degreePhrase} ${confVal} hearing loss`;
+          } else if(hasType){
+            // mild to moderate sensorineural hearing loss
+            core = `${degreePhrase} ${typeVal} hearing loss`;
+          } else {
+            // mild to moderate hearing loss
+            core = `${degreePhrase} hearing loss`;
+          }
+        } else {
+          // No degree selected, fall back to type/config if present
+          if(hasConf && hasType){
+            core = `${confVal} ${typeVal} hearing loss`;
+          } else if(hasType){
+            core = `${typeVal} hearing loss`;
+          } else if(hasConf){
+            core = `${confVal} hearing loss`;
+          } else {
+            // We get here only if there was some non-empty state,
+            // but no degree/type/config — this shouldn't really happen
+            core = `hearing loss`;
+          }
+        }
+
+        if(core) pieces.push(core);
+      }
+
+      if(hasCustom){
+        const customText = customArr
+          .map(l=>l.endsWith('.')?l:l+'.')
+          .join(' ');
+        pieces.push(customText);
+      }
+
+      return pieces.join(', ');
+    }
+
+    const aObjAS = buildAudioObjEarDesc(
+      state.audioObjASdeg,
+      state.audioObjAStype,
+      state.audioObjASconf,
+      state.audioObjCustomAS
+    );
+    const aObjAD = buildAudioObjEarDesc(
+      state.audioObjADdeg,
+      state.audioObjADtype,
+      state.audioObjADconf,
+      state.audioObjCustomAD
+    );
+
+    if(aObjAS || aObjAD){
+      if(aObjAS && aObjAD && aObjAS === aObjAD){
+        // Example: "Audiogram from Dr. X shows moderate to severe hearing loss, AU."
+        linesO.push(`${prefix} shows ${aObjAS}, AU.`);
+      } else {
+        const parts = [];
+        if(aObjAS) parts.push(`${aObjAS}, AS`);
+        if(aObjAD) parts.push(`${aObjAD}, AD`);
+        linesO.push(`${prefix} shows ${parts.join('; ')}.`);
+      }
+    }
+    // 🔹 Medical Clearance – single line, uses Doctor + AS/AD/AU
+    if(state.clearance){
+      const status = state.clearance === 'received' ? 'received' : 'not received';
+      const asOn = !!state.clearanceAS;
+      const adOn = !!state.clearanceAD;
+
+      let scope = '';
+      if(asOn && adOn) scope = 'AU';
+      else if(asOn)    scope = 'AS';
+      else if(adOn)    scope = 'AD';
+
+      let line = 'Medical clearance ';
+
+      if(status === 'received'){
+        line += 'received';
+        if(state.clearanceDoc) line += ` by ${state.clearanceDoc}`;
+      } else {
+        line += 'not received';
+        if(state.clearanceDoc) line += ` from ${state.clearanceDoc}`;
+      }
+
+      if(scope){
+        const aidsWord = (scope === 'AU') ? 'hearing aids' : 'a hearing aid';
+        line += ` for ${aidsWord}, ${scope}.`;
+      } else {
+        line += '.';
+      }
+
+      linesO.push(line);
+    } else if(state.clearanceDoc){
+      // Fallback if someone only fills the doctor
+      linesO.push(`Medical clearance from ${state.clearanceDoc}.`);
+    }
+
+  // 🔹 Hearing Aid Condition – single line, AU if same
+  const hacAS = [...state.hacAS];
+  const hacAD = [...state.hacAD];
+
+  // Make "filters plugged" singular when we're talking about a single ear
+  function singularizeFilters(text, scope){
+    if(!text || scope === 'AU') return text;
+    return text
+      .replace(/\bfilters plugged\b/gi, 'filter plugged')
+      .replace(/\bfilters appear partially plugged\b/gi, 'filter appears partially plugged');
+  }
+
+  if(hacAS.length || hacAD.length){
+    const sameHAC =
+      hacAS.length && hacAD.length &&
+      hacAS.length === hacAD.length &&
+      hacAS.every(v => hacAD.includes(v));
+
+    if(sameHAC){
+      // Both ears same → keep plural
+      let cond = S.utils.joinAnd(hacAS);
+      cond = singularizeFilters(cond, 'AU'); // no change for AU
+      linesO.push(`Hearing aid condition: ${cond}, AU.`);
+    } else {
+      const parts = [];
+      if(hacAS.length){
+        let condAS = S.utils.joinAnd(hacAS);
+        condAS = singularizeFilters(condAS, 'AS');
+        parts.push(`${condAS}, AS`);
+      }
+      if(hacAD.length){
+        let condAD = S.utils.joinAnd(hacAD);
+        condAD = singularizeFilters(condAD, 'AD');
+        parts.push(`${condAD}, AD`);
+      }
+      linesO.push(`Hearing aid condition: ${parts.join('; ')}.`);
+    }
+  }
+    // (hacCustomAS/AD no longer output here – boxes were removed)
+
+
+    // 🔹 Custom Objective
+    if(state.objCustom.length)
+      state.objCustom.forEach(l=>linesO.push(l.endsWith('.')?l:l+'.'));
+
+
+
+    /* ============================
+       ASSESSMENT
+       ============================ */
+
+    // In-office audiogram – same behavior as outside audiogram
+    const inPrefix = 'Audiogram';
+
+    function buildAudioEarDesc(degSet, typeSet, confSet, customArr){
+      const order = S.consts.AUDIO_DEG;
+      const degVals = Array.from(degSet);
+      degVals.sort((a,b)=>order.indexOf(a)-order.indexOf(b));
+
+      const typeVals = Array.from(typeSet);
+      const typeVal = typeVals[0] || '';
+
+      const confVals = Array.from(confSet);
+      const confVal = confVals[0] || '';
+
+      const hasDegree = degVals.length > 0;
+      const hasType   = !!typeVal;
+      const hasConf   = !!confVal;
+      const hasCustom = !!(customArr && customArr.length);
+
+      // If absolutely nothing selected/typed, return empty → no line in note
+      if(!hasDegree && !hasType && !hasConf && !hasCustom){
+        return '';
+      }
+
+      // Custom-only case: no degree/type/config, but user typed something
+      if(!hasDegree && !hasType && !hasConf && hasCustom){
+        return customArr
+          .map(l=>l.endsWith('.')?l:l+'.')
+          .join(' ');
+      }
+
+      let degreePhrase = '';
+      if(degVals.length === 1){
+        degreePhrase = degVals[0];
+      } else if(degVals.length >= 2){
+        degreePhrase = `${degVals[0]} to ${degVals[1]}`;
+      }
+
+      const pieces = [];
+
+      // Special case: ONLY "normal" selected, no type/config -> "hearing is within normal limits"
+      if(degVals.length === 1 && degVals[0] === 'normal' && !hasType && !hasConf){
+        pieces.push('hearing is within normal limits');
+      } else {
+      
+        let core = '';
+
+        if(degreePhrase){
+          if(hasConf && hasType){
+            core = `${degreePhrase} ${confVal} ${typeVal} hearing loss`;
+          } else if(hasConf){
+            core = `${degreePhrase} ${confVal} hearing loss`;
+          } else if(hasType){
+            core = `${degreePhrase} ${typeVal} hearing loss`;
+          } else {
+            core = `${degreePhrase} hearing loss`;
+          }
+        } else {
+          if(hasConf && hasType){
+            core = `${confVal} ${typeVal} hearing loss`;
+          } else if(hasType){
+            core = `${typeVal} hearing loss`;
+          } else if(hasConf){
+            core = `${confVal} hearing loss`;
+          } else {
+            core = `hearing loss`;
+          }
+        }
+
+        if(core) pieces.push(core);
+      }
+
+      if(hasCustom){
+        const customText = customArr
+          .map(l=>l.endsWith('.')?l:l+'.')
+          .join(' ');
+        pieces.push(customText);
+      }
+
+      return pieces.join(', ');
+    }
+
+    const inAS = buildAudioEarDesc(
+      state.audioASdeg,
+      state.audioAStype,
+      state.audioASconf,
+      state.audioCustomAS
+    );
+    const inAD = buildAudioEarDesc(
+      state.audioADdeg,
+      state.audioADtype,
+      state.audioADconf,
+      state.audioCustomAD
+    );
+
+    if(inAS || inAD){
+      // Same description both ears (AU)
+      if(inAS && inAD && inAS === inAD){
+        if(inAS === 'hearing is within normal limits'){
+          // Normal both ears
+          linesA.push(`Audiogram was performed today. Results indicate hearing is within normal limits.`);
+        } else {
+          // Hearing loss, AU
+          const needsArticle = /hearing loss\b/.test(inAS);
+          const core = needsArticle ? `a ${inAS}` : inAS;
+          linesA.push(`Audiogram was performed today. Results indicate ${core}, AU.`);
+        }
+      } else {
+        // AS / AD different or only one ear documented
+        const parts = [];
+        if(inAS) parts.push(`${inAS}, AS`);
+        if(inAD) parts.push(`${inAD}, AD`);
+
+        const joined = parts.join('; ');
+
+        // Add "a" only if it's a single-ear phrase with "hearing loss"
+        let prefixArticle = '';
+        if((inAS && !inAD) || (!inAS && inAD)){
+          if(/hearing loss\b/.test(joined)){
+            prefixArticle = 'a ';
+          }
+        }
+
+        linesA.push(`Audiogram was performed today. Results indicate ${prefixArticle}${joined}.`);
+      }
+    }
+
+
+    // Insurance
+    if(state.insCompany) linesA.push(`Insurance: ${state.insCompany}.`);
+    if(state.insBenefit) linesA.push(`Benefit: ${state.insBenefit}.`);
+    if(state.insOOP)     linesA.push(`Out-of-pocket: ${state.insOOP}.`);
+    if(state.insurance.status)
+      linesA.push(`Authorization: ${state.insurance.status}.`);
+
+// =====================
+// HA RECOMMENDATION & PATIENT ORDER
+// =====================
+
+// --- Recommendation scope (AS/AD -> AU) ---
+let recScope = '';
+if(state.haRecAS && state.haRecAD) recScope = 'AU';
+else if(state.haRecAS)             recScope = 'AS';
+else if(state.haRecAD)             recScope = 'AD';
+
+let recScopeFull = recScope;
+
+const styles = [...state.haStyle]; // values from HA_STYLES, e.g. "behind-the-ear"
+
+let stylePhrase = '';
+if(styles.length === 1){
+  // e.g. "behind-the-ear style"
+  stylePhrase = `${styles[0]} style`;
+} else if(styles.length > 1){
+  // e.g. "behind-the-ear style or receiver-in-the-canal style"
+  const styleWithWord = styles.map(s => `${s} style`);
+  stylePhrase = S.utils.joinOr(styleWithWord);
+}
+
+// --- Coupling for recommendation (dome / ear mold / RIC ear mold) ---
+const cvals = [...state.haCoupling]; // 'dome', 'ear mold', 'RIC ear mold'
+
+let couplingPhrase = '';
+if(cvals.length){
+  const phrases = [];
+
+  cvals.forEach(v=>{
+    if(v === 'dome'){
+      phrases.push('a dome');
+    } else if(v === 'ear mold' || v === 'RIC ear mold'){
+      // both map to "an ear mold" for the rec sentence
+      phrases.push('an ear mold');
+    }
+  });
+
+  // de-dupe (so dome + ear mold doesn't yield "an ear mold, an ear mold, a dome")
+  const unique = [...new Set(phrases)];
+
+  if(unique.length === 1){
+    couplingPhrase = unique[0];           // e.g. "an ear mold"
+  } else if(unique.length > 1){
+    couplingPhrase = S.utils.joinOr(unique); // e.g. "an ear mold or a dome"
+  }
+}
+
+// --- HA details (manufacturer / model / tech level) ---
+let recPrefix = '';
+if(state.haTech && stylePhrase){
+  // e.g. "I recommend the Starkey Evolv AI 1000 behind-the-ear or receiver-in-the-canal styles"
+  recPrefix = `I recommend the ${state.haTech} ${stylePhrase}`;
+} else if(state.haTech){
+  // fallback: no styles selected
+  recPrefix = `I recommend the ${state.haTech}`;
+} else if(stylePhrase){
+  recPrefix = `I recommend ${stylePhrase}`;
+}
+
+// --- Final recommendation line ---
+if(recPrefix){
+  let recLine = recPrefix;
+  if(couplingPhrase){
+    recLine += ` with ${couplingPhrase}`;
+  }
+  if(recScopeFull){
+    recLine += `, ${recScopeFull}.`;
+  } else {
+    recLine += `.`;
+  }
+  linesA.push(recLine);
+}
+
+// PATIENT ORDER LINES
+// =====================
+const o = state.order;
+
+// Build "Pt chose ..." line with style/material & AS/AD/AU logic
+(function buildPatientChoseLine(){
+  const cv = [...state.orderCoupling];
+
+  // Use the *per-ear* mold fields now (AS/AD)
+  const moldTypeAS      = o.moldTypeAS && o.moldTypeAS.trim();
+  const moldTypeAD      = o.moldTypeAD && o.moldTypeAD.trim();
+  const moldMaterialAS  = o.moldMaterialAS && o.moldMaterialAS.trim();
+  const moldMaterialAD  = o.moldMaterialAD && o.moldMaterialAD.trim();
+
+  // Derive a "common" mold type / material, based on scope & matching values
+  let moldType = '';
+  let moldMaterial = '';
+
+  if (moldTypeAS && moldTypeAD && moldTypeAS === moldTypeAD) {
+    moldType = moldTypeAS;        // same both ears
+  } else if (o.scope === 'AS' && moldTypeAS) {
+    moldType = moldTypeAS;
+  } else if (o.scope === 'AD' && moldTypeAD) {
+    moldType = moldTypeAD;
+  }
+
+  if (moldMaterialAS && moldMaterialAD && moldMaterialAS === moldMaterialAD) {
+    moldMaterial = moldMaterialAS;
+  } else if (o.scope === 'AS' && moldMaterialAS) {
+    moldMaterial = moldMaterialAS;
+  } else if (o.scope === 'AD' && moldMaterialAD) {
+    moldMaterial = moldMaterialAD;
+  }
+
+  const hasOrderCore =
+    o.mfg || o.model || o.style || o.color ||
+    moldType || moldMaterial ||
+    o.moldColorAS || o.moldColorAD ||
+    cv.length;
+
+  if(!hasOrderCore) return;
+
+  const scope = o.scope; // '', 'AS', 'AD', 'AU'
+
+  let line = 'Pt chose ';
+
+  // Brand + model
+  const brandModel = [o.mfg, o.model].filter(Boolean).join(' ').trim();
+  if(brandModel){
+    line += brandModel + ' ';
+  }
+
+  // Style (e.g. "receiver-in-the-canal")
+  if(o.style && o.style.trim()){
+    line += o.style.trim() + ' ';
+  }
+
+  // Hearing aid(s)
+  if(scope === 'AU'){
+    line += 'hearing aids';
+  } else {
+    line += 'hearing aid';
+  }
+
+  // Hearing aid shell color
+  if(o.color && o.color.trim()){
+    line += ` in “${o.color.trim()}”`;
+  }
+
+  // Coupling / ear molds (no receiver wording here)
+  let withPhrase = '';
+
+  if(cv.length){
+    const couplingType = cv[0]; // assume one selection
+    const leftColor  = o.moldColorAS && o.moldColorAS.trim();
+    const rightColor = o.moldColorAD && o.moldColorAD.trim();
+
+    // Build a descriptive ear-mold base from common type/material
+    function buildMoldBase(isRIC){
+      let base = '';
+      if(moldMaterial) base += moldMaterial + ' ';
+      if(moldType)     base += moldType + ' ';
+      if(isRIC)        base += 'RIC ';
+      base += 'ear molds';
+      return base.trim();
+    }
+
+    if(couplingType === 'dome'){
+      // Simple domes, no mold style
+      withPhrase = 'domes';
+    } else if(couplingType === 'ear mold' || couplingType === 'RIC ear mold'){
+      const isRIC = (couplingType === 'RIC ear mold');
+      const base = buildMoldBase(isRIC); // e.g. "soft half shell RIC ear molds"
+
+      if(leftColor && rightColor &&
+         leftColor.toLowerCase() === rightColor.toLowerCase()){
+        // Same color both ears → compress
+        withPhrase = base
+          ? `${base} in “${leftColor}”`
+          : `ear molds in “${leftColor}”`;
+      } else if(leftColor || rightColor){
+        // Different per-ear colors
+        const parts = [];
+        const singleBase = (base || 'ear mold').replace('ear molds','ear mold');
+
+        if(leftColor){
+          parts.push(`${singleBase} in “${leftColor}” (AS)`);
+        }
+        if(rightColor){
+          parts.push(`${singleBase} in “${rightColor}” (AD)`);
+        }
+        withPhrase = parts.join(', ');
+      } else {
+        // No color, just style/material
+        withPhrase = base || 'ear molds';
+      }
+    } else {
+      // Any future coupling types
+      withPhrase = couplingType;
+    }
+  }
+
+  if(withPhrase){
+    line += `, with ${withPhrase}`;
+  }
+
+  // Scope suffix at end
+  if(scope === 'AS'){
+    line += ', AS.';
+  } else if(scope === 'AD'){
+    line += ', AD.';
+  } else if(scope === 'AU'){
+    line += ', AU.';
+  } else {
+    line += '.';
+  }
+
+  linesA.push(line);
+})();
+
+// Receiver / slim tube order line with AU vs AS/AD logic
+(function buildReceiverOrderLine(){
+  if(!o.tubeType) return;
+
+  const hasRecAS = (o.recLenAS || o.recPwrAS);
+  const hasRecAD = (o.recLenAD || o.recPwrAD);
+
+  if(!hasRecAS && !hasRecAD) return;
+
+  const isSlim = (o.tubeType === 'slim tube');
+
+  // Helper to build per-ear detail
+  function buildRecDetails(len, pwr){
+    const bits = [];
+    if(len) bits.push(`length #${len}`);
+    if(pwr) bits.push(`${pwr} gain`);
+    return bits.join(', ');
+  }
+
+  // If both ears have identical receiver data, use AU
+  if(
+    hasRecAS && hasRecAD &&
+    o.recLenAS === o.recLenAD &&
+    o.recPwrAS === o.recPwrAD
+  ){
+    const details = buildRecDetails(o.recLenAS, o.recPwrAS);
+    const noun = isSlim ? 'slim tubes' : 'receivers';
+
+    let line = `I will order ${noun}`;
+    if(details) line += ` (${details})`;
+    line += ', AU.';
+
+    linesA.push(line);
+    return;
+  }
+
+  // Otherwise, specify AS and AD separately
+  const parts = [];
+  if(hasRecAS){
+    const details = buildRecDetails(o.recLenAS, o.recPwrAS);
+    const noun = isSlim ? 'slim tube' : 'receiver';
+    parts.push(`AS: ${details ? details + ' ' + noun : noun}`);
+  }
+  if(hasRecAD){
+    const details = buildRecDetails(o.recLenAD, o.recPwrAD);
+    const noun = isSlim ? 'slim tube' : 'receiver';
+    parts.push(`AD: ${details ? details + ' ' + noun : noun}`);
+  }
+
+  const pluralNoun = isSlim ? 'slim tubes' : 'receivers';
+  let line = `I will order ${pluralNoun}`;
+  if(parts.length){
+    line += ` (${parts.join('; ')}).`;
+  } else {
+    line += '.';
+  }
+
+  linesA.push(line);
+})();
+
+
+// Extra order details
+if(o.extraDetails && o.extraDetails.trim()){
+  linesA.push(`Additional order details: ${o.extraDetails.trim()}.`);
+}
+// =====================
+// IMPRESSION LINE
+// =====================
+if(state.impressionStatus === 'taken'){
+  linesA.push(`I took impressions without complication.`);
+}
+if(state.impressionStatus === 'onfile'){
+  linesA.push(`I did not take impressions; we will order with impressions on file.`);
+}
+
+// =====================
+// DELIVERY LINES (NEW)
+// =====================
+function pushDeliveryLines(arr){
+  if(!arr || !arr.length) return;
+  arr.forEach(l=>{
+    if(!l || !l.trim()) return;
+    const t = l.trim();
+    linesA.push(t.endsWith('.') ? t : t + '.');
+  });
+}
+
+pushDeliveryLines(state.deliveryFit);
+pushDeliveryLines(state.deliveryFeedback);
+pushDeliveryLines(state.deliveryProgramming);
+pushDeliveryLines(state.deliveryVC);
+pushDeliveryLines(state.deliveryPtResponse);
+pushDeliveryLines(state.deliveryInstructions);
+pushDeliveryLines(state.deliveryPurchase);
+
+    // HA maintenance (options + custom on same line)
+    function maintDesc(set, customArr){
+      const parts = [];
+      const arr = [...set];
+      if(arr.length) parts.push(S.utils.joinAnd(arr));
+      if(customArr && customArr.length){
+        const customText = customArr
+          .map(l=>l.endsWith('.')?l:l+'.')
+          .join(' ');
+        parts.push(customText);
+      }
+      return parts.join('; ');
+    }
+
+    const hmAS = maintDesc(state.hamAS, state.hamCustomAS);
+    const hmAD = maintDesc(state.hamAD, state.hamCustomAD);
+
+    if(hmAS || hmAD){
+      if(hmAS && hmAD && hmAS === hmAD){
+        linesA.push(`Hearing aid maintenance: ${hmAS} AU.`);
+      } else {
+        const parts = [];
+        if(hmAS) parts.push(`${hmAS} AS`);
+        if(hmAD) parts.push(`${hmAD} AD`);
+        linesA.push(`Hearing aid maintenance: ${parts.join('; ')}.`);
+      }
+    }
+
+    // HA post-maintenance (options + custom on same line)
+    function postMaintDesc(set, customArr){
+      const parts = [];
+      const arr = [...set];
+      if(arr.length) parts.push(S.utils.joinAnd(arr));
+      if(customArr && customArr.length){
+        const customText = customArr
+          .map(l=>l.endsWith('.')?l:l+'.')
+          .join(' ');
+        parts.push(customText);
+      }
+      return parts.join('; ');
+    }
+
+    const hpmAS = postMaintDesc(state.hamPostAS, state.hamPostCustomAS);
+    const hpmAD = postMaintDesc(state.hamPostAD, state.hamPostCustomAD);
+
+    if(hpmAS || hpmAD){
+      if(hpmAS && hpmAD && hpmAS === hpmAD){
+        linesA.push(`Post-maintenance status: ${hpmAS} AU.`);
+      } else {
+        const parts = [];
+        if(hpmAS) parts.push(`${hpmAS} AS`);
+        if(hpmAD) parts.push(`${hpmAD} AD`);
+        linesA.push(`Post-maintenance status: ${parts.join('; ')}.`);
+      }
+    }
+
+    // Global custom Assessment lines (from "Additional Assessment info")
+    if (state.assessCustom && state.assessCustom.length){
+      state.assessCustom.forEach(l => {
+        if(!l || !l.trim()) return;
+        const t = l.trim();
+        linesA.push(t.endsWith('.') ? t : t + '.');
+      });
+    }
+
+    /* ============================
+       PLAN
+       ============================ */
+
+    // Combine all plan items (referral / provider / patient)
+    const pl = [
+      ...state.planReferral,
+      ...state.planProvider,
+      ...state.planPatient
+    ];
+
+    // Each plan item gets its own bullet line
+    if (pl.length) {
+      pl.forEach(item => {
+        linesP.push(item.endsWith('.') ? item : item + '.');
+      });
+    }
+
+    // RTC logic with optional reason:
+    // Examples:
+    // - RTC for a follow up in 2 weeks or as needed.
+    // - RTC for hearing aid delivery as needed.
+    // - RTC in 3 months.
+    const time    = state.rtcTime && String(state.rtcTime).trim();
+    const unit    = state.rtcUnit;
+    const reason  = state.rtcReason && state.rtcReason.trim();
+    const asNeed  = state.rtcAsNeeded;
+
+    if (time && unit) {
+      let line;
+      if (reason) {
+        line = `RTC for ${reason} in ${time} ${unit}`;
+      } else {
+        line = `RTC in ${time} ${unit}`;
+      }
+      if (asNeed) line += ' or as needed';
+      line += '.';
+      linesP.push(line);
+    } else if (asNeed && reason) {
+      linesP.push(`RTC for ${reason} as needed.`);
+    } else if (asNeed) {
+      linesP.push('RTC as needed.');
+    }
+
+    if (state.planCustom.length)
+      state.planCustom.forEach(l => linesP.push(l.endsWith('.') ? l : l + '.'));
+
+
+    /* ============================
+       FINAL NOTE OUTPUT
+       ============================ */
+
+    const fullNote =
+      ''+NL+
+      'Subjective:'+NL+
+      (linesS.length ? linesS.map(l=>'- '+l).join(NL) : '')+NL+NL+
+      'Objective:'+NL+
+      (linesO.length ? linesO.map(l=>'- '+l).join(NL) : '')+NL+NL+
+      'Assessment:'+NL+
+      (linesA.length ? linesA.map(l=>'- '+l).join(NL) : '')+NL+NL+
+      'Plan:'+NL+
+      (linesP.length ? linesP.map(l=>'- '+l).join(NL) : '');
+
+    // If shorthand mode is on, transform the full note into an abbreviated version
+    const finalNote = state.shorthandMode ? toShorthandNote(fullNote) : fullNote;
+
+    const ta = document.getElementById('noteArea');
+    const nearBottom = (ta.scrollTop + ta.clientHeight) >= (ta.scrollHeight - 10);
+    const prev = ta.scrollTop;
+    ta.value = finalNote;
+    if(nearBottom) ta.scrollTop = ta.scrollHeight;
+    else ta.scrollTop = prev;
+
+    return finalNote;
+  };
+
+  /* ============================
+     HELPERS
+     ============================ */
+
+  S.maxSelect = {
+    // Outside audiogram (Objective)
+    'audio-obj-AS-deg': 2,
+    'audio-obj-AD-deg': 2,
+    'audio-obj-AS-type': 1,
+    'audio-obj-AD-type': 1,
+    'audio-obj-AS-conf': 1,
+    'audio-obj-AD-conf': 1,
+
+    // In-office audiogram (Assessment)
+    'audio-AS-deg': 2,
+    'audio-AD-deg': 2,
+    'audio-AS-type': 1,
+    'audio-AD-type': 1,
+    'audio-AS-conf': 1,
+    'audio-AD-conf': 1,
+
+    // HA coupling – usually one choice
+    'ha-coupling-row': 2
+  };
+
+  function makeButtons(containerID, options, set){
+    const el = document.getElementById(containerID);
+    if(!el) return;
+    el.innerHTML = '';
+
+    const max = S.maxSelect && S.maxSelect[containerID];
+
+    options.forEach(opt=>{
+      const b = document.createElement('button');
+      b.className = 'btn';
+
+      // Support both string and object
+      const label = opt.label || opt;
+      const value = opt.value || opt;
+
+      // expose underlying value for template engine
+      b.dataset.value = value;
+
+      if(set.has(value)) b.classList.add('toggled');
+      b.textContent = label;
+
+      b.addEventListener('click', ()=>{
+        if(set.has(value)){
+          // Turn OFF
+          set.delete(value);
+          b.classList.remove('toggled');
+        } else {
+          if(max === 1){
+            // Single-select: clear others, select this one
+            set.clear();
+            el.querySelectorAll('.btn.toggled')
+              .forEach(x=>x.classList.remove('toggled'));
+            set.add(value);
+            b.classList.add('toggled');
+          } else {
+            // Multi-select with optional cap
+            if(max && set.size >= max) return; // already at cap
+            set.add(value);
+            b.classList.add('toggled');
+          }
+        }
+        S.rebuild();
+      });
+
+      el.appendChild(b);
+    });
+  }
+
+  function copySet(from, to){
+    to.clear();
+    from.forEach(v=>to.add(v));
+  }
+
+  function wireLiveTextarea(id, stateKey){
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('input', ()=>{
+      state[stateKey] = el.value
+        .split('\n')
+        .map(s=>s.trim())
+        .filter(Boolean);
+      S.rebuild();
+    });
+  }
+
+
+  /* ============================
+     WIRE SUBJECTIVE
+     ============================ */
+  function wireSubjective(){
+
+    const apptRow = document.getElementById('apptButtons');
+    if(apptRow){
+      apptRow.addEventListener('click', e=>{
+        const b = e.target.closest('button[data-appt]');
+        if(!b) return;
+        const v = b.dataset.appt;
+
+        // Toggle appt type state
+        state.apptType = (state.apptType === v) ? '' : v;
+
+        // Visual toggle on the buttons
+        apptRow.querySelectorAll('.btn').forEach(x=>{
+          x.classList.toggle('toggled', x === b && state.apptType === v);
+        });
+
+        // Apply visit layout when an appt type is selected
+        if(state.apptType){
+          applyVisitLayout(state.apptType);
+        }
+
+        S.rebuild();
+      });
+    }
+
+    const comp = document.getElementById('subjective-companion');
+    if(comp){
+      comp.addEventListener('input', ()=>{
+        state.companion = comp.value.trim();
+        S.rebuild();
+      });
+    }
+
+    /* History buttons */
+    makeButtons('hist-AS', S.consts.HIST_ASAD, state.historyAS);
+    makeButtons('hist-AD', S.consts.HIST_ASAD, state.historyAD);
+    makeButtons('hist-general', S.consts.HIST_GENERAL, state.historyGeneral);
+
+    const histCopy = document.querySelector('[data-copy="hist-AS-to-AD"]');
+    if(histCopy){
+      histCopy.addEventListener('click', ()=>{
+        copySet(state.historyAS, state.historyAD);
+        makeButtons('hist-AD', S.consts.HIST_ASAD, state.historyAD);
+        S.rebuild();
+      });
+    }
+
+    const histAdd = document.getElementById('hist-additional');
+    if(histAdd){
+      histAdd.addEventListener('input', ()=>{
+        state.historyAdditional = histAdd.value.trim();
+        S.rebuild();
+      });
+    }
+
+    const histHA = document.getElementById('hist-hause');
+    if(histHA){
+      histHA.addEventListener('input', ()=>{
+        state.historyHAUse = histHA.value.trim();
+        S.rebuild();
+      });
+    }
+
+    /* Clicking any history button turns off "Denies all" */
+    ['hist-AS','hist-AD','hist-general'].forEach(id=>{
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.addEventListener('click', ()=>{
+        if(state.historyDeniesAll){
+          state.historyDeniesAll = false;
+          const btn = document.getElementById('btn-history-all');
+          if(btn) btn.classList.remove('toggled');
+          S.rebuild();
+        }
+      });
+    });
+
+    const btnAll = document.getElementById('btn-history-all');
+    const btnClear = document.getElementById('btn-history-clear');
+
+    if(btnAll){
+      btnAll.addEventListener('click', ()=>{
+        state.historyDeniesAll = !state.historyDeniesAll;
+        btnAll.classList.toggle('toggled', state.historyDeniesAll);
+        S.rebuild();
+      });
+    }
+
+    if(btnClear){
+      btnClear.addEventListener('click', ()=>{
+        state.historyAS.clear();
+        state.historyAD.clear();
+        state.historyGeneral.clear();
+        state.historyDeniesAll = false;
+        state.historyAdditional = '';
+        state.historyHAUse = '';
+
+        ['hist-additional','hist-hause'].forEach(id=>{
+          const el = document.getElementById(id);
+          if(el) el.value = '';
+        });
+
+        document.querySelectorAll('#hist-AS .btn,#hist-AD .btn,#hist-general .btn')
+          .forEach(b=>b.classList.remove('toggled'));
+        if(btnAll) btnAll.classList.remove('toggled');
+
+        S.rebuild();
+      });
+    }
+
+    /* Patient Reports buttons */
+    makeButtons('reports-gen-AS', S.consts.REPORTS_GENERAL, state.repGenAS);
+    makeButtons('reports-gen-AD', S.consts.REPORTS_GENERAL, state.repGenAD);
+    makeButtons('reports-ha-AS', S.consts.REPORTS_HA, state.repHAAS);
+    makeButtons('reports-ha-AD', S.consts.REPORTS_HA, state.repHAAD);
+
+    const rgenCopy = document.querySelector('[data-copy="rgen-AS-to-AD"]');
+    if(rgenCopy){
+      rgenCopy.addEventListener('click', ()=>{
+        copySet(state.repGenAS, state.repGenAD);
+        makeButtons('reports-gen-AD', S.consts.REPORTS_GENERAL, state.repGenAD);
+        S.rebuild();
+      });
+    }
+    const rhaCopy = document.querySelector('[data-copy="rha-AS-to-AD"]');
+    if(rhaCopy){
+      rhaCopy.addEventListener('click', ()=>{
+        copySet(state.repHAAS, state.repHAAD);
+        makeButtons('reports-ha-AD', S.consts.REPORTS_HA, state.repHAAD);
+        S.rebuild();
+      });
+    }
+
+    wireLiveTextarea('reportsAS-custom','repCustomAS');
+    wireLiveTextarea('reportsAD-custom','repCustomAD');
+    wireLiveTextarea('custom-subjective','subjCustom');
+  }
+
+  /* ============================
+     WIRE OBJECTIVE
+     ============================ */
+  function wireObjective(){
+
+    /* Otoscopy */
+    makeButtons('oto-AS-canal', S.consts.OTO_CANAL, state.otoAScanal);
+    makeButtons('oto-AS-tm',    S.consts.OTO_TM,    state.otoAStm);
+    makeButtons('oto-AD-canal', S.consts.OTO_CANAL, state.otoADcanal);
+    makeButtons('oto-AD-tm',    S.consts.OTO_TM,    state.otoADtm);
+
+    const otoCopy = document.querySelector('[data-copy="oto-AS-to-AD"]');
+    if(otoCopy){
+      otoCopy.addEventListener('click', ()=>{
+        copySet(state.otoAScanal, state.otoADcanal);
+        copySet(state.otoAStm,    state.otoADtm);
+        makeButtons('oto-AD-canal', S.consts.OTO_CANAL, state.otoADcanal);
+        makeButtons('oto-AD-tm',    S.consts.OTO_TM,    state.otoADtm);
+        S.rebuild();
+      });
+    }
+
+    wireLiveTextarea('oto-AS-custom','otoCustomAS');
+    wireLiveTextarea('oto-AD-custom','otoCustomAD');
+
+    /* Outside Audiogram */
+    const src = document.getElementById('audio-obj-src');
+    if(src){
+      src.addEventListener('input', ()=>{
+        state.audioObjSrc = src.value.trim();
+        S.rebuild();
+      });
+    }
+
+    makeButtons('audio-obj-AS-deg',  S.consts.AUDIO_DEG,        state.audioObjASdeg);
+    makeButtons('audio-obj-AD-deg',  S.consts.AUDIO_DEG,        state.audioObjADdeg);
+    makeButtons('audio-obj-AS-type', S.consts.AUDIO_TYPE_ONLY,  state.audioObjAStype);
+    makeButtons('audio-obj-AD-type', S.consts.AUDIO_TYPE_ONLY,  state.audioObjADtype);
+    makeButtons('audio-obj-AS-conf', S.consts.AUDIO_CONFIG,     state.audioObjASconf);
+    makeButtons('audio-obj-AD-conf', S.consts.AUDIO_CONFIG,     state.audioObjADconf);
+
+    const aobjCopy = document.querySelector('[data-copy="aobj-AS-to-AD"]');
+    if(aobjCopy){
+      aobjCopy.addEventListener('click', ()=>{
+        copySet(state.audioObjASdeg,   state.audioObjADdeg);
+        copySet(state.audioObjAStype,  state.audioObjADtype);
+        copySet(state.audioObjASconf,  state.audioObjADconf);
+        makeButtons('audio-obj-AD-deg',  S.consts.AUDIO_DEG,        state.audioObjADdeg);
+        makeButtons('audio-obj-AD-type', S.consts.AUDIO_TYPE_ONLY,  state.audioObjADtype);
+        makeButtons('audio-obj-AD-conf', S.consts.AUDIO_CONFIG,     state.audioObjADconf);
+        S.rebuild();
+      });
+    }
+
+    wireLiveTextarea('audio-obj-AS-custom','audioObjCustomAS');
+    wireLiveTextarea('audio-obj-AD-custom','audioObjCustomAD');
+
+
+    /* HA Condition */
+    makeButtons('hac-AS', S.consts.HAC_OPTS, state.hacAS);
+    makeButtons('hac-AD', S.consts.HAC_OPTS, state.hacAD);
+
+    const hacCopy = document.querySelector('[data-copy="hac-AS-to-AD"]');
+    if(hacCopy){
+      hacCopy.addEventListener('click', ()=>{
+        copySet(state.hacAS, state.hacAD);
+        makeButtons('hac-AD', S.consts.HAC_OPTS, state.hacAD);
+        S.rebuild();
+      });
+    }
+
+    wireLiveTextarea('hac-AS-custom','hacCustomAS');
+    wireLiveTextarea('hac-AD-custom','hacCustomAD');
+
+      /* Clearance */
+    const clearSub = document.getElementById('clearance-sub');
+    if(clearSub){
+      clearSub.addEventListener('click', e=>{
+        const statusBtn = e.target.closest('button[data-clearance]');
+        const earBtn    = e.target.closest('button[data-clear-ear]');
+
+        // Status (Received / Not received)
+        if(statusBtn){
+          const val = statusBtn.dataset.clearance === 'received' ? 'received' : 'not received';
+          state.clearance = (state.clearance === val) ? '' : val;
+
+          clearSub.querySelectorAll('button[data-clearance]').forEach(btn=>{
+            btn.classList.toggle('toggled', btn === statusBtn && state.clearance === val);
+          });
+
+          S.rebuild();
+          return;
+        }
+
+        // Ear toggles (AS / AD)
+        if(earBtn){
+          const ear = earBtn.dataset.clearEar;
+          if(ear === 'AS'){
+            state.clearanceAS = !state.clearanceAS;
+          } else if(ear === 'AD'){
+            state.clearanceAD = !state.clearanceAD;
+          }
+
+          clearSub.querySelectorAll('button[data-clear-ear]').forEach(btn=>{
+            const eEar = btn.dataset.clearEar;
+            const on = (eEar === 'AS') ? state.clearanceAS : state.clearanceAD;
+            btn.classList.toggle('toggled', on);
+          });
+
+          S.rebuild();
+        }
+      });
+    }
+
+    const clearDoc = document.getElementById('clearance-doc');
+    if(clearDoc){
+      clearDoc.addEventListener('input', ()=>{
+        state.clearanceDoc = clearDoc.value.trim();
+        S.rebuild();
+      });
+    }
+
+    wireLiveTextarea('custom-objective','objCustom');
+
+  }
+
+  // ============================
+  // DELIVERY PRESET HELPERS (v6.4)
+  // ============================
+  function setDeliveryField(id, value){
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.value = value;
+    // reuse existing live wiring (wireLiveTextarea)
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  function applyDeliveryPreset(){
+    // You can tweak these defaults anytime
+    setDeliveryField('delivery-fit',
+      'I fit the hearing aids.');
+    setDeliveryField('delivery-feedback',
+      'Ran feedback.');
+    setDeliveryField('delivery-programming',
+      'Set to best-fit and experience level 3.');
+    setDeliveryField('delivery-vc',
+      'The volume control was enabled.');
+    setDeliveryField('delivery-ptresponse',
+      'Pt noted improved sound quality and comfort.');
+    setDeliveryField('delivery-instructions',
+      'Instructed on use and care.');
+    setDeliveryField('delivery-purchase',
+      'Reviewed purchase agreement and warranty information.');
+  }
+
+  function clearDeliveryFields(){
+    [
+      'delivery-fit',
+      'delivery-feedback',
+      'delivery-programming',
+      'delivery-vc',
+      'delivery-ptresponse',
+      'delivery-instructions',
+      'delivery-purchase'
+    ].forEach(id => setDeliveryField(id, ''));
+  }
+
+  // expose preset in case we want to trigger it from appt type logic
+  S.applyDeliveryPreset = applyDeliveryPreset;
+
+
+  /* ============================
+     WIRE ASSESSMENT
+     ============================ */
+  function wireAssessment(){
+
+    /* In-office Audiogram */
+    makeButtons('audio-AS-deg',  S.consts.AUDIO_DEG,        state.audioASdeg);
+    makeButtons('audio-AD-deg',  S.consts.AUDIO_DEG,        state.audioADdeg);
+    makeButtons('audio-AS-type', S.consts.AUDIO_TYPE_ONLY,  state.audioAStype);
+    makeButtons('audio-AD-type', S.consts.AUDIO_TYPE_ONLY,  state.audioADtype);
+    makeButtons('audio-AS-conf', S.consts.AUDIO_CONFIG,     state.audioASconf);
+    makeButtons('audio-AD-conf', S.consts.AUDIO_CONFIG,     state.audioADconf);
+
+    const aCopy = document.querySelector('[data-copy="audio-AS-to-AD"]');
+    if(aCopy){
+      aCopy.addEventListener('click', ()=>{
+        copySet(state.audioASdeg,   state.audioADdeg);
+        copySet(state.audioAStype,  state.audioADtype);
+        copySet(state.audioASconf,  state.audioADconf);
+        makeButtons('audio-AD-deg',  S.consts.AUDIO_DEG,        state.audioADdeg);
+        makeButtons('audio-AD-type', S.consts.AUDIO_TYPE_ONLY,  state.audioADtype);
+        makeButtons('audio-AD-conf', S.consts.AUDIO_CONFIG,     state.audioADconf);
+        S.rebuild();
+      });
+    }
+
+    wireLiveTextarea('audio-AS-custom','audioCustomAS');
+    wireLiveTextarea('audio-AD-custom','audioCustomAD');
+
+
+    /* Insurance */
+    const insSub = document.getElementById('ins-sub');
+    if(insSub){
+      insSub.addEventListener('click', e=>{
+        const b = e.target.closest('button[data-auth]');
+        if(!b) return;
+        const val = b.dataset.auth;
+        state.insurance.status = (state.insurance.status === val) ? null : val;
+        [...document.querySelectorAll('button[data-auth]')].forEach(x=>{
+          x.classList.toggle('toggled', state.insurance.status === x.dataset.auth);
+        });
+        S.rebuild();
+      });
+    }
+
+    const insCompany = document.getElementById('ins-company');
+    const insBenefit = document.getElementById('ins-benefit');
+    const insOOP     = document.getElementById('ins-oop');
+
+    if(insCompany){
+      insCompany.addEventListener('input', ()=>{
+        state.insCompany = insCompany.value.trim();
+        S.rebuild();
+      });
+    }
+    if(insBenefit){
+      insBenefit.addEventListener('input', ()=>{
+        state.insBenefit = insBenefit.value.trim();
+        S.rebuild();
+      });
+    }
+    if(insOOP){
+      insOOP.addEventListener('input', ()=>{
+        state.insOOP = insOOP.value.trim();
+        S.rebuild();
+      });
+    }
+
+    // ==========================
+    // Insurance Estimator (mirrors Excel logic)
+    // ==========================
+    (function(){
+      const fmtMoney = S.utils.formatMoney;
+
+      let lastInsEst = {
+        hasResult: false,
+        claim: 0,
+        allowed: 0,
+        benefit: 0,
+        insPays: 0,
+        ptPays: 0
+      };
+
+      function readNum(id){
+        const el = document.getElementById(id);
+        if(!el) return { el:null, val:0 };
+        const raw = el.value.trim();
+        if(!raw) return { el, val:0 };
+        const v = parseFloat(raw);
+        return { el, val: isFinite(v) ? v : 0 };
+      }
+
+      function recomputeInsEstimator(){
+        const claim      = readNum('ins-est-claim');
+        const benefit    = readNum('ins-est-benefit');
+        const copay      = readNum('ins-est-copay');
+        const coins      = readNum('ins-est-coins');
+        const ded        = readNum('ins-est-ded');
+        const oop        = readNum('ins-est-oop');
+        const customPct  = readNum('ins-est-custom-pct');
+        const customAmt  = readNum('ins-est-custom-amt');
+
+        const contractSel = document.getElementById('ins-est-contract');
+        const allowedOut  = document.getElementById('ins-est-allowed-display');
+        const insOutEl    = document.getElementById('ins-est-ins');
+        const ptOutEl     = document.getElementById('ins-est-pt');
+
+        if(!contractSel || !allowedOut || !insOutEl || !ptOutEl){
+          return; // estimator UI not present
+        }
+
+        let claimAmt = Math.max(0, claim.val);
+
+        // STEP 1: contracted / allowed amount (B6)
+        let allowedAmt = claimAmt;
+        const ctype = contractSel.value || 'full';
+
+        if(ctype === 'anthem70'){
+          allowedAmt = claimAmt * 0.7;
+        }else if(ctype === 'healthnet60'){
+          allowedAmt = claimAmt * 0.6;
+        }else if(ctype === 'customPct'){
+          let pct = customPct.val;
+          // allow user to type 0.5 or 50 for 50%
+          if(pct > 1) pct = pct / 100;
+          if(pct < 0) pct = 0;
+          if(pct > 1) pct = 1;
+          allowedAmt = claimAmt * pct;
+        }else if(ctype === 'customAmt'){
+          allowedAmt = Math.max(0, claimAmt - customAmt.val);
+        }else{
+          // "full" / none: allowed = claim
+          allowedAmt = claimAmt;
+        }
+
+        // Benefit amount (C6). If blank, treat as allowed.
+        let benefitAmt = benefit.val > 0 ? benefit.val : allowedAmt;
+
+        const copayAmt = Math.max(0, copay.val);
+        const dedAmt   = Math.max(0, ded.val);
+        const oopMax   = Math.max(0, oop.val);
+
+        // co-insurance: allow 0.5 or 50 to mean 50%
+        let coinsRate = coins.val;
+        if(coinsRate > 1) coinsRate = coinsRate / 100;
+        if(coinsRate < 0) coinsRate = 0;
+        if(coinsRate > 1) coinsRate = 1;
+
+        if(!allowedAmt || !benefitAmt){
+          allowedOut.textContent = '';
+          insOutEl.textContent   = '';
+          ptOutEl.textContent    = '';
+          lastInsEst = {
+            hasResult:false,
+            claim:0,
+            allowed:0,
+            benefit:0,
+            insPays:0,
+            ptPays:0
+          };
+          return;
+        }
+
+        // STEP 2 — Insurance pays before OOP cap (H6)
+        // H6 = MAX(0,(C6*(1-E6))-(F6+D6))
+        let insBeforeOOP = Math.max(
+          0,
+          (benefitAmt * (1 - coinsRate)) - (dedAmt + copayAmt)
+        );
+
+        // STEP 3 — Patient initial responsibility (I6) = B6 - H6
+        let patientInitial = allowedAmt - insBeforeOOP;
+
+        // STEP 4 — Additional OOP adjustment (J6)
+        // J6 = MAX(0, C6 - H6 - G6)
+        let excess = Math.max(0, benefitAmt - insBeforeOOP - oopMax);
+
+        // STEP 5 — Raw patient total (K6)
+        // K6 = MAX(0, H6 + J6)
+        let patientRaw = Math.max(0, insBeforeOOP + excess);
+
+        // STEP 6 — Patient capped to allowed (L6) = MIN(K6,B6)
+        let patientCapped = Math.min(patientRaw, allowedAmt);
+
+        // STEP 7 — Insurance final (N6)
+        // N6 = IF(B6>C6,K6,L6)
+        let insuranceFinal;
+        if(allowedAmt > benefitAmt){
+          insuranceFinal = patientRaw;
+        }else{
+          insuranceFinal = patientCapped;
+        }
+
+        // STEP 8 — Patient final (O6) = MAX(0,B6-N6)
+        let patientFinal = Math.max(0, allowedAmt - insuranceFinal);
+
+        lastInsEst = {
+          hasResult: true,
+          claim: claimAmt,
+          allowed: allowedAmt,
+          benefit: benefitAmt,
+          insPays: insuranceFinal,
+          ptPays: patientFinal
+        };
+
+        allowedOut.textContent = fmtMoney(allowedAmt);
+        insOutEl.textContent   = fmtMoney(insuranceFinal);
+        ptOutEl.textContent    = fmtMoney(patientFinal);
+      }
+
+      // Wire estimator inputs
+      [
+        'ins-est-claim',
+        'ins-est-contract',
+        'ins-est-custom-pct',
+        'ins-est-custom-amt',
+        'ins-est-benefit',
+        'ins-est-copay',
+        'ins-est-coins',
+        'ins-est-ded',
+        'ins-est-oop'
+      ].forEach(id=>{
+        const el = document.getElementById(id);
+        if(el){
+          el.addEventListener('input', recomputeInsEstimator);
+          if(el.tagName === 'SELECT'){
+            el.addEventListener('change', recomputeInsEstimator);
+          }
+        }
+      });
+
+      // Apply button: push into the text fields that already feed Assessment
+      const insEstApply = document.getElementById('ins-est-apply');
+      if(insEstApply){
+        insEstApply.addEventListener('click', ()=>{
+          if(!lastInsEst.hasResult) return;
+
+          const fmt = fmtMoney;
+
+          if(insBenefit){
+            const summary =
+              `Insurance estimate: claim ${fmt(lastInsEst.claim)}, ` +
+              `contracted amount ${fmt(lastInsEst.allowed)}, ` +
+              `benefit used ${fmt(lastInsEst.benefit)}, ` +
+              `insurance responsibility ${fmt(lastInsEst.insPays)}.`;
+            insBenefit.value = summary;
+            insBenefit.dispatchEvent(new Event('input', { bubbles:true }));
+          }
+
+          if(insOOP){
+            const oopText =
+              `Estimated patient responsibility: ${fmt(lastInsEst.ptPays)}.`;
+            insOOP.value = oopText;
+            insOOP.dispatchEvent(new Event('input', { bubbles:true }));
+          }
+
+          S.rebuild();
+        });
+      }
+    })();
+
+
+/* HA Recommendation */
+makeButtons('ha-style-row', S.consts.HA_STYLES, state.haStyle);
+makeButtons('ha-coupling-row', S.consts.HA_COUPLING, state.haCoupling);
+makeButtons('order-coupling-row', S.consts.HA_COUPLING, state.orderCoupling);
+
+
+  // Recommendation ear scope
+  document.querySelectorAll('button[data-recscope]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const ear = btn.dataset.recscope;
+      if(ear === 'AS') state.haRecAS = !state.haRecAS;
+      if(ear === 'AD') state.haRecAD = !state.haRecAD;
+
+      document.querySelectorAll('button[data-recscope]').forEach(b=>{
+        const e = b.dataset.recscope;
+        const on = (e === 'AS' && state.haRecAS) ||
+                   (e === 'AD' && state.haRecAD);
+        b.classList.toggle('toggled', on);
+      });
+
+      S.rebuild();
+    });
+  });
+
+    // Order scope: AS / AD buttons, internally '', 'AS', 'AD', or 'AU'
+    function updateOrderScopeButtons(){
+      const scope = state.order.scope; // '', 'AS', 'AD', 'AU'
+      document.querySelectorAll('button[data-orderscope]').forEach(b=>{
+        const ear = b.dataset.orderscope; // "AS" or "AD"
+        const on = (scope === 'AU') || (scope === ear);
+        b.classList.toggle('toggled', on);
+      });
+    }
+
+    document.querySelectorAll('button[data-orderscope]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const ear = btn.dataset.orderscope; // "AS" or "AD"
+        const cur = state.order.scope;      // current value
+
+        if(cur === ear){
+          // Clicking the same ear turns everything off
+          state.order.scope = '';
+        } else if(cur === ''){
+          // Nothing selected -> select this ear
+          state.order.scope = ear;
+        } else if(cur === 'AU'){
+          // Both selected; clicking one means "only the other ear"
+          state.order.scope = (ear === 'AS') ? 'AD' : 'AS';
+        } else {
+          // One ear selected; clicking the other -> AU
+          state.order.scope = 'AU';
+        }
+
+        updateOrderScopeButtons();
+        S.rebuild();
+      });
+    });
+
+    // Initialize button states on load
+    updateOrderScopeButtons();
+
+
+// Hearing aid details text box
+const haTech = document.getElementById('ha-tech');
+if(haTech){
+  haTech.addEventListener('input', ()=>{
+    state.haTech = haTech.value.trim();
+    S.rebuild();
+  });
+}
+
+    /* Order (live) */
+    function bindOrderInput(id, key){
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.addEventListener('input', ()=>{
+        state.order[key] = el.value.trim();
+        S.rebuild();
+      });
+    }
+    function bindOrderSelect(id, key){
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.addEventListener('change', ()=>{
+        state.order[key] = el.value;
+        S.rebuild();
+      });
+    }
+
+    bindOrderInput('order-mfg','mfg');
+    bindOrderInput('order-model','model');
+    bindOrderInput('order-style','style');
+    bindOrderInput('order-color','color');
+
+    // Receiver lengths / powers
+    bindOrderSelect('rec-len-AS','recLenAS');
+    bindOrderSelect('rec-len-AD','recLenAD');
+    bindOrderInput('rec-pwr-AS','recPwrAS');
+    bindOrderInput('rec-pwr-AD','recPwrAD');
+
+    // Ear mold style / material / color — independent per ear
+    bindOrderSelect('order-mold-type-AS','moldTypeAS');
+    bindOrderSelect('order-mold-type-AD','moldTypeAD');
+    bindOrderSelect('order-mold-material-AS','moldMaterialAS');
+    bindOrderSelect('order-mold-material-AD','moldMaterialAD');
+    bindOrderInput('mold-color-AS','moldColorAS');
+    bindOrderInput('mold-color-AD','moldColorAD');
+
+    bindOrderInput('order-extra','extraDetails');
+
+    // Copy entire left coupling row → right
+    const copyCouplingBtn = document.getElementById('copy-coupling-AS-to-AD');
+    if(copyCouplingBtn){
+      copyCouplingBtn.addEventListener('click', ()=>{
+        const lenAS  = document.getElementById('rec-len-AS');
+        const lenAD  = document.getElementById('rec-len-AD');
+        const pwrAS  = document.getElementById('rec-pwr-AS');
+        const pwrAD  = document.getElementById('rec-pwr-AD');
+        const typeAS = document.getElementById('order-mold-type-AS');
+        const typeAD = document.getElementById('order-mold-type-AD');
+        const matAS  = document.getElementById('order-mold-material-AS');
+        const matAD  = document.getElementById('order-mold-material-AD');
+        const moldAS = document.getElementById('mold-color-AS');
+        const moldAD = document.getElementById('mold-color-AD');
+
+        if(lenAS && lenAD){
+          lenAD.value = lenAS.value;
+          state.order.recLenAD = lenAS.value || '';
+        }
+        if(pwrAS && pwrAD){
+          pwrAD.value = pwrAS.value;
+          state.order.recPwrAD = pwrAS.value || '';
+        }
+        if(typeAS && typeAD){
+          typeAD.value = typeAS.value;
+          state.order.moldTypeAD = typeAS.value || '';
+        }
+        if(matAS && matAD){
+          matAD.value = matAS.value;
+          state.order.moldMaterialAD = matAS.value || '';
+        }
+        if(moldAS && moldAD){
+          moldAD.value = moldAS.value;
+          state.order.moldColorAD = moldAS.value || '';
+        }
+
+        S.rebuild();
+      });
+    }
+
+
+    // Impression toggles (Assessment)
+    document.querySelectorAll('[data-impression]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const v = btn.dataset.impression;
+
+        // toggle
+        state.impressionStatus = (state.impressionStatus === v ? '' : v);
+
+        document.querySelectorAll('[data-impression]').forEach(b=>{
+          b.classList.toggle('toggled', b.dataset.impression === state.impressionStatus);
+        });
+
+        S.rebuild();
+      });
+    });
+
+
+// Tube type: slim tube vs receiver
+document
+  .querySelectorAll('button[data-order-tube], button[data-ordertube]')
+  .forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Support either data-order-tube or data-ordertube in the HTML
+      const v = btn.dataset.orderTube || btn.dataset.ordertube || '';
+
+      // Toggle selection
+      state.order.tubeType = (state.order.tubeType === v) ? '' : v;
+
+      // Update button visuals
+      document
+        .querySelectorAll('button[data-order-tube], button[data-ordertube]')
+        .forEach(b => {
+          const val = b.dataset.orderTube || b.dataset.ordertube || '';
+          b.classList.toggle('toggled', val && val === state.order.tubeType);
+        });
+
+      S.rebuild();
+    });
+  });
+
+    /* HA Maintenance */
+    /* HA Maintenance */
+    makeButtons('ham-AS', S.consts.HAM_OPTS, state.hamAS);
+    makeButtons('ham-AD', S.consts.HAM_OPTS, state.hamAD);
+
+    const hamCopy = document.querySelector('[data-copy="ham-AS-to-AD"]');
+    if(hamCopy){
+      hamCopy.addEventListener('click', ()=>{
+        copySet(state.hamAS, state.hamAD);
+        makeButtons('ham-AD', S.consts.HAM_OPTS, state.hamAD);
+        S.rebuild();
+      });
+    }
+
+    wireLiveTextarea('ham-AS-custom','hamCustomAS');
+    wireLiveTextarea('ham-AD-custom','hamCustomAD');
+
+    /* HA Post-maintenance */
+    makeButtons('ham-post-AS', S.consts.HAM_POST_OPTS, state.hamPostAS);
+    makeButtons('ham-post-AD', S.consts.HAM_POST_OPTS, state.hamPostAD);
+
+    const hamPostCopy = document.querySelector('[data-copy="ham-post-AS-to-AD"]');
+    if(hamPostCopy){
+      hamPostCopy.addEventListener('click', ()=>{
+        copySet(state.hamPostAS, state.hamPostAD);
+        makeButtons('ham-post-AD', S.consts.HAM_POST_OPTS, state.hamPostAD);
+        S.rebuild();
+      });
+    }
+
+    wireLiveTextarea('ham-post-AS-custom','hamPostCustomAS');
+    wireLiveTextarea('ham-post-AD-custom','hamPostCustomAD');
+
+    // NEW: Delivery text boxes (single-line)
+    wireLiveTextarea('delivery-fit','deliveryFit');
+    wireLiveTextarea('delivery-feedback','deliveryFeedback');
+    wireLiveTextarea('delivery-programming','deliveryProgramming');
+    wireLiveTextarea('delivery-vc','deliveryVC');
+    wireLiveTextarea('delivery-ptresponse','deliveryPtResponse');
+    wireLiveTextarea('delivery-instructions','deliveryInstructions');
+    wireLiveTextarea('delivery-purchase','deliveryPurchase');
+
+    wireLiveTextarea('custom-assessment','assessCustom');
+  }
+
+    // v6.4: Delivery preset & clear buttons
+    const delStd = document.getElementById('delivery-standard');
+    if(delStd){
+      delStd.addEventListener('click', ()=>{
+        applyDeliveryPreset();
+      });
+    }
+
+const delClr = document.getElementById('delivery-clear');
+if(delClr){
+  delClr.addEventListener('click', ()=>{
+    clearDeliveryFields();
+  });
+}
+
+
+
+  /* ============================
+     WIRE PLAN
+     ============================ */
+
+  function wirePlan(){
+
+    // 🔹 Generate grouped Plan buttons
+    makeButtons('plan-provider', S.consts.PLAN_ITEMS.provider, state.planProvider);
+    makeButtons('plan-patient',  S.consts.PLAN_ITEMS.patient,  state.planPatient);
+
+    const rtcTime = document.getElementById('rtc-time');
+    if(rtcTime){
+      rtcTime.addEventListener('input', ()=>{
+        state.rtcTime = rtcTime.value;
+        S.rebuild();
+      });
+    }
+
+    const rtcReason = document.getElementById('rtc-reason');
+    if(rtcReason){
+      rtcReason.addEventListener('input', ()=>{
+        state.rtcReason = rtcReason.value.trim();
+        S.rebuild();
+      });
+    }
+
+    document.querySelectorAll('button[data-rtcunit]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const unit = btn.dataset.rtcunit;
+        state.rtcUnit = (state.rtcUnit === unit) ? '' : unit;
+        document.querySelectorAll('button[data-rtcunit]').forEach(b=>{
+          b.classList.toggle('toggled', b.dataset.rtcunit === state.rtcUnit);
+        });
+        S.rebuild();
+      });
+    });
+
+    const rtcAs = document.getElementById('rtc-asneeded');
+    if(rtcAs){
+      rtcAs.addEventListener('click', ()=>{
+        state.rtcAsNeeded = !state.rtcAsNeeded;
+        rtcAs.classList.toggle('toggled', state.rtcAsNeeded);
+        S.rebuild();
+      });
+    }
+
+    const rtcClear = document.getElementById('rtc-clear');
+    if(rtcClear){
+      rtcClear.addEventListener('click', ()=>{
+        state.rtcTime = '';
+        state.rtcUnit = '';
+        state.rtcReason = '';
+        state.rtcAsNeeded = false;
+
+        const t = document.getElementById('rtc-time');
+        if(t) t.value = '';
+        const r = document.getElementById('rtc-reason');
+        if(r) r.value = '';
+
+        document.querySelectorAll('button[data-rtcunit]').forEach(b=>b.classList.remove('toggled'));
+        const asbtn = document.getElementById('rtc-asneeded');
+        if(asbtn) asbtn.classList.remove('toggled');
+
+        S.rebuild();
+      });
+    }
+
+    wireLiveTextarea('custom-plan','planCustom');
+  }
+
+
+  /* ============================
+     NOTE CONTROLS
+     ============================ */
+  function wireNoteControls(){
+    const copyBtn = document.getElementById('copy-note');
+    const clearBtn = document.getElementById('clear-note');
+    const shorthandBtn = document.getElementById('toggle-shorthand');
+
+    if(copyBtn){
+      copyBtn.addEventListener('click', async ()=>{
+        const text = document.getElementById('noteArea').value;
+        try{
+          await navigator.clipboard.writeText(text);
+        }catch(e){
+          console.error('Clipboard copy failed', e);
+        }
+      });
+    }
+
+    if(clearBtn){
+      clearBtn.addEventListener('click', ()=>{
+        /* Reset everything */
+        resetState();
+
+        document.querySelectorAll('.btn.toggled').forEach(b=>b.classList.remove('toggled'));
+        document.querySelectorAll('input[type="text"],input[type="number"]').forEach(i=>i.value='');
+        document.querySelectorAll('textarea').forEach(t=>t.value='');
+        document.querySelectorAll('select').forEach(s=>s.selectedIndex = 0);
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb=>cb.checked = false);
+
+        // Auto-open all sections (all main cards + subcards)
+        document.querySelectorAll('details').forEach(d=>{
+          d.open = true;
+        });
+
+        // Reset shorthand button UI
+        if(shorthandBtn){
+          shorthandBtn.classList.remove('toggled');
+          shorthandBtn.textContent = 'Shorthand OFF';
+        }
+
+        S.rebuild();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+    if(shorthandBtn){
+      shorthandBtn.addEventListener('click', ()=>{
+        state.shorthandMode = !state.shorthandMode;
+        shorthandBtn.classList.toggle('toggled', state.shorthandMode);
+        shorthandBtn.textContent = state.shorthandMode ? 'Shorthand ON' : 'Shorthand OFF';
+        S.rebuild();
+      });
+    }
+  }
+  
+    function wireTemplates(){
+    document.querySelectorAll('.template-btn[data-template]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const id = btn.dataset.template;
+        applyTemplate(id);
+      });
+    });
+  }
+
+function sortDatalist(id) {
+  const dl = document.getElementById(id);
+  if (!dl) return;
+
+  const values = Array.from(dl.querySelectorAll("option"))
+    .map(o => o.value)
+    .sort((a, b) => a.localeCompare(b));
+
+  dl.innerHTML = values.map(v => `<option value="${v}"></option>`).join("");
+}
+
+
+  /* ============================
+     INIT
+     ============================ */
+  function init(){
+    wireSubjective();
+    wireObjective();
+    wireAssessment();
+    wirePlan();
+    wireNoteControls();
+    wireTemplates();
+    sortDatalist('ha-mfg-list');
+    sortDatalist('ha-model-list');
+    sortDatalist('ha-color-list');
+    sortDatalist('mold-color-list');
+    sortDatalist('rtc-reason-list');
+    S.rebuild();
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+
+  return S;
+})();
+
+</script>
+
+</body>
+</html>
+
+
