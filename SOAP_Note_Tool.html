@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOAP Note Tool — v6.7.4</title>
+<title>SOAP Note Tool — v6.7.5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -746,7 +746,7 @@ textarea {
 </head>
 <body>
 <div class="wrap">
-  <h1>SOAP Note Tool — Version 6.7.4</h1>
+  <h1>SOAP Note Tool — Version 6.7.5</h1>
   <div class="app">
 
     <!-- LEFT -->
@@ -770,6 +770,24 @@ textarea {
       <button class="btn" data-appt="Annual hearing test">Annual test</button>
       <button class="btn" data-appt="re-delivery appointment">Re-Del</button>
     </div>
+
+
+    <h4>Smart Start (one-click baseline)</h4>
+    <div class="row">
+      <button class="btn template-btn" data-template="smart-CHT">Smart CHT</button>
+      <button class="btn template-btn" data-template="smart-HAE">Smart HAE</button>
+      <button class="btn template-btn" data-template="smart-HAC">Smart HAC</button>
+      <button class="btn template-btn" data-template="smart-HAD">Smart HAD</button>
+      <button class="btn template-btn" data-template="smart-HACK-IW">Smart HACK I/W</button>
+      <button class="btn template-btn" data-template="smart-HACK-OW">Smart HACK O/W</button>
+      <button class="btn template-btn" data-template="smart-1FU">Smart 1st F/U</button>
+      <button class="btn template-btn" data-template="smart-Annual">Smart Annual</button>
+      <button class="btn template-btn" data-template="smart-ReDel">Smart Re-Del</button>
+    </div>
+    <div class="note-hint" style="margin-top:4px;">
+      These clear the note, pick the visit type, open the right sections, and prefill a few common Plan/RTC items.
+    </div>
+
 
     <div class="grid-2">
       <div>
@@ -2406,6 +2424,160 @@ S.utils = {
   // 4) Add a <button class="btn template-btn" data-template="your-key"> in the HTML
 
   S.templates = {
+
+    /* ============================
+       SMART START — BASELINE VISITS
+       ============================ */
+    'smart-CHT': {
+      label: 'Smart CHT baseline',
+      clearFirst: true,
+      openDetails: [
+        'sec-subjective','sec-objective','sec-assessment','sec-plan',
+        'otoscopy-sub','audiogram-obj-sub','audiogram-assess-sub'
+      ],
+      actions: [
+        { type: 'clickRaw', selector: '#apptButtons button[data-appt="comprehensive hearing test"]' },
+
+        // RTC 1 year for annual hearing tests (easy default; change as needed)
+        { type: 'setInput', id: 'rtc-time', value: '1' },
+        { type: 'setInput', id: 'rtc-reason', value: 'an annual hearing test' },
+        { type: 'clickRaw', selector: 'button[data-rtcunit="years"]' },
+
+        // Plan (Patient): annual hearing tests
+        { type: 'toggleOption', containerId: 'plan-patient', value: 'RTC for annual hearing tests' }
+      ]
+    },
+
+    'smart-HAE': {
+      label: 'Smart HAE baseline',
+      clearFirst: true,
+      openDetails: [
+        'sec-subjective','sec-objective','sec-assessment','sec-plan',
+        'otoscopy-sub','audiogram-assess-sub','ha-rec-sub','ins-sub'
+      ],
+      actions: [
+        { type: 'clickRaw', selector: '#apptButtons button[data-appt="hearing aid evaluation"]' },
+
+        // RTC 4 weeks for delivery
+        { type: 'setInput', id: 'rtc-time', value: '4' },
+        { type: 'setInput', id: 'rtc-reason', value: 'a hearing aid delivery' },
+        { type: 'clickRaw', selector: 'button[data-rtcunit="weeks"]' },
+
+        // Plan (Provider): submit auth + request Rx (common defaults)
+        { type: 'toggleOption', containerId: 'plan-provider', value: "We will submit authorization to the patient's insurance company" },
+        { type: 'toggleOption', containerId: 'plan-provider', value: 'We will request a medical clearance from the PCP or ENT' }
+      ]
+    },
+
+    'smart-HAC': {
+      label: 'Smart HAC baseline',
+      clearFirst: true,
+      openDetails: [
+        'sec-subjective','sec-objective','sec-assessment','sec-plan',
+        'otoscopy-sub','audiogram-assess-sub','ha-rec-sub'
+      ],
+      actions: [
+        { type: 'clickRaw', selector: '#apptButtons button[data-appt="hearing aid consultation"]' },
+
+        // RTC 2 weeks follow up (editable)
+        { type: 'setInput', id: 'rtc-time', value: '2' },
+        { type: 'setInput', id: 'rtc-reason', value: 'a follow up' },
+        { type: 'clickRaw', selector: 'button[data-rtcunit="weeks"]' }
+      ]
+    },
+
+    'smart-HAD': {
+      label: 'Smart HAD baseline',
+      clearFirst: true,
+      openDetails: [
+        'sec-subjective','sec-objective','sec-assessment','sec-plan',
+        'delivery-assess-sub','ham-sub','ham-post-sub'
+      ],
+      actions: [
+        { type: 'clickRaw', selector: '#apptButtons button[data-appt="hearing aid delivery"]' },
+
+        // RTC 2 weeks follow up (editable)
+        { type: 'setInput', id: 'rtc-time', value: '2' },
+        { type: 'setInput', id: 'rtc-reason', value: 'a follow up' },
+        { type: 'clickRaw', selector: 'button[data-rtcunit="weeks"]' }
+      ]
+    },
+
+    'smart-HACK-IW': {
+      label: 'Smart HACK I/W baseline',
+      clearFirst: true,
+      openDetails: [
+        'sec-subjective','sec-objective','sec-assessment','sec-plan',
+        'otoscopy-sub','hacond-sub','ham-sub','ham-post-sub'
+      ],
+      actions: [
+        { type: 'clickRaw', selector: '#apptButtons button[data-appt="in-warranty hearing aid check and clean"]' }
+      ]
+    },
+
+    'smart-HACK-OW': {
+      label: 'Smart HACK O/W baseline',
+      clearFirst: true,
+      openDetails: [
+        'sec-subjective','sec-objective','sec-assessment','sec-plan',
+        'otoscopy-sub','hacond-sub','ham-sub','ham-post-sub'
+      ],
+      actions: [
+        { type: 'clickRaw', selector: '#apptButtons button[data-appt="out-of-warranty hearing aid check and clean"]' }
+      ]
+    },
+
+    'smart-1FU': {
+      label: 'Smart 1st F/U baseline',
+      clearFirst: true,
+      openDetails: [
+        'sec-subjective','sec-objective','sec-assessment','sec-plan',
+        'otoscopy-sub','hacond-sub','ham-sub','ham-post-sub'
+      ],
+      actions: [
+        { type: 'clickRaw', selector: '#apptButtons button[data-appt="first follow-up appointment"]' },
+
+        { type: 'setInput', id: 'rtc-time', value: '6' },
+        { type: 'setInput', id: 'rtc-reason', value: 'a follow up' },
+        { type: 'clickRaw', selector: 'button[data-rtcunit="months"]' }
+      ]
+    },
+
+    'smart-Annual': {
+      label: 'Smart Annual baseline',
+      clearFirst: true,
+      openDetails: [
+        'sec-subjective','sec-objective','sec-assessment','sec-plan',
+        'otoscopy-sub','audiogram-assess-sub'
+      ],
+      actions: [
+        { type: 'clickRaw', selector: '#apptButtons button[data-appt="Annual hearing test"]' },
+
+        { type: 'setInput', id: 'rtc-time', value: '1' },
+        { type: 'setInput', id: 'rtc-reason', value: 'an annual hearing test' },
+        { type: 'clickRaw', selector: 'button[data-rtcunit="years"]' },
+
+        { type: 'toggleOption', containerId: 'plan-patient', value: 'RTC for annual hearing tests' }
+      ]
+    },
+
+    'smart-ReDel': {
+      label: 'Smart Re-Del baseline',
+      clearFirst: true,
+      openDetails: [
+        'sec-subjective','sec-objective','sec-assessment','sec-plan',
+        'otoscopy-sub','hacond-sub','ham-sub','ham-post-sub','delivery-assess-sub'
+      ],
+      actions: [
+        { type: 'clickRaw', selector: '#apptButtons button[data-appt="re-delivery appointment"]' },
+
+        { type: 'setInput', id: 'rtc-time', value: '2' },
+        { type: 'setInput', id: 'rtc-reason', value: 'a follow up' },
+        { type: 'clickRaw', selector: 'button[data-rtcunit="weeks"]' }
+      ]
+    },
+
+
     // Example baseline template for a Hearing Aid Evaluation visit
     'appt-HAE': {
       label: 'HAE baseline',
