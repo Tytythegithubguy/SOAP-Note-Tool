@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOAP Note Tool — v6.7.8</title>
+<title>SOAP Note Tool — v6.7.19</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -457,22 +457,6 @@ textarea {
   margin-bottom: 2px;
 }
 
-
-/* Swap AS/AD column order to show AD (Right) first (audiology standard) */
-.asad-grid{
-  display: flex;               /* override grid for ear columns */
-  flex-direction: row-reverse; /* AD first (right column appears on left) */
-  gap: 8px 16px;
-}
-.asad-grid > div{
-  flex: 1 1 0%;
-  min-width: 0;
-}
-@media (max-width: 760px){
-  .asad-grid{ flex-direction: column-reverse; } /* AD on top on small screens */
-}
-
-
 /* Rows that hold the many option buttons */
 .row {
   display: flex;
@@ -480,18 +464,6 @@ textarea {
   gap: 4px;
   margin: 2px 0 4px;
 }
-
-
-.mini-field{
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-  min-width: 140px;
-}
-.mini-field input{
-  width: 100%;
-}
-
 
 /* Small pill builder buttons */
 .row .btn {
@@ -769,12 +741,34 @@ textarea {
 }
 
 
+
+
+/* Audiogram numeric inputs + tymp layout */
+.row.audiogram-numeric-row{
+  display:flex;
+  gap:8px;
+  flex-wrap:nowrap;
+}
+.row.audiogram-tymp-row{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+/* Force Audiogram AS/AD to remain side-by-side (override responsive collapse) */
+.grid-2.audiogram-ears{
+  display:grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  gap:20px !important;
+  align-items:start;
+}
+
 </style>
 
 </head>
 <body>
 <div class="wrap">
-  <h1>SOAP Note Tool — Version 6.7.8</h1>
+  <h1>SOAP Note Tool — Version 6.7.19</h1>
   <div class="app">
 
     <!-- LEFT -->
@@ -828,7 +822,7 @@ textarea {
       <div>
         <div class="copy-arrows">
           <span class="small">Left (AS)</span>
-          <button class="btn" data-copy="hist-AS-to-AD">Copy →</button>
+          <button class="btn" data-copy="hist-AS-to-AD">Copy ▶</button>
         </div>
         <div id="hist-AS" class="row"></div>
       </div>
@@ -868,13 +862,13 @@ textarea {
       <div>
         <div class="copy-arrows">
           <span class="small">General — Left (AS)</span>
-          <button class="btn" data-copy="rgen-AS-to-AD">Copy →</button>
+          <button class="btn" data-copy="rgen-AS-to-AD">Copy ▶</button>
         </div>
         <div id="reports-gen-AS" class="row"></div>
 
         <div class="copy-arrows">
           <span class="small">Hearing Aid — Left (AS)</span>
-          <button class="btn" data-copy="rha-AS-to-AD">Copy →</button>
+          <button class="btn" data-copy="rha-AS-to-AD">Copy ▶</button>
         </div>
                <div id="reports-ha-AS" class="row"></div>
         <!-- Removed per-ear AS custom textarea -->
@@ -887,7 +881,7 @@ textarea {
 
         <div class="copy-arrows">
           <span class="small">Hearing Aid — Right (AD)</span>
-          <button class="btn spacer" type="button" tabindex="-1" aria-hidden="true">Copy →</button>
+          <button class="btn spacer" type="button" tabindex="-1" aria-hidden="true">Copy ▶</button>
         </div>
         <div id="reports-ha-AD" class="row"></div>
         <!-- Removed per-ear AD custom textarea -->
@@ -916,7 +910,7 @@ textarea {
           <div>
             <div class="copy-arrows">
               <span class="small">Left (AS)</span>
-              <button class="btn" data-copy="oto-AS-to-AD">Copy →</button>
+              <button class="btn" data-copy="oto-AS-to-AD">Copy ▶</button>
             </div>
             <label class="small">Canal</label>
             <div id="oto-AS-canal" class="row"></div>
@@ -957,12 +951,12 @@ textarea {
           <input type="text" id="audio-obj-src" placeholder="Doctor/Company (optional)"/>
         </div>
 
-        <div class="grid-2 asad-grid">
+        <div class="grid-2 asad-grid audiogram-ears">
 
           <div>
             <div class="copy-arrows">
               <span class="small">Left (AS)</span>
-              <button class="btn" data-copy="aobj-AS-to-AD">Copy →</button>
+              <button class="btn" data-copy="aobj-AS-to-AD">Copy ▶</button>
             </div>
 
             <label class="small">Degree (max 2)</label>
@@ -974,32 +968,27 @@ textarea {
             <label class="small">Configuration (max 1)</label>
             <div id="audio-obj-AS-conf" class="row"></div>
 
-            <div class="row">
-              <div class="mini-field">
-                <label class="small">SRT (dB HL)</label>
-                <input id="audio-obj-AS-srt" type="number" inputmode="numeric" min="0" max="120" placeholder="e.g., 35">
-              </div>
-              <div class="mini-field">
-                <label class="small">WRS (%)</label>
-                <input id="audio-obj-AS-wrs" type="number" inputmode="numeric" min="0" max="100" placeholder="e.g., 88">
-              </div>
-              <div class="mini-field">
-                <label class="small">at (dB)</label>
-                <input id="audio-obj-AS-wrsdb" type="number" inputmode="numeric" min="0" max="120" placeholder="e.g., 70">
-              </div>
-            </div>
+          <div class="row audiogram-numeric-row">
+            <input type="number" inputmode="numeric" id="audio-obj-AS-pta" placeholder="PTA (dB HL)" style="max-width:120px;">
+            <input type="number" inputmode="numeric" id="audio-obj-AS-srt" placeholder="SRT (dB HL)" style="max-width:120px;">
+          </div>
 
-            <label class="small">Tympanogram (Type)</label>
-            <div class="row">
-              <select id="audio-obj-AS-tymp">
-                <option value="">(not entered)</option>
-                <option value="A">Type A</option>
-                <option value="As">Type As</option>
-                <option value="Ad">Type Ad</option>
-                <option value="B">Type B</option>
-                <option value="C">Type C</option>
-              </select>
-            </div>
+          <div class="row audiogram-numeric-row">
+            <input type="number" inputmode="numeric" id="audio-obj-AS-wrs" placeholder="WRS %" style="max-width:120px;">
+            <input type="number" inputmode="numeric" id="audio-obj-AS-wrsdb" placeholder="at dB" style="max-width:120px;">
+          </div>
+
+          <div class="row audiogram-tymp-row">
+            <label class="small" style="margin:0;">Tympanogram</label>
+            <select id="audio-obj-AS-tymp">
+              <option value="">Select type</option>
+              <option value="A">Type A</option>
+              <option value="As">Type As</option>
+              <option value="Ad">Type Ad</option>
+              <option value="B">Type B</option>
+              <option value="C">Type C</option>
+            </select>
+          </div>
 
 
             <div class="row">
@@ -1021,32 +1010,27 @@ textarea {
             <label class="small">Configuration (max 1)</label>
             <div id="audio-obj-AD-conf" class="row"></div>
 
-            <div class="row">
-              <div class="mini-field">
-                <label class="small">SRT (dB HL)</label>
-                <input id="audio-obj-AD-srt" type="number" inputmode="numeric" min="0" max="120" placeholder="e.g., 35">
-              </div>
-              <div class="mini-field">
-                <label class="small">WRS (%)</label>
-                <input id="audio-obj-AD-wrs" type="number" inputmode="numeric" min="0" max="100" placeholder="e.g., 88">
-              </div>
-              <div class="mini-field">
-                <label class="small">at (dB)</label>
-                <input id="audio-obj-AD-wrsdb" type="number" inputmode="numeric" min="0" max="120" placeholder="e.g., 70">
-              </div>
-            </div>
+          <div class="row audiogram-numeric-row">
+            <input type="number" inputmode="numeric" id="audio-obj-AD-pta" placeholder="PTA (dB HL)" style="max-width:120px;">
+            <input type="number" inputmode="numeric" id="audio-obj-AD-srt" placeholder="SRT (dB HL)" style="max-width:120px;">
+          </div>
 
-            <label class="small">Tympanogram (Type)</label>
-            <div class="row">
-              <select id="audio-obj-AD-tymp">
-                <option value="">(not entered)</option>
-                <option value="A">Type A</option>
-                <option value="As">Type As</option>
-                <option value="Ad">Type Ad</option>
-                <option value="B">Type B</option>
-                <option value="C">Type C</option>
-              </select>
-            </div>
+          <div class="row audiogram-numeric-row">
+            <input type="number" inputmode="numeric" id="audio-obj-AD-wrs" placeholder="WRS %" style="max-width:120px;">
+            <input type="number" inputmode="numeric" id="audio-obj-AD-wrsdb" placeholder="at dB" style="max-width:120px;">
+          </div>
+
+          <div class="row audiogram-tymp-row">
+            <label class="small" style="margin:0;">Tympanogram</label>
+            <select id="audio-obj-AD-tymp">
+              <option value="">Select type</option>
+              <option value="A">Type A</option>
+              <option value="As">Type As</option>
+              <option value="Ad">Type Ad</option>
+              <option value="B">Type B</option>
+              <option value="C">Type C</option>
+            </select>
+          </div>
 
 
             <div class="row">
@@ -1104,7 +1088,7 @@ textarea {
     <div>
       <div class="copy-arrows">
         <span class="small">Left (AS)</span>
-        <button class="btn" data-copy="hac-AS-to-AD">Copy →</button>
+        <button class="btn" data-copy="hac-AS-to-AD">Copy ▶</button>
       </div>
 
       <div id="hac-AS" class="row"></div>
@@ -1135,12 +1119,12 @@ textarea {
 
     <details class="subcard" id="audiogram-assess-sub" open>
       <summary>In-Office Audiogram <span class="chev">▶</span></summary>
-      <div class="inner grid-2 asad-grid">
+      <div class="inner grid-2 asad-grid audiogram-ears">
 
         <div>
           <div class="copy-arrows">
             <span class="small">Left (AS)</span>
-            <button class="btn" data-copy="audio-AS-to-AD">Copy →</button>
+            <button class="btn" data-copy="audio-AS-to-AD">Copy ▶</button>
           </div>
 
           <label class="small">Degree (max 2)</label>
@@ -1152,27 +1136,20 @@ textarea {
           <label class="small">Configuration (max 1)</label>
           <div id="audio-AS-conf" class="row"></div>
 
-          
-
-          <div class="row">
-            <div class="mini-field">
-              <label class="small">SRT (dB HL)</label>
-              <input id="audio-AS-srt" type="number" inputmode="numeric" min="0" max="120" placeholder="e.g., 35">
-            </div>
-            <div class="mini-field">
-              <label class="small">WRS (%)</label>
-              <input id="audio-AS-wrs" type="number" inputmode="numeric" min="0" max="100" placeholder="e.g., 88">
-            </div>
-            <div class="mini-field">
-              <label class="small">at (dB)</label>
-              <input id="audio-AS-wrsdb" type="number" inputmode="numeric" min="0" max="120" placeholder="e.g., 70">
-            </div>
+          <div class="row audiogram-numeric-row">
+            <input type="number" inputmode="numeric" id="audio-AS-pta" placeholder="PTA (dB HL)" style="max-width:120px;">
+            <input type="number" inputmode="numeric" id="audio-AS-srt" placeholder="SRT (dB HL)" style="max-width:120px;">
           </div>
 
-          <label class="small">Tympanogram (Type)</label>
-          <div class="row">
+          <div class="row audiogram-numeric-row">
+            <input type="number" inputmode="numeric" id="audio-AS-wrs" placeholder="WRS %" style="max-width:120px;">
+            <input type="number" inputmode="numeric" id="audio-AS-wrsdb" placeholder="at dB" style="max-width:120px;">
+          </div>
+
+          <div class="row audiogram-tymp-row">
+            <label class="small" style="margin:0;">Tympanogram</label>
             <select id="audio-AS-tymp">
-              <option value="">(not entered)</option>
+              <option value="">Select type</option>
               <option value="A">Type A</option>
               <option value="As">Type As</option>
               <option value="Ad">Type Ad</option>
@@ -1180,7 +1157,9 @@ textarea {
               <option value="C">Type C</option>
             </select>
           </div>
-<div class="row">
+
+
+          <div class="row">
             <textarea id="audio-AS-custom" rows="3"
               placeholder="Additional Audiogram info (AS)"></textarea>
           </div>
@@ -1199,27 +1178,20 @@ textarea {
           <label class="small">Configuration (max 1)</label>
           <div id="audio-AD-conf" class="row"></div>
 
-          
-
-          <div class="row">
-            <div class="mini-field">
-              <label class="small">SRT (dB HL)</label>
-              <input id="audio-AD-srt" type="number" inputmode="numeric" min="0" max="120" placeholder="e.g., 35">
-            </div>
-            <div class="mini-field">
-              <label class="small">WRS (%)</label>
-              <input id="audio-AD-wrs" type="number" inputmode="numeric" min="0" max="100" placeholder="e.g., 88">
-            </div>
-            <div class="mini-field">
-              <label class="small">at (dB)</label>
-              <input id="audio-AD-wrsdb" type="number" inputmode="numeric" min="0" max="120" placeholder="e.g., 70">
-            </div>
+          <div class="row audiogram-numeric-row">
+            <input type="number" inputmode="numeric" id="audio-AD-pta" placeholder="PTA (dB HL)" style="max-width:120px;">
+            <input type="number" inputmode="numeric" id="audio-AD-srt" placeholder="SRT (dB HL)" style="max-width:120px;">
           </div>
 
-          <label class="small">Tympanogram (Type)</label>
-          <div class="row">
+          <div class="row audiogram-numeric-row">
+            <input type="number" inputmode="numeric" id="audio-AD-wrs" placeholder="WRS %" style="max-width:120px;">
+            <input type="number" inputmode="numeric" id="audio-AD-wrsdb" placeholder="at dB" style="max-width:120px;">
+          </div>
+
+          <div class="row audiogram-tymp-row">
+            <label class="small" style="margin:0;">Tympanogram</label>
             <select id="audio-AD-tymp">
-              <option value="">(not entered)</option>
+              <option value="">Select type</option>
               <option value="A">Type A</option>
               <option value="As">Type As</option>
               <option value="Ad">Type Ad</option>
@@ -1227,7 +1199,9 @@ textarea {
               <option value="C">Type C</option>
             </select>
           </div>
-<div class="row">
+
+
+          <div class="row">
             <textarea id="audio-AD-custom" rows="3"
               placeholder="Additional Audiogram info (AD)"></textarea>
           </div>
@@ -1591,7 +1565,7 @@ textarea {
     <div>
       <div class="copy-arrows">
         <span class="small"><strong>Left (AS)</strong></span>
-        <button class="btn" id="copy-coupling-AS-to-AD">Copy →</button>
+        <button class="btn" id="copy-coupling-AS-to-AD">Copy ▶</button>
       </div>
 
       <label class="small mt-6">Receiver/slim tube length — AS</label>
@@ -1640,8 +1614,8 @@ textarea {
     <div>
       <div class="copy-arrows">
         <span class="small"><strong>Right (AD)</strong></span>
-        <!-- dummy button to match Copy → height on the left -->
-        <button class="btn" style="visibility:hidden; pointer-events:none;">Copy →</button>
+        <!-- dummy button to match Copy ▶ height on the left -->
+        <button class="btn" style="visibility:hidden; pointer-events:none;">Copy ▶</button>
       </div>
 
       <label class="small mt-6">Receiver/slim tube length — AD</label>
@@ -1859,7 +1833,7 @@ textarea {
     <div>
       <div class="copy-arrows">
         <span class="small">Left (AS)</span>
-        <button class="btn" data-copy="ham-AS-to-AD">Copy →</button>
+        <button class="btn" data-copy="ham-AS-to-AD">Copy ▶</button>
       </div>
 
       <div id="ham-AS" class="row"></div>
@@ -1892,7 +1866,7 @@ textarea {
     <div>
       <div class="copy-arrows">
         <span class="small">Left (AS)</span>
-        <button class="btn" data-copy="ham-post-AS-to-AD">Copy →</button>
+        <button class="btn" data-copy="ham-post-AS-to-AD">Copy ▶</button>
       </div>
 
       <div id="ham-post-AS" class="row"></div>
@@ -2069,16 +2043,20 @@ window.SNB = (()=>{
     audioObjADtype: new Set(),
     audioObjASconf: new Set(),
     audioObjADconf: new Set(),
+
+    audioObjASpta: '',
+    audioObjASsrt: '',
+    audioObjASwrs: '',
+    audioObjASwrsdb: '',
+    audioObjAStymp: '',
+
+    audioObjADpta: '',
+    audioObjADsrt: '',
+    audioObjADwrs: '',
+    audioObjADwrsdb: '',
+    audioObjADtymp: '',
     audioObjCustomAS: [],
     audioObjCustomAD: [],
-    audioObjTympAS: '',
-    audioObjTympAD: '',
-    audioObjSRTAS: '',
-    audioObjSRTAD: '',
-    audioObjWRSAS: '',
-    audioObjWRSAD: '',
-    audioObjWRSdBAS: '',
-    audioObjWRSdBAD: '',
 
 
     hacAS: new Set(),
@@ -2101,20 +2079,20 @@ window.SNB = (()=>{
     audioADtype: new Set(),
     audioASconf: new Set(),
     audioADconf: new Set(),
+
+    audioASpta: '',
+    audioASsrt: '',
+    audioASwrs: '',
+    audioASwrsdb: '',
+    audioAStymp: '',
+
+    audioADpta: '',
+    audioADsrt: '',
+    audioADwrs: '',
+    audioADwrsdb: '',
+    audioADtymp: '',
     audioCustomAS: [],
     audioCustomAD: [],
-        audioCustomAS: [],
-        audioCustomAD: [],
-
-        // Tympanogram + Speech (added v6.9)
-        audioTympAS: '',
-        audioTympAD: '',
-        audioSRTAS: '',
-        audioSRTAD: '',
-        audioWRSAS: '',
-        audioWRSAD: '',
-        audioWRSdBAS: '',
-        audioWRSdBAD: '',
 
 
     insCompany: '',
@@ -2356,6 +2334,12 @@ S.utils = {
     out = out.replace(/\bHistory of\b/gi, 'Hx:');
 
     // Otoscopy / Audiogram
+
+    out = out.replace(/Pure Tone Average \(PTA\)/gi, 'PTA');
+    out = out.replace(/Speech Reception Threshold \(SRT\)/gi, 'SRT');
+    out = out.replace(/Word Recognition Score \(WRS\)/gi, 'WRS');
+    out = out.replace(/Tympanometry/gi, 'Tymp');
+
     out = out.replace(/\bOtoscopy\b/gi, 'Oto');
     out = out.replace(/\bAudiogram was performed today\. Results indicate\b/gi, 'Audio:');
     out = out.replace(/\bAudiogram from\b/gi, 'Audio (ext) from');
@@ -3408,6 +3392,40 @@ if(state.subjCustom.length)
        OBJECTIVE
        ============================ */
 
+    // --- Audiogram helpers (PTA/SRT/WRS/Tymp) ---
+    function tympDescription(t){
+      switch(t){
+        case 'A':  return 'Type A Normal pressure and compliance';
+        case 'As': return 'Type As Normal pressure and low compliance';
+        case 'Ad': return 'Type Ad Normal pressure and high compliance';
+        case 'B':  return 'Type B Flat';
+        case 'C':  return 'Type C Negative pressure and normal compliance';
+        default:   return '';
+      }
+    }
+
+    function pushEarLine(linesArr, label, asTxt, adTxt){
+      if(!asTxt && !adTxt) return;
+      if(asTxt && adTxt && asTxt === adTxt){
+        linesArr.push(`${label}: ${asTxt}, AU.`);
+      } else {
+        const parts = [];
+        if(asTxt) parts.push(`${asTxt}, AS`);
+        if(adTxt) parts.push(`${adTxt}, AD`);
+        linesArr.push(`${label}: ${parts.join('; ')}.`);
+      }
+    }
+
+    function buildWrsText(pct, db){
+      const p = (pct||'').toString().trim();
+      const d = (db||'').toString().trim();
+      if(!p && !d) return '';
+      if(p && d) return `${p}% at ${d} dB`;
+      if(p) return `${p}%`;
+      return `at ${d} dB`;
+    }
+
+
     // 🔹 Otoscopy – 1 line per ear: Canal + TM + custom
     const canalAS = [...state.otoAScanal];
     const tmAS    = [...state.otoAStm];
@@ -3445,7 +3463,7 @@ if(state.subjCustom.length)
       ? `Audiogram from ${state.audioObjSrc}`
       : `Audiogram`;
 
-    function buildAudioObjEarDesc(degSet, typeSet, confSet, customArr, srt, wrs, wrsdb, tymp){
+    function buildAudioObjEarDesc(degSet, typeSet, confSet, customArr){
       const order = S.consts.AUDIO_DEG;
       const degVals = Array.from(degSet);
       degVals.sort((a,b)=>order.indexOf(a)-order.indexOf(b));
@@ -3460,17 +3478,14 @@ if(state.subjCustom.length)
       const hasType   = !!typeVal;
       const hasConf   = !!confVal;
       const hasCustom = !!(customArr && customArr.length);
-      const hasSrt    = !!srt;
-      const hasWrs    = !!wrs;
-      const hasTymp   = !!tymp;
 
       // If absolutely nothing selected/typed, return empty → no line in note
-      if(!hasDegree && !hasType && !hasConf && !hasCustom && !hasSrt && !hasWrs && !hasTymp){
+      if(!hasDegree && !hasType && !hasConf && !hasCustom){
         return '';
       }
 
       // Custom-only case: no degree/type/config, but user typed something
-      if(!hasDegree && !hasType && !hasConf && !hasSrt && !hasWrs && !hasTymp && hasCustom){
+      if(!hasDegree && !hasType && !hasConf && hasCustom){
         return customArr
           .map(l=>l.endsWith('.')?l:l+'.')
           .join(' ');
@@ -3525,14 +3540,6 @@ if(state.subjCustom.length)
         if(core) pieces.push(core);
       }
 
-      // SRT / WRS / Tymp (order: SRT, WRS, Tymp)
-      if(hasSrt) pieces.push(`SRT ${srt} dB HL`);
-      if(hasWrs){
-        const at = wrsdb ? ` at ${wrsdb} dB` : '';
-        pieces.push(`WRS ${wrs}%${at}`);
-      }
-      if(hasTymp) pieces.push(`Tymp Type ${tymp}`);
-
       if(hasCustom){
         const customText = customArr
           .map(l=>l.endsWith('.')?l:l+'.')
@@ -3547,21 +3554,13 @@ if(state.subjCustom.length)
       state.audioObjASdeg,
       state.audioObjAStype,
       state.audioObjASconf,
-      state.audioObjCustomAS,
-      state.audioObjSRTAS,
-      state.audioObjWRSAS,
-      state.audioObjWRSdBAS,
-      state.audioObjTympAS
+      state.audioObjCustomAS
     );
     const aObjAD = buildAudioObjEarDesc(
       state.audioObjADdeg,
       state.audioObjADtype,
       state.audioObjADconf,
-      state.audioObjCustomAD,
-      state.audioObjSRTAD,
-      state.audioObjWRSAD,
-      state.audioObjWRSdBAD,
-      state.audioObjTympAD
+      state.audioObjCustomAD
     );
 
     if(aObjAS || aObjAD){
@@ -3574,6 +3573,28 @@ if(state.subjCustom.length)
         if(aObjAD) parts.push(`${aObjAD}, AD`);
         linesO.push(`${prefix} shows ${parts.join('; ')}.`);
       }
+
+    // Outside Audiogram metrics
+    pushEarLine(linesO, 'Pure Tone Average (PTA)',
+      state.audioObjASpta ? `${state.audioObjASpta} dB HL` : '',
+      state.audioObjADpta ? `${state.audioObjADpta} dB HL` : ''
+    );
+
+    pushEarLine(linesO, 'Speech Reception Threshold (SRT)',
+      state.audioObjASsrt ? `${state.audioObjASsrt} dB HL` : '',
+      state.audioObjADsrt ? `${state.audioObjADsrt} dB HL` : ''
+    );
+
+    pushEarLine(linesO, 'Word Recognition Score (WRS)',
+      buildWrsText(state.audioObjASwrs, state.audioObjASwrsdb),
+      buildWrsText(state.audioObjADwrs, state.audioObjADwrsdb)
+    );
+
+    pushEarLine(linesO, 'Tympanometry',
+      tympDescription(state.audioObjAStymp),
+      tympDescription(state.audioObjADtymp)
+    );
+
     }
     // 🔹 Medical Clearance – single line, uses Doctor + AS/AD/AU
     if(state.clearance){
@@ -3787,57 +3808,31 @@ if(state.subjCustom.length)
       }
     }
 
-        // Tympanogram + Speech results (simple)
-        const sAS = state.audioSRTAS;
-        const sAD = state.audioSRTAD;
-        if(sAS || sAD){
-          if(sAS && sAD && sAS === sAD){
-            linesA.push(`SRT: ${sAS} dB HL, AU.`);
-          } else {
-            const parts = [];
-            if(sAS) parts.push(`${sAS} dB HL AS`);
-            if(sAD) parts.push(`${sAD} dB HL AD`);
-            linesA.push(`SRT: ${parts.join('; ')}.`);
-          }
-        }
 
-        const wAS = state.audioWRSAS;
-        const wAD = state.audioWRSAD;
-        const wdAS = state.audioWRSdBAS;
-        const wdAD = state.audioWRSdBAD;
-        if(wAS || wAD){
-          function wrsPiece(pct, db, ear){
-            if(!pct) return '';
-            if(db) return `${pct}% at ${db} dB ${ear}`;
-            return `${pct}% ${ear}`;
-          }
-          if(wAS && wAD && wAS === wAD && (!wdAS && !wdAD || wdAS === wdAD)){
-            const at = (wdAS || wdAD) ? ` at ${wdAS || wdAD} dB` : '';
-            linesA.push(`WRS: ${wAS}%${at}, AU.`);
-          } else {
-            const parts = [];
-            const p1 = wrsPiece(wAS, wdAS, 'AS');
-            const p2 = wrsPiece(wAD, wdAD, 'AD');
-            if(p1) parts.push(p1);
-            if(p2) parts.push(p2);
-            linesA.push(`WRS: ${parts.join('; ')}.`);
-          }
-        }
+    // In-office Audiogram metrics
+    pushEarLine(linesA, 'Pure Tone Average (PTA)',
+      state.audioASpta ? `${state.audioASpta} dB HL` : '',
+      state.audioADpta ? `${state.audioADpta} dB HL` : ''
+    );
 
-        const tAS = state.audioTympAS;
-        const tAD = state.audioTympAD;
-        if(tAS || tAD){
-          if(tAS && tAD && tAS === tAD){
-            linesA.push(`Tympanogram: Type ${tAS}, AU.`);
-          } else {
-            const parts = [];
-            if(tAS) parts.push(`Type ${tAS} AS`);
-            if(tAD) parts.push(`Type ${tAD} AD`);
-            linesA.push(`Tympanogram: ${parts.join('; ')}.`);
-          }
-        }
+    pushEarLine(linesA, 'Speech Reception Threshold (SRT)',
+      state.audioASsrt ? `${state.audioASsrt} dB HL` : '',
+      state.audioADsrt ? `${state.audioADsrt} dB HL` : ''
+    );
 
-// Insurance
+    pushEarLine(linesA, 'Word Recognition Score (WRS)',
+      buildWrsText(state.audioASwrs, state.audioASwrsdb),
+      buildWrsText(state.audioADwrs, state.audioADwrsdb)
+    );
+
+    pushEarLine(linesA, 'Tympanometry',
+      tympDescription(state.audioAStymp),
+      tympDescription(state.audioADtymp)
+    );
+
+
+
+    // Insurance
     if(state.insCompany) linesA.push(`Insurance: ${state.insCompany}.`);
     if(state.insBenefit) linesA.push(`Benefit: ${state.insBenefit}.`);
     if(state.insOOP)     linesA.push(`Out-of-pocket: ${state.insOOP}.`);
@@ -4570,6 +4565,31 @@ pushDeliveryLines(state.deliveryPurchase);
     makeButtons('audio-obj-AS-conf', S.consts.AUDIO_CONFIG,     state.audioObjASconf);
     makeButtons('audio-obj-AD-conf', S.consts.AUDIO_CONFIG,     state.audioObjADconf);
 
+    // Audiogram numeric + tymp (Outside)
+    function wireValue(id, setter){
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.addEventListener('input', ()=>{ setter(el.value.trim()); S.rebuild(); });
+    }
+    function wireSelect(id, setter){
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.addEventListener('change', ()=>{ setter(el.value); S.rebuild(); });
+    }
+
+    wireValue('audio-obj-AS-pta',   v=>state.audioObjASpta=v);
+    wireValue('audio-obj-AS-srt',   v=>state.audioObjASsrt=v);
+    wireValue('audio-obj-AS-wrs',   v=>state.audioObjASwrs=v);
+    wireValue('audio-obj-AS-wrsdb', v=>state.audioObjASwrsdb=v);
+    wireSelect('audio-obj-AS-tymp', v=>state.audioObjAStymp=v);
+
+    wireValue('audio-obj-AD-pta',   v=>state.audioObjADpta=v);
+    wireValue('audio-obj-AD-srt',   v=>state.audioObjADsrt=v);
+    wireValue('audio-obj-AD-wrs',   v=>state.audioObjADwrs=v);
+    wireValue('audio-obj-AD-wrsdb', v=>state.audioObjADwrsdb=v);
+    wireSelect('audio-obj-AD-tymp', v=>state.audioObjADtymp=v);
+
+
     const aobjCopy = document.querySelector('[data-copy="aobj-AS-to-AD"]');
     if(aobjCopy){
       aobjCopy.addEventListener('click', ()=>{
@@ -4577,20 +4597,23 @@ pushDeliveryLines(state.deliveryPurchase);
         copySet(state.audioObjAStype,  state.audioObjADtype);
         copySet(state.audioObjASconf,  state.audioObjADconf);
 
-        // Copy tymp/speech values
-        state.audioObjTympAD  = state.audioObjTympAS;
-        state.audioObjSRTAD   = state.audioObjSRTAS;
-        state.audioObjWRSAD   = state.audioObjWRSAS;
-        state.audioObjWRSdBAD = state.audioObjWRSdBAS;
+        // copy numeric + tymp
+        state.audioObjADpta   = state.audioObjASpta;
+        state.audioObjADsrt   = state.audioObjASsrt;
+        state.audioObjADwrs   = state.audioObjASwrs;
+        state.audioObjADwrsdb = state.audioObjASwrsdb;
+        state.audioObjADtymp  = state.audioObjAStymp;
 
-        const _oTympAD = document.getElementById('audio-obj-AD-tymp');
-        const _oSrtAD  = document.getElementById('audio-obj-AD-srt');
-        const _oWrsAD  = document.getElementById('audio-obj-AD-wrs');
-        const _oWrsdbAD= document.getElementById('audio-obj-AD-wrsdb');
-        if(_oTympAD) _oTympAD.value = state.audioObjTympAD || '';
-        if(_oSrtAD)  _oSrtAD.value  = state.audioObjSRTAD || '';
-        if(_oWrsAD)  _oWrsAD.value  = state.audioObjWRSAD || '';
-        if(_oWrsdbAD)_oWrsdbAD.value= state.audioObjWRSdBAD || '';
+        const adPTA = document.getElementById('audio-obj-AD-pta');
+        const adSRT = document.getElementById('audio-obj-AD-srt');
+        const adWRS = document.getElementById('audio-obj-AD-wrs');
+        const adWDB = document.getElementById('audio-obj-AD-wrsdb');
+        const adTYP = document.getElementById('audio-obj-AD-tymp');
+        if(adPTA) adPTA.value = state.audioObjADpta || '';
+        if(adSRT) adSRT.value = state.audioObjADsrt || '';
+        if(adWRS) adWRS.value = state.audioObjADwrs || '';
+        if(adWDB) adWDB.value = state.audioObjADwrsdb || '';
+        if(adTYP) adTYP.value = state.audioObjADtymp || '';
         makeButtons('audio-obj-AD-deg',  S.consts.AUDIO_DEG,        state.audioObjADdeg);
         makeButtons('audio-obj-AD-type', S.consts.AUDIO_TYPE_ONLY,  state.audioObjADtype);
         makeButtons('audio-obj-AD-conf', S.consts.AUDIO_CONFIG,     state.audioObjADconf);
@@ -4601,35 +4624,6 @@ pushDeliveryLines(state.deliveryPurchase);
     wireLiveTextarea('audio-obj-AS-custom','audioObjCustomAS');
     wireLiveTextarea('audio-obj-AD-custom','audioObjCustomAD');
 
-
-
-    // Outside Tympanogram + Speech
-    const oTympAS = document.getElementById('audio-obj-AS-tymp');
-    const oTympAD = document.getElementById('audio-obj-AD-tymp');
-    const oSrtAS  = document.getElementById('audio-obj-AS-srt');
-    const oSrtAD  = document.getElementById('audio-obj-AD-srt');
-    const oWrsAS  = document.getElementById('audio-obj-AS-wrs');
-    const oWrsAD  = document.getElementById('audio-obj-AD-wrs');
-    const oWrsdbAS= document.getElementById('audio-obj-AS-wrsdb');
-    const oWrsdbAD= document.getElementById('audio-obj-AD-wrsdb');
-
-    if(oTympAS) oTympAS.addEventListener('change', ()=>{ state.audioObjTympAS = oTympAS.value; S.rebuild(); });
-    if(oTympAD) oTympAD.addEventListener('change', ()=>{ state.audioObjTympAD = oTympAD.value; S.rebuild(); });
-
-    function wireNumObj(el, setter){
-      if(!el) return;
-      el.addEventListener('input', ()=>{
-        const v = el.value === '' ? '' : String(el.value).trim();
-        setter(v);
-        S.rebuild();
-      });
-    }
-    wireNumObj(oSrtAS,   v=>state.audioObjSRTAS=v);
-    wireNumObj(oSrtAD,   v=>state.audioObjSRTAD=v);
-    wireNumObj(oWrsAS,   v=>state.audioObjWRSAS=v);
-    wireNumObj(oWrsAD,   v=>state.audioObjWRSAD=v);
-    wireNumObj(oWrsdbAS, v=>state.audioObjWRSdBAS=v);
-    wireNumObj(oWrsdbAD, v=>state.audioObjWRSdBAD=v);
 
     /* HA Condition */
     makeButtons('hac-AS', S.consts.HAC_OPTS, state.hacAS);
@@ -4757,26 +4751,55 @@ pushDeliveryLines(state.deliveryPurchase);
     makeButtons('audio-AS-conf', S.consts.AUDIO_CONFIG,     state.audioASconf);
     makeButtons('audio-AD-conf', S.consts.AUDIO_CONFIG,     state.audioADconf);
 
+    // Audiogram numeric + tymp (In-office)
+    function wireValueA(id, setter){
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.addEventListener('input', ()=>{ setter(el.value.trim()); S.rebuild(); });
+    }
+    function wireSelectA(id, setter){
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.addEventListener('change', ()=>{ setter(el.value); S.rebuild(); });
+    }
+
+    wireValueA('audio-AS-pta',   v=>state.audioASpta=v);
+    wireValueA('audio-AS-srt',   v=>state.audioASsrt=v);
+    wireValueA('audio-AS-wrs',   v=>state.audioASwrs=v);
+    wireValueA('audio-AS-wrsdb', v=>state.audioASwrsdb=v);
+    wireSelectA('audio-AS-tymp', v=>state.audioAStymp=v);
+
+    wireValueA('audio-AD-pta',   v=>state.audioADpta=v);
+    wireValueA('audio-AD-srt',   v=>state.audioADsrt=v);
+    wireValueA('audio-AD-wrs',   v=>state.audioADwrs=v);
+    wireValueA('audio-AD-wrsdb', v=>state.audioADwrsdb=v);
+    wireSelectA('audio-AD-tymp', v=>state.audioADtymp=v);
+
+
     const aCopy = document.querySelector('[data-copy="audio-AS-to-AD"]');
     if(aCopy){
       aCopy.addEventListener('click', ()=>{
         copySet(state.audioASdeg,   state.audioADdeg);
         copySet(state.audioAStype,  state.audioADtype);
         copySet(state.audioASconf,  state.audioADconf);
-        // copy tymp/speech too
-        state.audioTympAD = state.audioTympAS;
-        state.audioSRTAD  = state.audioSRTAS;
-        state.audioWRSAD  = state.audioWRSAS;
-        state.audioWRSdBAD = state.audioWRSdBAS;
-        const tAD = document.getElementById('audio-AD-tymp');
-        const sAD = document.getElementById('audio-AD-srt');
-        const wAD = document.getElementById('audio-AD-wrs');
-        const wdAD = document.getElementById('audio-AD-wrsdb');
-        if(tAD) tAD.value = state.audioTympAD;
-        if(sAD) sAD.value = state.audioSRTAD;
-        if(wAD)  wAD.value  = state.audioWRSAD;
-        if(wdAD) wdAD.value = state.audioWRSdBAD;
 
+        // copy numeric + tymp
+        state.audioADpta   = state.audioASpta;
+        state.audioADsrt   = state.audioASsrt;
+        state.audioADwrs   = state.audioASwrs;
+        state.audioADwrsdb = state.audioASwrsdb;
+        state.audioADtymp  = state.audioAStymp;
+
+        const adPTA = document.getElementById('audio-AD-pta');
+        const adSRT = document.getElementById('audio-AD-srt');
+        const adWRS = document.getElementById('audio-AD-wrs');
+        const adWDB = document.getElementById('audio-AD-wrsdb');
+        const adTYP = document.getElementById('audio-AD-tymp');
+        if(adPTA) adPTA.value = state.audioADpta || '';
+        if(adSRT) adSRT.value = state.audioADsrt || '';
+        if(adWRS) adWRS.value = state.audioADwrs || '';
+        if(adWDB) adWDB.value = state.audioADwrsdb || '';
+        if(adTYP) adTYP.value = state.audioADtymp || '';
         makeButtons('audio-AD-deg',  S.consts.AUDIO_DEG,        state.audioADdeg);
         makeButtons('audio-AD-type', S.consts.AUDIO_TYPE_ONLY,  state.audioADtype);
         makeButtons('audio-AD-conf', S.consts.AUDIO_CONFIG,     state.audioADconf);
@@ -4786,36 +4809,6 @@ pushDeliveryLines(state.deliveryPurchase);
 
     wireLiveTextarea('audio-AS-custom','audioCustomAS');
     wireLiveTextarea('audio-AD-custom','audioCustomAD');
-
-
-    // Tympanogram + Speech
-    const tympAS = document.getElementById('audio-AS-tymp');
-    const tympAD = document.getElementById('audio-AD-tymp');
-    const srtAS  = document.getElementById('audio-AS-srt');
-    const srtAD  = document.getElementById('audio-AD-srt');
-    const wrsAS  = document.getElementById('audio-AS-wrs');
-    const wrsAD  = document.getElementById('audio-AD-wrs');
-    const wrsdbAS = document.getElementById('audio-AS-wrsdb');
-    const wrsdbAD = document.getElementById('audio-AD-wrsdb');
-
-    if(tympAS) tympAS.addEventListener('change', ()=>{ state.audioTympAS = tympAS.value; S.rebuild(); });
-    if(tympAD) tympAD.addEventListener('change', ()=>{ state.audioTympAD = tympAD.value; S.rebuild(); });
-
-    function wireNum(el, setter){
-      if(!el) return;
-      el.addEventListener('input', ()=>{
-        const v = el.value === '' ? '' : String(el.value).trim();
-        setter(v);
-        S.rebuild();
-      });
-    }
-    wireNum(srtAS, v=>state.audioSRTAS=v);
-    wireNum(srtAD, v=>state.audioSRTAD=v);
-    wireNum(wrsAS, v=>state.audioWRSAS=v);
-    wireNum(wrsAD, v=>state.audioWRSAD=v);
-    wireNum(wrsdbAS, v=>state.audioWRSdBAS=v);
-    wireNum(wrsdbAD, v=>state.audioWRSdBAD=v);
-
 
 
     /* Insurance */
