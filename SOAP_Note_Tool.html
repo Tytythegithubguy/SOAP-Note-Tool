@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOAP Note Tool — v6.8.0</title>
+<title>SOAP Note Tool — v6.9.0</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -779,7 +779,7 @@ textarea {
 </head>
 <body>
 <div class="wrap">
-  <h1>SOAP Note Tool — Version 6.8.0</h1>
+  <h1>SOAP Note Tool — Version 6.9.0</h1>
   <div class="app">
 
     <!-- LEFT -->
@@ -1138,7 +1138,17 @@ textarea {
 
     <details class="subcard" id="audiogram-assess-sub" open>
       <summary>In-Office Audiogram <span class="chev">▶</span></summary>
-      <div class="inner grid-2 asad-grid audiogram-ears">
+      <div class="inner">
+
+        <div class="row">
+          <label class="small">Referred by:</label>
+          <input type="text" id="audio-refby" list="audio-refby-list" placeholder="Referred by (optional)"/>
+          <datalist id="audio-refby-list">
+            <option value="ENT Associates"></option>
+          </datalist>
+        </div>
+
+        <div class="grid-2 asad-grid audiogram-ears">
 
         <div>
           <div class="copy-arrows">
@@ -1228,6 +1238,7 @@ textarea {
         </div>
 
       </div>
+      </div>
     </details>
 
     <!-- INSURANCE MOVED UP HERE as requested -->
@@ -1237,12 +1248,24 @@ textarea {
 
         <!-- Basic free-text fields (same behavior as before) -->
         <div class="row">
-          <input type="text" id="ins-company" placeholder="Insurance Company"/>
+          <input type="text" id="ins-company" list="ins-company-list" placeholder="Insurance Company"/>
+          <datalist id="ins-company-list">
+            <option value="Anthem Blue Cross"></option>
+            <option value="Blue Shield"></option>
+            <option value="Blue Shield Promise Medi-Cal"></option>
+            <option value="Community Health Group Medi-Cal"></option>
+            <option value="Health Net"></option>
+            <option value="Molina Medi-Cal"></option>
+            <option value="United Health Care"></option>
+          </datalist>
         </div>
 
         <div class="row">
-          <input type="text" id="ins-benefit"
+          <input type="text" id="ins-benefit" list="ins-benefit-list"
                  placeholder="Hearing Aid Benefit / allowed amount (can auto-fill from estimator)"/>
+          <datalist id="ins-benefit-list">
+            <option value="100% covered up to $1,510"></option>
+          </datalist>
         </div>
 
         <div class="row">
@@ -1251,9 +1274,14 @@ textarea {
         </div>
 
         <div class="row">
-          <button class="btn" data-auth="authorized">Authorized</button>
-          <button class="btn" data-auth="pending">Pending</button>
-          <button class="btn" data-auth="denied">Denied</button>
+          <input type="text" id="ins-auth" list="ins-auth-list" placeholder="Authorization status (optional)"/>
+          <datalist id="ins-auth-list">
+            <option value="Approved"></option>
+            <option value="Pending"></option>
+            <option value="No prior authorization required"></option>
+            <option value="Denied"></option>
+            <option value="Needs to be submitted"></option>
+          </datalist>
         </div>
 
         <hr/>
@@ -2092,6 +2120,8 @@ window.SNB = (()=>{
 
 
     /* ASSESSMENT */
+    audioRefBy: '',
+
     audioASdeg: new Set(),
     audioADdeg: new Set(),
     audioAStype: new Set(),
@@ -2734,8 +2764,8 @@ S.utils = {
         // Standard delivery preset (fills common delivery text)
         { type: 'clickRaw', selector: '#delivery-standard' },
 
-        // Default RTC: 2 weeks follow up (editable) + "or as needed"
-        { type: 'setInput', id: 'rtc-time', value: '2' },
+        // Default RTC: 4 weeks follow up (editable) + "or as needed"
+        { type: 'setInput', id: 'rtc-time', value: '4' },
         { type: 'setInput', id: 'rtc-reason', value: 'a follow up' },
         { type: 'clickRaw', selector: 'button[data-rtcunit="weeks"]' },
         { type: 'clickRaw', selector: '#rtc-asneeded' }
@@ -2768,7 +2798,7 @@ S.utils = {
 
         // Plan: RTC 6 months for clean & check + "or as needed"
         { type: 'setInput', id: 'rtc-time', value: '6' },
-        { type: 'setInput', id: 'rtc-reason', value: 'a clean and check' },
+        { type: 'setInput', id: 'rtc-reason', value: 'a hearing aid check and clean' },
         { type: 'clickRaw', selector: 'button[data-rtcunit="months"]' },
         { type: 'clickRaw', selector: '#rtc-asneeded' }
       ]
@@ -2834,7 +2864,7 @@ S.utils = {
 
         // Plan: RTC 6 months + "or as needed"
         { type: 'setInput', id: 'rtc-time', value: '6' },
-        { type: 'setInput', id: 'rtc-reason', value: 'a clean and check' },
+        { type: 'setInput', id: 'rtc-reason', value: 'a hearing aid check and clean' },
         { type: 'clickRaw', selector: 'button[data-rtcunit="months"]' },
         { type: 'clickRaw', selector: '#rtc-asneeded' }
       ]
@@ -2869,7 +2899,7 @@ S.utils = {
       actions: [
         { type: 'clickRaw', selector: '#apptButtons button[data-appt="re-delivery appointment"]' },
 
-        { type: 'setInput', id: 'rtc-time', value: '2' },
+        { type: 'setInput', id: 'rtc-time', value: '4' },
         { type: 'setInput', id: 'rtc-reason', value: 'a follow up' },
         { type: 'clickRaw', selector: 'button[data-rtcunit="weeks"]' },
         { type: 'clickRaw', selector: '#rtc-asneeded' }
@@ -3734,6 +3764,8 @@ if(state.subjCustom.length)
        ============================ */
 
     // In-office audiogram – same behavior as outside audiogram
+
+    if(state.audioRefBy) linesA.push(`Referred by: ${state.audioRefBy}.`);
     const inPrefix = 'Audiogram';
 
     function buildAudioEarDesc(degSet, typeSet, confSet, customArr){
@@ -4287,7 +4319,7 @@ pushDeliveryLines(state.deliveryPurchase);
 
     // RTC logic with optional reason:
     // Examples:
-    // - RTC for a follow up in 2 weeks or as needed.
+    // - RTC for a follow up in 4 weeks or as needed.
     // - RTC for hearing aid delivery as needed.
     // - RTC in 3 months.
     const time    = state.rtcTime && String(state.rtcTime).trim();
@@ -4814,6 +4846,15 @@ pushDeliveryLines(state.deliveryPurchase);
   function wireAssessment(){
 
     /* In-office Audiogram */
+
+    const refby = document.getElementById('audio-refby');
+    if(refby){
+      refby.addEventListener('input', ()=>{
+        state.audioRefBy = refby.value.trim();
+        S.rebuild();
+      });
+    }
+
     makeButtons('audio-AS-deg',  S.consts.AUDIO_DEG,        state.audioASdeg);
     makeButtons('audio-AD-deg',  S.consts.AUDIO_DEG,        state.audioADdeg);
     makeButtons('audio-AS-type', S.consts.AUDIO_TYPE_ONLY,  state.audioAStype);
@@ -4882,27 +4923,28 @@ pushDeliveryLines(state.deliveryPurchase);
 
 
     /* Insurance */
-    const insSub = document.getElementById('ins-sub');
-    if(insSub){
-      insSub.addEventListener('click', e=>{
-        const b = e.target.closest('button[data-auth]');
-        if(!b) return;
-        const val = b.dataset.auth;
-        state.insurance.status = (state.insurance.status === val) ? null : val;
-        [...document.querySelectorAll('button[data-auth]')].forEach(x=>{
-          x.classList.toggle('toggled', state.insurance.status === x.dataset.auth);
-        });
-        S.rebuild();
-      });
-    }
-
     const insCompany = document.getElementById('ins-company');
     const insBenefit = document.getElementById('ins-benefit');
     const insOOP     = document.getElementById('ins-oop');
+    const insAuth    = document.getElementById('ins-auth');
+
+    const AUTO_MEDICAL_BENEFIT = '100% covered up to $1,510';
+    function maybeAutofillMediCal(){
+      const company = (insCompany ? insCompany.value : (state.insCompany||'')) .trim();
+      const isMediCal = /medi-?cal/i.test(company);
+      if(!isMediCal) return;
+
+      const current = (insBenefit ? insBenefit.value : (state.insBenefit||'')) .trim();
+      if(!current || current === AUTO_MEDICAL_BENEFIT){
+        state.insBenefit = AUTO_MEDICAL_BENEFIT;
+        if(insBenefit) insBenefit.value = AUTO_MEDICAL_BENEFIT;
+      }
+    }
 
     if(insCompany){
       insCompany.addEventListener('input', ()=>{
         state.insCompany = insCompany.value.trim();
+        maybeAutofillMediCal();
         S.rebuild();
       });
     }
@@ -4915,6 +4957,13 @@ pushDeliveryLines(state.deliveryPurchase);
     if(insOOP){
       insOOP.addEventListener('input', ()=>{
         state.insOOP = insOOP.value.trim();
+        S.rebuild();
+      });
+    }
+    if(insAuth){
+      insAuth.addEventListener('input', ()=>{
+        const v = insAuth.value.trim();
+        state.insurance.status = v ? v : null;
         S.rebuild();
       });
     }
