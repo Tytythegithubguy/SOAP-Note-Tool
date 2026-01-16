@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOAP Note Tool — v6.7.19</title>
+<title>SOAP Note Tool — v6.8.0</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -465,6 +465,17 @@ textarea {
   margin: 2px 0 4px;
 }
 
+/* Group labels inside option rows */
+.row .group-label{
+  flex-basis: 100%;
+  margin: 6px 0 2px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 /* Small pill builder buttons */
 .row .btn {
   background: #f3f4f6;
@@ -768,7 +779,7 @@ textarea {
 </head>
 <body>
 <div class="wrap">
-  <h1>SOAP Note Tool — Version 6.7.19</h1>
+  <h1>SOAP Note Tool — Version 6.8.0</h1>
   <div class="app">
 
     <!-- LEFT -->
@@ -1092,13 +1103,21 @@ textarea {
       </div>
 
       <div id="hac-AS" class="row"></div>
-      <!-- Removed AS custom box -->
+
+      <div class="row">
+        <textarea id="hac-AS-custom" rows="2"
+          placeholder="Additional HA condition info (AS)"></textarea>
+      </div>
     </div>
 
     <div>
       <span class="small">Right (AD)</span>
       <div id="hac-AD" class="row"></div>
-      <!-- Removed AD custom box -->
+
+      <div class="row">
+        <textarea id="hac-AD-custom" rows="2"
+          placeholder="Additional HA condition info (AD)"></textarea>
+      </div>
     </div>
 
   </div>
@@ -2190,38 +2209,47 @@ window.SNB = (()=>{
     OTO_TM: ["normal","unremarkable","dull","retracted","bulging","red","scarred","perforated"],
      // 🔹 Hearing aid CONDITION (Objective)
     HAC_OPTS: [
+        { heading: "Physical appearance" },
         "appears clean",
         "appears dirty",
-        "filters plugged",
-        "filters appear partially plugged",
-        "tubes soft",
-        "tubes hard",
-        "microphones appear clean",
-        "microphones appear clogged",
         "case in good condition",
         "case shows cosmetic wear",
+        { heading: "Wax / mic" },
+        "filters plugged",
+        "filters appear partially plugged",
+        "microphones appear clean",
+        "microphones appear clogged",
+        { heading: "Tubes / doors" },
+        "tubes soft",
+        "tubes hard",
         "battery door intact",
         "battery door loose"
     ],
 
     // 🔹 Hearing aid MAINTENANCE (used later, Plan/Assessment section)
     HAM_OPTS: [
+        { heading: "Cleaning" },
         "cleaned",
         "vacuumed microphones",
+        { heading: "Parts replaced" },
         "wax guard replaced",
         "tubing replaced",
         "dome replaced",
         "ear hook replaced",
         "receiver replaced",
         "battery replaced",
+        { heading: "Software" },
         "firmware updated"
     ],
     HAM_POST_OPTS: [
+        { heading: "Sound quality" },
         "sounds good",
         "still sounds weak",
         "still sounds dead",
+        { heading: "Outcome / next steps" },
         "cannot fix in office",
-        "needs to be sent for repair"],
+        "needs to be sent for repair"
+    ],
 
 
     AUDIO_DEG: ["normal","mild","moderate","moderately-severe","severe","profound"],
@@ -2335,10 +2363,10 @@ S.utils = {
 
     // Otoscopy / Audiogram
 
-    out = out.replace(/Pure Tone Average \(PTA\)/gi, 'PTA');
-    out = out.replace(/Speech Reception Threshold \(SRT\)/gi, 'SRT');
-    out = out.replace(/Word Recognition Score \(WRS\)/gi, 'WRS');
-    out = out.replace(/Tympanometry/gi, 'Tymp');
+    out = out.replace(/\bPure Tone Average \(PTA\)/gi, 'PTA');
+    out = out.replace(/\bSpeech Reception Threshold \(SRT\)/gi, 'SRT');
+    out = out.replace(/\bWord Recognition Score \(WRS\)/gi, 'WRS');
+    out = out.replace(/\bTympanometry\b/gi, 'Tymp');
 
     out = out.replace(/\bOtoscopy\b/gi, 'Oto');
     out = out.replace(/\bAudiogram was performed today\. Results indicate\b/gi, 'Audio:');
@@ -3630,7 +3658,7 @@ if(state.subjCustom.length)
       linesO.push(`Medical clearance from ${state.clearanceDoc}.`);
     }
 
-  // 🔹 Hearing Aid Condition – single line, AU if same
+  // 🔹 Hearing Aid Condition – single line, AU if same (now supports custom text)
   const hacAS = [...state.hacAS];
   const hacAD = [...state.hacAD];
 
@@ -3642,33 +3670,57 @@ if(state.subjCustom.length)
       .replace(/\bfilters appear partially plugged\b/gi, 'filter appears partially plugged');
   }
 
-  if(hacAS.length || hacAD.length){
-    const sameHAC =
-      hacAS.length && hacAD.length &&
+  function sameArray(a,b){
+    const aa = (a||[]).map(String);
+    const bb = (b||[]).map(String);
+    if(aa.length !== bb.length) return false;
+    for(let i=0;i<aa.length;i++){
+      if(aa[i] !== bb[i]) return false;
+    }
+    return true;
+  }
+
+  function condDesc(arr, customArr, scope){
+    const parts = [];
+    if(arr && arr.length){
+      let t = S.utils.joinAnd(arr);
+      t = singularizeFilters(t, scope);
+      parts.push(t);
+    }
+    if(customArr && customArr.length){
+      const customText = customArr
+        .map(l=>l.endsWith('.')?l:l+'.')
+        .join(' ');
+      parts.push(customText);
+    }
+    return parts.join('; ');
+  }
+
+  const hasAnyHAC =
+    hacAS.length || hacAD.length ||
+    (state.hacCustomAS && state.hacCustomAS.length) ||
+    (state.hacCustomAD && state.hacCustomAD.length);
+
+  if(hasAnyHAC){
+    const sameSet =
       hacAS.length === hacAD.length &&
       hacAS.every(v => hacAD.includes(v));
 
-    if(sameHAC){
-      // Both ears same → keep plural
-      let cond = S.utils.joinAnd(hacAS);
-      cond = singularizeFilters(cond, 'AU'); // no change for AU
-      linesO.push(`Hearing aid condition: ${cond}, AU.`);
+    const sameCustom = sameArray(state.hacCustomAS, state.hacCustomAD);
+
+    if(sameSet && sameCustom){
+      const condAU = condDesc(hacAS, state.hacCustomAS, 'AU');
+      if(condAU) linesO.push(`Hearing aid condition: ${condAU}, AU.`);
     } else {
       const parts = [];
-      if(hacAS.length){
-        let condAS = S.utils.joinAnd(hacAS);
-        condAS = singularizeFilters(condAS, 'AS');
-        parts.push(`${condAS}, AS`);
-      }
-      if(hacAD.length){
-        let condAD = S.utils.joinAnd(hacAD);
-        condAD = singularizeFilters(condAD, 'AD');
-        parts.push(`${condAD}, AD`);
-      }
-      linesO.push(`Hearing aid condition: ${parts.join('; ')}.`);
+      const condAS = condDesc(hacAS, state.hacCustomAS, 'AS');
+      const condAD = condDesc(hacAD, state.hacCustomAD, 'AD');
+      if(condAS) parts.push(`${condAS}, AS`);
+      if(condAD) parts.push(`${condAD}, AD`);
+      if(parts.length) linesO.push(`Hearing aid condition: ${parts.join('; ')}.`);
     }
   }
-    // (hacCustomAS/AD no longer output here – boxes were removed)
+
 
 
     // 🔹 Custom Objective
@@ -4324,6 +4376,24 @@ pushDeliveryLines(state.deliveryPurchase);
     const max = S.maxSelect && S.maxSelect[containerID];
 
     options.forEach(opt=>{
+      // Headings / separators
+      if(opt && typeof opt === 'object' && opt.heading){
+        const h = document.createElement('div');
+        h.className = 'group-label';
+        h.textContent = opt.heading;
+        el.appendChild(h);
+        return;
+      }
+      if(opt && typeof opt === 'object' && opt.hr){
+        const hr = document.createElement('div');
+        hr.style.flexBasis = '100%';
+        hr.style.height = '1px';
+        hr.style.background = 'var(--border)';
+        hr.style.margin = '6px 0 4px';
+        el.appendChild(hr);
+        return;
+      }
+
       const b = document.createElement('button');
       b.className = 'btn';
 
