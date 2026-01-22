@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOAP Note Tool — v6.9.0</title>
+<title>SOAP Note Tool — v6.9.1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -779,7 +779,7 @@ textarea {
 </head>
 <body>
 <div class="wrap">
-  <h1>SOAP Note Tool — Version 6.9.0</h1>
+  <h1>SOAP Note Tool — Version 6.9.1</h1>
   <div class="app">
 
     <!-- LEFT -->
@@ -1250,12 +1250,19 @@ textarea {
         <div class="row">
           <input type="text" id="ins-company" list="ins-company-list" placeholder="Insurance Company"/>
           <datalist id="ins-company-list">
+            <option value="Aetna"></option>
             <option value="Anthem Blue Cross"></option>
             <option value="Blue Shield"></option>
             <option value="Blue Shield Promise Medi-Cal"></option>
+            <option value="CalOptima"></option>
+            <option value="Cigna"></option>
             <option value="Community Health Group Medi-Cal"></option>
             <option value="Health Net"></option>
+            <option value="Health Net Medi-Cal"></option>
+            <option value="IEHP"></option>
+            <option value="LA Care"></option>
             <option value="Molina Medi-Cal"></option>
+            <option value="Sharp Health Plan"></option>
             <option value="United Health Care"></option>
           </datalist>
         </div>
@@ -1416,6 +1423,9 @@ textarea {
         <div class="row" style="margin-top:10px;">
           <button class="btn" type="button" id="ins-est-apply">
             Apply to Benefit &amp; OOP fields
+          </button>
+          <button class="btn" type="button" id="ins-est-clear">
+            Clear estimator
           </button>
         </div>
   </details>
@@ -4931,7 +4941,7 @@ pushDeliveryLines(state.deliveryPurchase);
     const AUTO_MEDICAL_BENEFIT = '100% covered up to $1,510';
     function maybeAutofillMediCal(){
       const company = (insCompany ? insCompany.value : (state.insCompany||'')) .trim();
-      const isMediCal = /medi-?cal/i.test(company);
+      const isMediCal = /medi-?cal/i.test(company) || /^(LA Care|CalOptima|IEHP|Health Net Medi-Cal)$/i.test(company);
       if(!isMediCal) return;
 
       const current = (insBenefit ? insBenefit.value : (state.insBenefit||'')) .trim();
@@ -5157,6 +5167,51 @@ pushDeliveryLines(state.deliveryPurchase);
           }
 
           S.rebuild();
+        });
+      }
+
+      // Clear button: reset estimator inputs/outputs only (does not clear the main Insurance fields)
+      const insEstClear = document.getElementById('ins-est-clear');
+      if(insEstClear){
+        insEstClear.addEventListener('click', ()=>{
+          // Reset inputs
+          const ids = [
+            'ins-est-claim',
+            'ins-est-benefit',
+            'ins-est-oop',
+            'ins-est-custom-pct',
+            'ins-est-custom-amt',
+            'ins-est-copay',
+            'ins-est-coins',
+            'ins-est-ded'
+          ];
+          ids.forEach(id=>{
+            const el = document.getElementById(id);
+            if(el) el.value = '';
+          });
+
+          const contractSel = document.getElementById('ins-est-contract');
+          if(contractSel) contractSel.value = 'full';
+
+          // Clear outputs
+          const allowedOut  = document.getElementById('ins-est-allowed-display');
+          const insOutEl    = document.getElementById('ins-est-ins');
+          const ptOutEl     = document.getElementById('ins-est-pt');
+          if(allowedOut) allowedOut.textContent = '';
+          if(insOutEl)   insOutEl.textContent   = '';
+          if(ptOutEl)    ptOutEl.textContent    = '';
+
+          lastInsEst = {
+            hasResult: false,
+            claim: 0,
+            allowed: 0,
+            benefit: 0,
+            insPays: 0,
+            ptPays: 0
+          };
+
+          // Recompute to keep everything consistent
+          recomputeInsEstimator();
         });
       }
     })();
