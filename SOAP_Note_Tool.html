@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOAP Note Tool — v6.9.1</title>
+<title>SOAP Note Tool — v6.9.2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -779,7 +779,7 @@ textarea {
 </head>
 <body>
 <div class="wrap">
-  <h1>SOAP Note Tool — Version 6.9.1</h1>
+  <h1>SOAP Note Tool — Version 6.9.2</h1>
   <div class="app">
 
     <!-- LEFT -->
@@ -791,7 +791,7 @@ textarea {
   <div class="card-body" id="subjective-body">
 
 
-    <h4>Smart Start (one-click baseline)</h4>
+    <h4>Smart Templates (one-click baseline)</h4>
 <div class="row">
     <button class="btn template-btn" data-template="smart-HAD">Smart HAD</button>
   <button class="btn template-btn" data-template="smart-HACK-IW">Smart HACK I/W</button>
@@ -2637,7 +2637,7 @@ S.utils = {
   S.templates = {
 
     /* ============================
-       SMART START — BASELINE VISITS
+       SMART TEMPLATES — BASELINE VISITS
        ============================ */
     'smart-CHT': {
       label: 'Smart CHT baseline',
@@ -2669,6 +2669,11 @@ S.utils = {
       ],
       actions: [
         { type: 'clickRaw', selector: '#apptButtons button[data-appt="hearing aid evaluation"]' },
+
+        // Recommendation scope: AS + AD
+        { type: 'clickRaw', selector: '#ha-rec-sub button[data-recscope="AS"]' },
+        { type: 'clickRaw', selector: '#ha-rec-sub button[data-recscope="AD"]' },
+
 
         // Otoscopy: clear canals + unremarkable TM (AS then copy to AD)
         { type: 'toggleOption', containerId: 'oto-AS-canal', value: 'clear' },
@@ -2704,6 +2709,11 @@ S.utils = {
       actions: [
         { type: 'clickRaw', selector: '#apptButtons button[data-appt="hearing aid evaluation"]' },
 
+        // Recommendation scope: AS + AD
+        { type: 'clickRaw', selector: '#ha-rec-sub button[data-recscope="AS"]' },
+        { type: 'clickRaw', selector: '#ha-rec-sub button[data-recscope="AD"]' },
+
+
         // Otoscopy: clear canals + unremarkable TM (AS then copy to AD)
         { type: 'toggleOption', containerId: 'oto-AS-canal', value: 'clear' },
         { type: 'toggleOption', containerId: 'oto-AS-tm', value: 'unremarkable' },
@@ -2737,6 +2747,11 @@ S.utils = {
       actions: [
         { type: 'clickRaw', selector: '#apptButtons button[data-appt="hearing aid consultation"]' },
 
+        // Recommendation scope: AS + AD
+        { type: 'clickRaw', selector: '#ha-rec-sub button[data-recscope="AS"]' },
+        { type: 'clickRaw', selector: '#ha-rec-sub button[data-recscope="AD"]' },
+
+
         // Otoscopy: clear canals + unremarkable TM (AS then copy to AD)
         { type: 'toggleOption', containerId: 'oto-AS-canal', value: 'clear' },
         { type: 'toggleOption', containerId: 'oto-AS-tm', value: 'unremarkable' },
@@ -2761,7 +2776,7 @@ S.utils = {
       clearFirst: true,
       openDetails: [
         'sec-subjective','sec-objective','sec-assessment','sec-plan',
-        'otoscopy-sub','delivery-assess-sub','ham-sub','ham-post-sub'
+        'otoscopy-sub','hacond-sub','ham-sub','ham-post-sub'
       ],
       actions: [
         { type: 'clickRaw', selector: '#apptButtons button[data-appt="hearing aid delivery"]' },
@@ -2839,13 +2854,7 @@ S.utils = {
         { type: 'clickRaw', selector: '[data-copy="ham-post-AS-to-AD"]' },
 
         // Plan patient: eligible for new (O/W default)
-        { type: 'toggleOption', containerId: 'plan-patient', value: "Pt may be eligible for new HA’s, RTC for an annual hearing test to start the process" },
-
-        // RTC 1 year annual + "or as needed"
-        { type: 'setInput', id: 'rtc-time', value: '1' },
-        { type: 'setInput', id: 'rtc-reason', value: 'an annual hearing test' },
-        { type: 'clickRaw', selector: 'button[data-rtcunit="years"]' },
-        { type: 'clickRaw', selector: '#rtc-asneeded' }
+        { type: 'toggleOption', containerId: 'plan-patient', value: "Pt may be eligible for new HA’s, RTC for an annual hearing test to start the process" }
       ]
     },
 
@@ -2894,8 +2903,6 @@ S.utils = {
         { type: 'setInput', id: 'rtc-reason', value: 'an annual hearing test' },
         { type: 'clickRaw', selector: 'button[data-rtcunit="years"]' },
         { type: 'clickRaw', selector: '#rtc-asneeded' },
-
-        { type: 'toggleOption', containerId: 'plan-patient', value: 'RTC for annual hearing tests' }
       ]
     },
 
