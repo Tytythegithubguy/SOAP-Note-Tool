@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOAP Note Tool — v6.10.0</title>
+<title>SOAP Note Tool — v6.11.1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -607,6 +607,29 @@ textarea {
   margin-top: 8px;
 }
 
+
+.signature-controls{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+}
+.signature-controls input{
+  min-width: 0;
+}
+@media (max-width: 700px){
+  .signature-controls{
+    grid-template-columns: 1fr 1fr;
+  }
+  .signature-controls #sig-lic{
+    grid-column: 1 / -1;
+  }
+  .signature-controls button{
+    grid-column: 1 / -1;
+  }
+}
+
 /* Basic responsive fallback if the window gets too narrow */
 @media (max-width: 1100px) {
   .app {
@@ -779,7 +802,7 @@ textarea {
 </head>
 <body>
 <div class="wrap">
-  <h1>SOAP Note Tool — Version 6.9.3</h1>
+  <h1>SOAP Note Tool — Version 6.11.0</h1>
   <div class="app">
 
     <!-- LEFT -->
@@ -2073,6 +2096,20 @@ textarea {
   <button class="btn reset" id="clear-note">Clear Note</button>
 </div>
 
+<div class="signature-controls">
+  <input type="text" id="sig-name" placeholder="Name"/>
+  <input type="text" id="sig-title" list="sig-title-list" placeholder="Title"/>
+  <datalist id="sig-title-list">
+    <option value="Hearing Aid Dispenser"></option>
+    <option value="Hearing Aid Dispenser Trainee"></option>
+    <option value="Audiologist"></option>
+    <option value="Regional Executive Audiologist"></option>
+    <option value="Clinic Manager"></option>
+  </datalist>
+  <input type="text" id="sig-lic" placeholder="License #"/>
+  <button class="btn" id="toggle-signature">Signature OFF</button>
+</div>
+
   </div>
 </div>
 
@@ -2250,7 +2287,11 @@ window.SNB = (()=>{
     rtcReason: '',
     rtcAsNeeded: false,
     planCustom: [],
-    shorthandMode: false
+    shorthandMode: false,
+    signatureEnabled: false,
+    signatureName: '',
+    signatureTitle: '',
+    signatureLicense: ''
   };
 
   S.state = state;
@@ -4496,9 +4537,23 @@ pushDeliveryLines(state.deliveryPurchase);
       (linesP.length ? linesP.map(l=>'- '+l).join(NL) : '');
 
     // If shorthand mode is on, transform the full note into an abbreviated version
-    const finalNote = state.shorthandMode ? toShorthandNote(fullNote) : fullNote;
+    let finalNote = state.shorthandMode ? toShorthandNote(fullNote) : fullNote;
 
-    const ta = document.getElementById('noteArea');
+    // Optional signature block for printing/signing
+    if(state.signatureEnabled){
+      const nm = (state.signatureName || '').trim();
+      const tt = (state.signatureTitle || '').trim();
+      const lic = (state.signatureLicense || '').trim();
+      const lines = [];
+      if(nm) lines.push(nm);
+      if(tt) lines.push(tt);
+      if(lic) lines.push('Lic. # ' + lic);
+      if(lines.length){
+        // 3 blank lines of space, then printed name/title/license
+        finalNote = finalNote + NL + NL + NL + NL + lines.join(NL);
+      }
+    }
+const ta = document.getElementById('noteArea');
     const nearBottom = (ta.scrollTop + ta.clientHeight) >= (ta.scrollHeight - 10);
     const prev = ta.scrollTop;
     ta.value = finalNote;
@@ -5693,7 +5748,41 @@ if(delClr){
     const clearBtn = document.getElementById('clear-note');
     const shorthandBtn = document.getElementById('toggle-shorthand');
 
-    if(copyBtn){
+    
+
+    const sigBtn = document.getElementById('toggle-signature');
+    const sigName = document.getElementById('sig-name');
+    const sigTitle = document.getElementById('sig-title');
+    const sigLic = document.getElementById('sig-lic');
+
+    if(sigName){
+      sigName.addEventListener('input', ()=>{
+        state.signatureName = sigName.value;
+        S.rebuild();
+      });
+    }
+    if(sigTitle){
+      sigTitle.addEventListener('input', ()=>{
+        state.signatureTitle = sigTitle.value;
+        S.rebuild();
+      });
+    }
+    if(sigLic){
+      sigLic.addEventListener('input', ()=>{
+        state.signatureLicense = sigLic.value;
+        S.rebuild();
+      });
+    }
+    if(sigBtn){
+      sigBtn.addEventListener('click', ()=>{
+        state.signatureEnabled = !state.signatureEnabled;
+        sigBtn.classList.toggle('toggled', state.signatureEnabled);
+        sigBtn.textContent = state.signatureEnabled ? 'Signature ON' : 'Signature OFF';
+        S.rebuild();
+      });
+    }
+
+if(copyBtn){
       copyBtn.addEventListener('click', async ()=>{
         const text = document.getElementById('noteArea').value;
         try{
@@ -5726,7 +5815,14 @@ if(delClr){
           shorthandBtn.textContent = 'Shorthand OFF';
         }
 
-        S.rebuild();
+        
+
+        // Reset signature button UI
+        if(sigBtn){
+          sigBtn.classList.remove('toggled');
+          sigBtn.textContent = 'Signature OFF';
+        }
+S.rebuild();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
     }
