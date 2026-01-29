@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOAP Note Tool — v6.9.2</title>
+<title>SOAP Note Tool — v6.9.3</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -779,7 +779,7 @@ textarea {
 </head>
 <body>
 <div class="wrap">
-  <h1>SOAP Note Tool — Version 6.9.2</h1>
+  <h1>SOAP Note Tool — Version 6.9.3</h1>
   <div class="app">
 
     <!-- LEFT -->
@@ -793,13 +793,14 @@ textarea {
 
     <h4>Smart Templates (one-click baseline)</h4>
 <div class="row">
-    <button class="btn template-btn" data-template="smart-HAD">Smart HAD</button>
-  <button class="btn template-btn" data-template="smart-HACK-IW">Smart HACK I/W</button>
-  <button class="btn template-btn" data-template="smart-HACK-OW">Smart HACK O/W</button>
+  <button class="btn template-btn" data-template="smart-CHT">Smart CHT</button>
   <button class="btn template-btn" data-template="smart-HAE-MCAL-RDY">HAE MCAL Ready</button>
   <button class="btn template-btn" data-template="smart-HAE-MCAL-NR">HAE MCAL Not Ready</button>
-  <button class="btn template-btn" data-template="smart-CHT">Smart CHT</button>
   <button class="btn template-btn" data-template="smart-HAC">Smart HAC</button>
+  <button class="btn template-btn" data-template="smart-TPA-HAC">Smart TPA HAC</button>
+  <button class="btn template-btn" data-template="smart-HAD">Smart HAD</button>
+  <button class="btn template-btn" data-template="smart-HACK-IW">Smart HACK I/W</button>
+  <button class="btn template-btn" data-template="smart-HACK-OW">Smart HACK O/W</button>
   <button class="btn template-btn" data-template="smart-1FU">Smart 1st F/U</button>
   <button class="btn template-btn" data-template="smart-Annual">Smart Annual</button>
   <button class="btn template-btn" data-template="smart-ReDel">Smart Re-Del</button>
@@ -812,6 +813,7 @@ textarea {
       <button class="btn" data-appt="comprehensive hearing test">CHT</button>
       <button class="btn" data-appt="hearing aid evaluation">HAE</button>
       <button class="btn" data-appt="hearing aid consultation">HAC</button>
+      <button class="btn" data-appt="hearing aid consultation (TPA)">TPA HAC</button>
       <button class="btn" data-appt="hearing aid delivery">HAD</button>
       <button class="btn" data-appt="in-warranty hearing aid check and clean">HACK I/W</button>
       <button class="btn" data-appt="out-of-warranty hearing aid check and clean">HACK O/W</button>
@@ -1290,6 +1292,28 @@ textarea {
             <option value="Needs to be submitted"></option>
           </datalist>
         </div>
+
+        
+        <h4>TPA</h4>
+
+        <div class="row">
+          <input type="text" id="ins-tpa-name" list="ins-tpa-list" placeholder="TPA name (optional)"/>
+          <datalist id="ins-tpa-list">
+            <option value="TruHearing"></option>
+            <option value="EPIC Hearing Healthcare"></option>
+            <option value="Hearing Care Solutions"></option>
+            <option value="Amplifon"></option>
+            <option value="NationsHearing"></option>
+          </datalist>
+        </div>
+
+        <label class="small">TPA note lines</label>
+        <div id="ins-tpa-lines" class="row"></div>
+
+        <div class="row" style="margin-top:8px;">
+          <textarea id="ins-tpa-additional" rows="2" placeholder="Additional TPA info"></textarea>
+        </div>
+
 
         <hr/>
 
@@ -2159,6 +2183,11 @@ window.SNB = (()=>{
     insOOP: '',
     insurance: { status: null },
 
+    // TPA (within Insurance)
+    insTpaName: '',
+    insTpaLines: new Set(),
+    insTpaAdditional: '',
+
     haStyle: new Set(),
     haRecAS: false,           // left ear recommended?
     haRecAD: false,           // right ear recommended?
@@ -2314,6 +2343,13 @@ HA_COUPLING: [
       { label: "IIC",       value: "invisible-in-the-canal" }
     ],
 
+INS_TPA_LINES: [
+  { label: "Carved out through TPA", value: "carved" },
+  { label: "Discussed Sonus vs TPA", value: "sonus" },
+  { label: "Explained Medicare/TPA process", value: "explained" }
+],
+
+
 PLAN_ITEMS: {
 
   provider: [
@@ -2325,6 +2361,8 @@ PLAN_ITEMS: {
     // Delivery call moved here
     { label: "delivery call", value: "RTC 4-6 weeks for a Delivery appt. We will call when the hearing aids are received" },
 
+
+    { label: "Candidate list", value: "I will add patient to the candidate list" },
     // NEW
     { label: "Request Rx", value: "We will request a medical clearance from the PCP or ENT" },
     { label: "Submit Auth", value: "We will submit authorization to the patient's insurance company" }
@@ -2518,6 +2556,21 @@ S.utils = {
       ]
     },
 
+
+    // TPA HAC:
+    // Same layout as HAC, but with TPA flow
+    'hearing aid consultation (TPA)': {
+      mainOpen: ['sec-subjective','sec-objective','sec-assessment','sec-plan'],
+      subOpen:  [
+        'otoscopy-sub',
+        'audiogram-obj-sub',
+        'audiogram-assess-sub',
+        'clearance-sub',
+        'ins-sub',
+        'ha-rec-sub'
+      ]
+    },
+
 'hearing aid delivery': {
       // Keep Subjective open now
       mainOpen: [
@@ -2558,6 +2611,20 @@ S.utils = {
         'ham-post-sub'
       ]
     },
+
+    // 1st F/U:
+    // Same as HACK I/W (otoscopy + HA condition/maintenance)
+    'first follow-up appointment': {
+      mainOpen: ['sec-subjective','sec-objective','sec-assessment','sec-plan'],
+      subOpen:  [
+        'otoscopy-sub',
+        'hacond-sub',
+        'ham-sub',
+        'ham-post-sub'
+      ]
+    },
+
+
 
     // Annual test:
     // History, patient reports, otoscopy, in-office audio, Plan
@@ -2747,7 +2814,7 @@ S.utils = {
       actions: [
         { type: 'clickRaw', selector: '#apptButtons button[data-appt="hearing aid consultation"]' },
 
-        // Recommendation scope: AS + AD
+// Recommendation scope: AS + AD
         { type: 'clickRaw', selector: '#ha-rec-sub button[data-recscope="AS"]' },
         { type: 'clickRaw', selector: '#ha-rec-sub button[data-recscope="AD"]' },
 
@@ -2771,6 +2838,34 @@ S.utils = {
     },
 
     
+
+    'smart-TPA-HAC': {
+      label: 'Smart TPA HAC — consult + TPA discussion',
+      clearFirst: true,
+      openDetails: [
+        'sec-subjective','sec-objective','sec-assessment','sec-plan',
+        'otoscopy-sub','audiogram-obj-sub','audiogram-assess-sub','ha-rec-sub','ins-sub'
+      ],
+      actions: [
+        { type: 'clickRaw', selector: '#apptButtons button[data-appt="hearing aid consultation (TPA)"]' },
+
+        // Otoscopy: clear canals + unremarkable TM (AS then copy to AD)
+        { type: 'toggleOption', containerId: 'oto-AS-canal', value: 'clear' },
+        { type: 'toggleOption', containerId: 'oto-AS-tm', value: 'unremarkable' },
+        { type: 'clickRaw', selector: '[data-copy="oto-AS-to-AD"]' },
+
+        // TPA lines (fill TPA name as needed)
+        { type: 'toggleOption', containerId: 'ins-tpa-lines', value: 'carved' },
+        { type: 'toggleOption', containerId: 'ins-tpa-lines', value: 'sonus' },
+        { type: 'toggleOption', containerId: 'ins-tpa-lines', value: 'explained' },
+
+        // Plan: default "think about it" + candidate list
+        { type: 'toggleOption', containerId: 'plan-patient', value: 'If patient wants to move forward with ordering hearing aids or if they have any other questions, they will contact us.' },
+        { type: 'toggleOption', containerId: 'plan-provider', value: 'I will add patient to the candidate list' }
+      ]
+    },
+
+
     'smart-HAD': {
       label: 'Smart HAD — Standard delivery',
       clearFirst: true,
@@ -3940,6 +4035,27 @@ if(state.subjCustom.length)
     if(state.insurance.status)
       linesA.push(`Authorization: ${state.insurance.status}.`);
 
+    // TPA (within Insurance)
+    const tpaName = (state.insTpaName || '').trim();
+    if(state.insTpaLines && state.insTpaLines.size){
+      if(state.insTpaLines.has('carved')){
+        linesA.push(tpaName
+          ? `Insurance carved out through TPA - ${tpaName}.`
+          : `Insurance carved out through TPA.`
+        );
+      }
+      if(state.insTpaLines.has('sonus')){
+        linesA.push(`We talked about tech levels, lifestyle and budget to decide the best option for the patient. We talked about the benefits of Sonus Solutions vs the TPA pricing model.`);
+      }
+      if(state.insTpaLines.has('explained')){
+        linesA.push(`Pt was provided with TPA rates but is interested in pursuing hearing aids through the TPA to potentially reduce initial out-of-pocket costs. I explained how the Medicare HMO’s work and how a TPA’s operate. I also gave them information on their TPA and how to start the process.`);
+      }
+    }
+    if(state.insTpaAdditional && state.insTpaAdditional.trim()){
+      const t = state.insTpaAdditional.trim();
+      linesA.push(t.endsWith('.') ? t : t + '.');
+    }
+
 // =====================
 // HA RECOMMENDATION & PATIENT ORDER
 // =====================
@@ -4984,6 +5100,27 @@ pushDeliveryLines(state.deliveryPurchase);
         S.rebuild();
       });
     }
+
+
+    // TPA fields inside Insurance section
+    makeButtons('ins-tpa-lines', S.consts.INS_TPA_LINES, state.insTpaLines);
+
+    const insTpaName = document.getElementById('ins-tpa-name');
+    if(insTpaName){
+      insTpaName.addEventListener('input', ()=>{
+        state.insTpaName = insTpaName.value.trim();
+        S.rebuild();
+      });
+    }
+
+    const insTpaAdditional = document.getElementById('ins-tpa-additional');
+    if(insTpaAdditional){
+      insTpaAdditional.addEventListener('input', ()=>{
+        state.insTpaAdditional = insTpaAdditional.value.trim();
+        S.rebuild();
+      });
+    }
+
 
     // ==========================
     // Insurance Estimator (mirrors Excel logic)
