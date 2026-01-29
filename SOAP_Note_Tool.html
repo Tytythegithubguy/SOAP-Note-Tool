@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOAP Note Tool — v6.9.3</title>
+<title>SOAP Note Tool — v6.10.0</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -396,7 +396,7 @@ textarea {
   margin-top: 10px;
 }
 
-/* AS/AD two-column layout */
+/* AD/AS two-column layout */
 .grid-2 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -424,14 +424,14 @@ textarea {
   pointer-events: none;
 }
 
-/* Make Left (AS) + Copy row and Right (AD) label the same height 
+/* Make Right (AD) + Copy row and Left (AS) label the same height 
    so the two columns align cleanly */
 .hist-grid > div:first-child .copy-arrows,
 .hist-grid > div:nth-child(2) > .small:first-child {
   min-height: 32px; /* tweak this number if you want tighter / looser spacing */
 }
 
-/* Make the AS/AD headers line up nicely */
+/* Make the AD/AS headers line up nicely */
 .grid-2 > div {
   display: flex;
   flex-direction: column;
@@ -446,13 +446,13 @@ textarea {
   margin-bottom: 4px;
 }
 
-/* AS/AD grids that have a COPY button in the left column */
+/* AD/AS grids that have a COPY button in the left column */
 .asad-grid > div:first-child .copy-arrows,
 .asad-grid > div:nth-child(2) > .small:first-child {
   min-height: 32px; /* adjust if you want tighter/looser spacing */
 }
 
-/* Slightly tighter spacing under COPY rows in AS/AD grids */
+/* Slightly tighter spacing under COPY rows in AD/AS grids */
 .asad-grid .copy-arrows {
   margin-bottom: 2px;
 }
@@ -766,7 +766,7 @@ textarea {
   align-items:center;
   flex-wrap:wrap;
 }
-/* Force Audiogram AS/AD to remain side-by-side (override responsive collapse) */
+/* Force Audiogram AD/AS to remain side-by-side (override responsive collapse) */
 .grid-2.audiogram-ears{
   display:grid !important;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
@@ -834,15 +834,15 @@ textarea {
     <div class="grid-2 asad-grid">
       <div>
         <div class="copy-arrows">
-          <span class="small">Left (AS)</span>
-          <button class="btn" data-copy="hist-AS-to-AD">Copy ▶</button>
+          <span class="small">Right (AD)</span>
+          <button class="btn" data-copy="hist-AD-to-AS">Copy ▶</button>
         </div>
-        <div id="hist-AS" class="row"></div>
+        <div id="hist-AD" class="row"></div>
       </div>
 
       <div>
-        <span class="small">Right (AD)</span>
-        <div id="hist-AD" class="row"></div>
+        <span class="small">Left (AS)</span>
+        <div id="hist-AS" class="row"></div>
       </div>
     </div>
 
@@ -874,30 +874,30 @@ textarea {
     <div class="grid-2 asad-grid">
       <div>
         <div class="copy-arrows">
-          <span class="small">General — Left (AS)</span>
-          <button class="btn" data-copy="rgen-AS-to-AD">Copy ▶</button>
+          <span class="small">General — Right (AD)</span>
+          <button class="btn" data-copy="rgen-AD-to-AS">Copy ▶</button>
         </div>
-        <div id="reports-gen-AS" class="row"></div>
-
-        <div class="copy-arrows">
-          <span class="small">Hearing Aid — Left (AS)</span>
-          <button class="btn" data-copy="rha-AS-to-AD">Copy ▶</button>
-        </div>
-               <div id="reports-ha-AS" class="row"></div>
-        <!-- Removed per-ear AS custom textarea -->
-
-      </div>
-
-      <div>
-        <span class="small">General — Right (AD)</span>
         <div id="reports-gen-AD" class="row"></div>
 
         <div class="copy-arrows">
           <span class="small">Hearing Aid — Right (AD)</span>
+          <button class="btn" data-copy="rha-AD-to-AS">Copy ▶</button>
+        </div>
+               <div id="reports-ha-AD" class="row"></div>
+        <!-- Removed per-ear AD custom textarea -->
+
+      </div>
+
+      <div>
+        <span class="small">General — Left (AS)</span>
+        <div id="reports-gen-AS" class="row"></div>
+
+        <div class="copy-arrows">
+          <span class="small">Hearing Aid — Left (AS)</span>
           <button class="btn spacer" type="button" tabindex="-1" aria-hidden="true">Copy ▶</button>
         </div>
-        <div id="reports-ha-AD" class="row"></div>
-        <!-- Removed per-ear AD custom textarea -->
+        <div id="reports-ha-AS" class="row"></div>
+        <!-- Removed per-ear AS custom textarea -->
 
       </div>
     </div>
@@ -922,24 +922,9 @@ textarea {
 
           <div>
             <div class="copy-arrows">
-              <span class="small">Left (AS)</span>
-              <button class="btn" data-copy="oto-AS-to-AD">Copy ▶</button>
+              <span class="small">Right (AD)</span>
+              <button class="btn" data-copy="oto-AD-to-AS">Copy ▶</button>
             </div>
-            <label class="small">Canal</label>
-            <div id="oto-AS-canal" class="row"></div>
-
-            <label class="small">TM</label>
-            <div id="oto-AS-tm" class="row"></div>
-
-            <div class="row">
-              <textarea id="oto-AS-custom" rows="3"
-                placeholder="Additional Otoscopy info (AS)"></textarea>
-            </div>
-          </div>
-
-          <div>
-            <span class="small">Right (AD)</span>
-
             <label class="small">Canal</label>
             <div id="oto-AD-canal" class="row"></div>
 
@@ -948,7 +933,22 @@ textarea {
 
             <div class="row">
               <textarea id="oto-AD-custom" rows="3"
-                placeholder="Additional Otoscopy info (AD) — live"></textarea>
+                placeholder="Additional Otoscopy info (AD)"></textarea>
+            </div>
+          </div>
+
+          <div>
+            <span class="small">Left (AS)</span>
+
+            <label class="small">Canal</label>
+            <div id="oto-AS-canal" class="row"></div>
+
+            <label class="small">TM</label>
+            <div id="oto-AS-tm" class="row"></div>
+
+            <div class="row">
+              <textarea id="oto-AS-custom" rows="3"
+                placeholder="Additional Otoscopy info (AS) — live"></textarea>
             </div>
           </div>
 
@@ -961,58 +961,16 @@ textarea {
       <div class="inner">
 
         <div class="row">
-          <input type="text" id="audio-obj-src" placeholder="Doctor/Company (optional)"/>
+          <input type="text" id="audio-obj-src" placeholder="Doctor/Company "/>
         </div>
 
         <div class="grid-2 asad-grid audiogram-ears">
 
           <div>
             <div class="copy-arrows">
-              <span class="small">Left (AS)</span>
-              <button class="btn" data-copy="aobj-AS-to-AD">Copy ▶</button>
+              <span class="small">Right (AD)</span>
+              <button class="btn" data-copy="aobj-AD-to-AS">Copy ▶</button>
             </div>
-
-            <label class="small">Degree (max 2)</label>
-            <div id="audio-obj-AS-deg" class="row"></div>
-
-            <label class="small">Type (max 1)</label>
-            <div id="audio-obj-AS-type" class="row"></div>
-
-            <label class="small">Configuration (max 1)</label>
-            <div id="audio-obj-AS-conf" class="row"></div>
-
-          <div class="row audiogram-numeric-row">
-            <input type="number" inputmode="numeric" id="audio-obj-AS-pta" placeholder="PTA (dB HL)" style="max-width:120px;">
-            <input type="number" inputmode="numeric" id="audio-obj-AS-srt" placeholder="SRT (dB HL)" style="max-width:120px;">
-          </div>
-
-          <div class="row audiogram-numeric-row">
-            <input type="number" inputmode="numeric" id="audio-obj-AS-wrs" placeholder="WRS %" style="max-width:120px;">
-            <input type="number" inputmode="numeric" id="audio-obj-AS-wrsdb" placeholder="at dB" style="max-width:120px;">
-          </div>
-
-          <div class="row audiogram-tymp-row">
-            <label class="small" style="margin:0;">Tympanogram</label>
-            <select id="audio-obj-AS-tymp">
-              <option value="">Select type</option>
-              <option value="A">Type A</option>
-              <option value="As">Type As</option>
-              <option value="Ad">Type Ad</option>
-              <option value="B">Type B</option>
-              <option value="C">Type C</option>
-            </select>
-          </div>
-
-
-            <div class="row">
-              <textarea id="audio-obj-AS-custom" rows="3"
-                placeholder="Additional Audiogram info (AS)"></textarea>
-            </div>
-
-          </div>
-
-          <div>
-            <span class="small">Right (AD)</span>
 
             <label class="small">Degree (max 2)</label>
             <div id="audio-obj-AD-deg" class="row"></div>
@@ -1053,6 +1011,48 @@ textarea {
 
           </div>
 
+          <div>
+            <span class="small">Left (AS)</span>
+
+            <label class="small">Degree (max 2)</label>
+            <div id="audio-obj-AS-deg" class="row"></div>
+
+            <label class="small">Type (max 1)</label>
+            <div id="audio-obj-AS-type" class="row"></div>
+
+            <label class="small">Configuration (max 1)</label>
+            <div id="audio-obj-AS-conf" class="row"></div>
+
+          <div class="row audiogram-numeric-row">
+            <input type="number" inputmode="numeric" id="audio-obj-AS-pta" placeholder="PTA (dB HL)" style="max-width:120px;">
+            <input type="number" inputmode="numeric" id="audio-obj-AS-srt" placeholder="SRT (dB HL)" style="max-width:120px;">
+          </div>
+
+          <div class="row audiogram-numeric-row">
+            <input type="number" inputmode="numeric" id="audio-obj-AS-wrs" placeholder="WRS %" style="max-width:120px;">
+            <input type="number" inputmode="numeric" id="audio-obj-AS-wrsdb" placeholder="at dB" style="max-width:120px;">
+          </div>
+
+          <div class="row audiogram-tymp-row">
+            <label class="small" style="margin:0;">Tympanogram</label>
+            <select id="audio-obj-AS-tymp">
+              <option value="">Select type</option>
+              <option value="A">Type A</option>
+              <option value="As">Type As</option>
+              <option value="Ad">Type Ad</option>
+              <option value="B">Type B</option>
+              <option value="C">Type C</option>
+            </select>
+          </div>
+
+
+            <div class="row">
+              <textarea id="audio-obj-AS-custom" rows="3"
+                placeholder="Additional Audiogram info (AS)"></textarea>
+            </div>
+
+          </div>
+
         </div>
       </div>
     </details>
@@ -1083,8 +1083,8 @@ textarea {
     <div class="row" style="margin-top:8px;">
       <label class="small">Ear(s)</label>
       <div class="row">
-        <button class="btn" data-clear-ear="AS">AS</button>
         <button class="btn" data-clear-ear="AD">AD</button>
+        <button class="btn" data-clear-ear="AS">AS</button>
       </div>
       <span class="small" style="display:block;margin-top:4px;">
         Select both for AU in the note.
@@ -1100,25 +1100,25 @@ textarea {
 
     <div>
       <div class="copy-arrows">
-        <span class="small">Left (AS)</span>
-        <button class="btn" data-copy="hac-AS-to-AD">Copy ▶</button>
+        <span class="small">Right (AD)</span>
+        <button class="btn" data-copy="hac-AD-to-AS">Copy ▶</button>
       </div>
 
-      <div id="hac-AS" class="row"></div>
-
-      <div class="row">
-        <textarea id="hac-AS-custom" rows="2"
-          placeholder="Additional HA condition info (AS)"></textarea>
-      </div>
-    </div>
-
-    <div>
-      <span class="small">Right (AD)</span>
       <div id="hac-AD" class="row"></div>
 
       <div class="row">
         <textarea id="hac-AD-custom" rows="2"
           placeholder="Additional HA condition info (AD)"></textarea>
+      </div>
+    </div>
+
+    <div>
+      <span class="small">Left (AS)</span>
+      <div id="hac-AS" class="row"></div>
+
+      <div class="row">
+        <textarea id="hac-AS-custom" rows="2"
+          placeholder="Additional HA condition info (AS)"></textarea>
       </div>
     </div>
 
@@ -1133,7 +1133,7 @@ textarea {
   </div>
 </details>
 
-<!-- ASSESSMENT -->
+<!-- ADSESSMENT -->
 <details class="card" id="sec-assessment" open>
   <summary>Assessment <span class="chev">▶</span></summary>
   <div class="card-body" id="assessment-body">
@@ -1144,7 +1144,7 @@ textarea {
 
         <div class="row">
           <label class="small">Referred by:</label>
-          <input type="text" id="audio-refby" list="audio-refby-list" placeholder="Referred by (optional)"/>
+          <input type="text" id="audio-refby" list="audio-refby-list" placeholder="Referred by "/>
           <datalist id="audio-refby-list">
             <option value="ENT Associates"></option>
           </datalist>
@@ -1154,51 +1154,9 @@ textarea {
 
         <div>
           <div class="copy-arrows">
-            <span class="small">Left (AS)</span>
-            <button class="btn" data-copy="audio-AS-to-AD">Copy ▶</button>
+            <span class="small">Right (AD)</span>
+            <button class="btn" data-copy="audio-AD-to-AS">Copy ▶</button>
           </div>
-
-          <label class="small">Degree (max 2)</label>
-          <div id="audio-AS-deg" class="row"></div>
-
-          <label class="small">Type (max 1)</label>
-          <div id="audio-AS-type" class="row"></div>
-
-          <label class="small">Configuration (max 1)</label>
-          <div id="audio-AS-conf" class="row"></div>
-
-          <div class="row audiogram-numeric-row">
-            <input type="number" inputmode="numeric" id="audio-AS-pta" placeholder="PTA (dB HL)" style="max-width:120px;">
-            <input type="number" inputmode="numeric" id="audio-AS-srt" placeholder="SRT (dB HL)" style="max-width:120px;">
-          </div>
-
-          <div class="row audiogram-numeric-row">
-            <input type="number" inputmode="numeric" id="audio-AS-wrs" placeholder="WRS %" style="max-width:120px;">
-            <input type="number" inputmode="numeric" id="audio-AS-wrsdb" placeholder="at dB" style="max-width:120px;">
-          </div>
-
-          <div class="row audiogram-tymp-row">
-            <label class="small" style="margin:0;">Tympanogram</label>
-            <select id="audio-AS-tymp">
-              <option value="">Select type</option>
-              <option value="A">Type A</option>
-              <option value="As">Type As</option>
-              <option value="Ad">Type Ad</option>
-              <option value="B">Type B</option>
-              <option value="C">Type C</option>
-            </select>
-          </div>
-
-
-          <div class="row">
-            <textarea id="audio-AS-custom" rows="3"
-              placeholder="Additional Audiogram info (AS)"></textarea>
-          </div>
-
-        </div>
-
-        <div>
-          <span class="small">Right (AD)</span>
 
           <label class="small">Degree (max 2)</label>
           <div id="audio-AD-deg" class="row"></div>
@@ -1235,6 +1193,48 @@ textarea {
           <div class="row">
             <textarea id="audio-AD-custom" rows="3"
               placeholder="Additional Audiogram info (AD)"></textarea>
+          </div>
+
+        </div>
+
+        <div>
+          <span class="small">Left (AS)</span>
+
+          <label class="small">Degree (max 2)</label>
+          <div id="audio-AS-deg" class="row"></div>
+
+          <label class="small">Type (max 1)</label>
+          <div id="audio-AS-type" class="row"></div>
+
+          <label class="small">Configuration (max 1)</label>
+          <div id="audio-AS-conf" class="row"></div>
+
+          <div class="row audiogram-numeric-row">
+            <input type="number" inputmode="numeric" id="audio-AS-pta" placeholder="PTA (dB HL)" style="max-width:120px;">
+            <input type="number" inputmode="numeric" id="audio-AS-srt" placeholder="SRT (dB HL)" style="max-width:120px;">
+          </div>
+
+          <div class="row audiogram-numeric-row">
+            <input type="number" inputmode="numeric" id="audio-AS-wrs" placeholder="WRS %" style="max-width:120px;">
+            <input type="number" inputmode="numeric" id="audio-AS-wrsdb" placeholder="at dB" style="max-width:120px;">
+          </div>
+
+          <div class="row audiogram-tymp-row">
+            <label class="small" style="margin:0;">Tympanogram</label>
+            <select id="audio-AS-tymp">
+              <option value="">Select type</option>
+              <option value="A">Type A</option>
+              <option value="As">Type As</option>
+              <option value="Ad">Type Ad</option>
+              <option value="B">Type B</option>
+              <option value="C">Type C</option>
+            </select>
+          </div>
+
+
+          <div class="row">
+            <textarea id="audio-AS-custom" rows="3"
+              placeholder="Additional Audiogram info (AS)"></textarea>
           </div>
 
         </div>
@@ -1283,7 +1283,7 @@ textarea {
         </div>
 
         <div class="row">
-          <input type="text" id="ins-auth" list="ins-auth-list" placeholder="Authorization status (optional)"/>
+          <input type="text" id="ins-auth" list="ins-auth-list" placeholder="Authorization status "/>
           <datalist id="ins-auth-list">
             <option value="Approved"></option>
             <option value="Pending"></option>
@@ -1297,7 +1297,7 @@ textarea {
         <h4>TPA</h4>
 
         <div class="row">
-          <input type="text" id="ins-tpa-name" list="ins-tpa-list" placeholder="TPA name (optional)"/>
+          <input type="text" id="ins-tpa-name" list="ins-tpa-list" placeholder="TPA name "/>
           <datalist id="ins-tpa-list">
             <option value="TruHearing"></option>
             <option value="EPIC Hearing Healthcare"></option>
@@ -1466,8 +1466,8 @@ textarea {
     <div class="row">
       <label class="small">Ear(s) (recommendation)</label>
       <div class="row">
-        <button class="btn" data-recscope="AS">AS</button>
         <button class="btn" data-recscope="AD">AD</button>
+        <button class="btn" data-recscope="AS">AS</button>
       </div>
     </div>
 
@@ -1531,8 +1531,8 @@ textarea {
   <div class="row mt-6">
     <label class="small">Ear(s) (order)</label>
     <div class="row">
-      <button class="btn" data-orderscope="AS">AS</button>
       <button class="btn" data-orderscope="AD">AD</button>
+      <button class="btn" data-orderscope="AS">AS</button>
     </div>
   </div>
 
@@ -1639,64 +1639,14 @@ textarea {
     </div>
   </div>
 
-  <!-- AS / AD receiver + mold inputs -->
+  <!-- AD / AS receiver + mold inputs -->
   <div class="grid-2 mt-10">
-
-    <!-- Left Ear -->
-    <div>
-      <div class="copy-arrows">
-        <span class="small"><strong>Left (AS)</strong></span>
-        <button class="btn" id="copy-coupling-AS-to-AD">Copy ▶</button>
-      </div>
-
-      <label class="small mt-6">Receiver/slim tube length — AS</label>
-      <select id="rec-len-AS">
-        <option value="">—</option>
-        <option>0</option><option>1</option><option>2</option>
-        <option>3</option><option>4</option><option>5</option>
-      </select>
-
-      <label class="small mt-6">Receiver power (AS)</label>
-      <input
-        type="text"
-        id="rec-pwr-AS"
-        placeholder="e.g., 50"
-      />
-
-      <label class="small mt-6">Ear mold style (AS)</label>
-      <select id="order-mold-type-AS">
-        <option value="">—</option>
-        <option value="canal">canal</option>
-        <option value="canal lock">canal lock</option>
-        <option value="helix">helix</option>
-        <option value="half shell">half shell</option>
-        <option value="3/4 shell">3/4 shell</option>
-        <option value="skeleton">skeleton</option>
-        <option value="full shell">full shell</option>
-      </select>
-
-      <label class="small mt-6">Ear mold material (AS)</label>
-      <select id="order-mold-material-AS">
-        <option value="">—</option>
-        <option value="soft">soft</option>
-        <option value="hard">hard</option>
-      </select>
-
-      <label class="small mt-6">Ear mold color (AS)</label>
-      <input
-        type="text"
-        id="mold-color-AS"
-        list="mold-color-list"
-        placeholder="Left (AS)"
-      />
-    </div>
 
     <!-- Right Ear -->
     <div>
       <div class="copy-arrows">
         <span class="small"><strong>Right (AD)</strong></span>
-        <!-- dummy button to match Copy ▶ height on the left -->
-        <button class="btn" style="visibility:hidden; pointer-events:none;">Copy ▶</button>
+        <button class="btn" id="copy-coupling-AD-to-AS">Copy ▶</button>
       </div>
 
       <label class="small mt-6">Receiver/slim tube length — AD</label>
@@ -1710,7 +1660,7 @@ textarea {
       <input
         type="text"
         id="rec-pwr-AD"
-        placeholder="e.g., 60"
+        placeholder="e.g., 50"
       />
 
       <label class="small mt-6">Ear mold style (AD)</label>
@@ -1738,6 +1688,56 @@ textarea {
         id="mold-color-AD"
         list="mold-color-list"
         placeholder="Right (AD)"
+      />
+    </div>
+
+    <!-- Left Ear -->
+    <div>
+      <div class="copy-arrows">
+        <span class="small"><strong>Left (AS)</strong></span>
+        <!-- dummy button to match Copy ▶ height on the left -->
+        <button class="btn" style="visibility:hidden; pointer-events:none;">Copy ▶</button>
+      </div>
+
+      <label class="small mt-6">Receiver/slim tube length — AS</label>
+      <select id="rec-len-AS">
+        <option value="">—</option>
+        <option>0</option><option>1</option><option>2</option>
+        <option>3</option><option>4</option><option>5</option>
+      </select>
+
+      <label class="small mt-6">Receiver power (AS)</label>
+      <input
+        type="text"
+        id="rec-pwr-AS"
+        placeholder="e.g., 60"
+      />
+
+      <label class="small mt-6">Ear mold style (AS)</label>
+      <select id="order-mold-type-AS">
+        <option value="">—</option>
+        <option value="canal">canal</option>
+        <option value="canal lock">canal lock</option>
+        <option value="helix">helix</option>
+        <option value="half shell">half shell</option>
+        <option value="3/4 shell">3/4 shell</option>
+        <option value="skeleton">skeleton</option>
+        <option value="full shell">full shell</option>
+      </select>
+
+      <label class="small mt-6">Ear mold material (AS)</label>
+      <select id="order-mold-material-AS">
+        <option value="">—</option>
+        <option value="soft">soft</option>
+        <option value="hard">hard</option>
+      </select>
+
+      <label class="small mt-6">Ear mold color (AS)</label>
+      <input
+        type="text"
+        id="mold-color-AS"
+        list="mold-color-list"
+        placeholder="Left (AS)"
       />
     </div>
 
@@ -1913,26 +1913,26 @@ textarea {
 
     <div>
       <div class="copy-arrows">
-        <span class="small">Left (AS)</span>
-        <button class="btn" data-copy="ham-AS-to-AD">Copy ▶</button>
+        <span class="small">Right (AD)</span>
+        <button class="btn" data-copy="ham-AD-to-AS">Copy ▶</button>
       </div>
-
-      <div id="ham-AS" class="row"></div>
-
-      <div class="row">
-        <textarea id="ham-AS-custom" rows="2"
-          placeholder="Additional HA maintenance info (AS)"></textarea>
-      </div>
-    </div>
-
-    <div>
-      <span class="small">Right (AD)</span>
 
       <div id="ham-AD" class="row"></div>
 
       <div class="row">
         <textarea id="ham-AD-custom" rows="2"
           placeholder="Additional HA maintenance info (AD)"></textarea>
+      </div>
+    </div>
+
+    <div>
+      <span class="small">Left (AS)</span>
+
+      <div id="ham-AS" class="row"></div>
+
+      <div class="row">
+        <textarea id="ham-AS-custom" rows="2"
+          placeholder="Additional HA maintenance info (AS)"></textarea>
       </div>
     </div>
 
@@ -1946,26 +1946,26 @@ textarea {
 
     <div>
       <div class="copy-arrows">
-        <span class="small">Left (AS)</span>
-        <button class="btn" data-copy="ham-post-AS-to-AD">Copy ▶</button>
+        <span class="small">Right (AD)</span>
+        <button class="btn" data-copy="ham-post-AD-to-AS">Copy ▶</button>
       </div>
-
-      <div id="ham-post-AS" class="row"></div>
-
-      <div class="row">
-        <textarea id="ham-post-AS-custom" rows="2"
-          placeholder="Post-maintenance notes (AS)"></textarea>
-      </div>
-    </div>
-
-    <div>
-      <span class="small">Right (AD)</span>
 
       <div id="ham-post-AD" class="row"></div>
 
       <div class="row">
         <textarea id="ham-post-AD-custom" rows="2"
           placeholder="Post-maintenance notes (AD)"></textarea>
+      </div>
+    </div>
+
+    <div>
+      <span class="small">Left (AS)</span>
+
+      <div id="ham-post-AS" class="row"></div>
+
+      <div class="row">
+        <textarea id="ham-post-AS-custom" rows="2"
+          placeholder="Post-maintenance notes (AS)"></textarea>
       </div>
     </div>
 
@@ -2037,7 +2037,7 @@ textarea {
         </div>
       </div>
 
-      <!-- AS-NEEDED + CLEAR COLUMN -->
+      <!-- AD-NEEDED + CLEAR COLUMN -->
       <div>
         <label class="small">Other</label>
         <div class="row">
@@ -2093,89 +2093,89 @@ window.SNB = (()=>{
     /* SUBJECTIVE */
     apptType: '',
     companion: '',
-    historyAS: new Set(),
     historyAD: new Set(),
+    historyAS: new Set(),
     historyGeneral: new Set(),
     historyDeniesAll: false,
     historyAdditional: '',
     historyHAUse: '',
 
-    repGenAS: new Set(),
     repGenAD: new Set(),
+    repGenAS: new Set(),
     repHAAS: new Set(),
     repHAAD: new Set(),
 
-    repCustomAS: [],
     repCustomAD: [],
+    repCustomAS: [],
     subjCustom: [],
 
     /* OBJECTIVE */
-    otoAScanal: new Set(),
-    otoAStm: new Set(),
     otoADcanal: new Set(),
     otoADtm: new Set(),
-    otoCustomAS: [],
+    otoAScanal: new Set(),
+    otoAStm: new Set(),
     otoCustomAD: [],
+    otoCustomAS: [],
 
     audioObjSrc: '',
-    audioObjASdeg: new Set(),
     audioObjADdeg: new Set(),
-    audioObjAStype: new Set(),
+    audioObjASdeg: new Set(),
     audioObjADtype: new Set(),
-    audioObjASconf: new Set(),
+    audioObjAStype: new Set(),
     audioObjADconf: new Set(),
-
-    audioObjASpta: '',
-    audioObjASsrt: '',
-    audioObjASwrs: '',
-    audioObjASwrsdb: '',
-    audioObjAStymp: '',
+    audioObjASconf: new Set(),
 
     audioObjADpta: '',
     audioObjADsrt: '',
     audioObjADwrs: '',
     audioObjADwrsdb: '',
     audioObjADtymp: '',
-    audioObjCustomAS: [],
+
+    audioObjASpta: '',
+    audioObjASsrt: '',
+    audioObjASwrs: '',
+    audioObjASwrsdb: '',
+    audioObjAStymp: '',
     audioObjCustomAD: [],
+    audioObjCustomAS: [],
 
 
-    hacAS: new Set(),
     hacAD: new Set(),
-    hacCustomAS: [],
+    hacAS: new Set(),
     hacCustomAD: [],
+    hacCustomAS: [],
 
     clearance: '',
     clearanceDoc: '',
-    clearanceAS: false,
     clearanceAD: false,
+    clearanceAS: false,
 
     objCustom: [],
 
 
-    /* ASSESSMENT */
+    /* ADSESSMENT */
     audioRefBy: '',
 
-    audioASdeg: new Set(),
     audioADdeg: new Set(),
-    audioAStype: new Set(),
+    audioASdeg: new Set(),
     audioADtype: new Set(),
-    audioASconf: new Set(),
+    audioAStype: new Set(),
     audioADconf: new Set(),
-
-    audioASpta: '',
-    audioASsrt: '',
-    audioASwrs: '',
-    audioASwrsdb: '',
-    audioAStymp: '',
+    audioASconf: new Set(),
 
     audioADpta: '',
     audioADsrt: '',
     audioADwrs: '',
     audioADwrsdb: '',
     audioADtymp: '',
-    audioCustomAS: [],
+
+    audioASpta: '',
+    audioASsrt: '',
+    audioASwrs: '',
+    audioASwrsdb: '',
+    audioAStymp: '',
     audioCustomAD: [],
+    audioCustomAS: [],
 
 
     insCompany: '',
@@ -2189,8 +2189,8 @@ window.SNB = (()=>{
     insTpaAdditional: '',
 
     haStyle: new Set(),
-    haRecAS: false,           // left ear recommended?
-    haRecAD: false,           // right ear recommended?
+    haRecAD: false,           // left ear recommended?
+    haRecAS: false,           // right ear recommended?
     haTech: '',               // "Hearing aid details" text
     haCoupling: new Set(),    // dome / custom ear mold
     orderCoupling: new Set(),
@@ -2200,35 +2200,35 @@ window.SNB = (()=>{
       model: '',
       style: '',
       color: '',
-      scope: '',              // AS, AD, or AU (also derived from buttons)
+      scope: '',              // AD, AS, or AU (also derived from buttons)
 
       // Receiver / tube details
-      recLenAS: '',
       recLenAD: '',
-      recPwrAS: '',
+      recLenAS: '',
       recPwrAD: '',
+      recPwrAS: '',
       tubeType: '',           // "slim tube" or "receiver"
 
       // Ear mold style/material/color — independent per ear
-      moldTypeAS: '',
       moldTypeAD: '',
-      moldMaterialAS: '',
+      moldTypeAS: '',
       moldMaterialAD: '',
-      moldColorAS: '',
+      moldMaterialAS: '',
       moldColorAD: '',
+      moldColorAS: '',
 
       extraDetails: ''        // optional extra line for order
     },
 
-    hamAS: new Set(),
     hamAD: new Set(),
-    hamCustomAS: [],
+    hamAS: new Set(),
     hamCustomAD: [],
+    hamCustomAS: [],
 
-    hamPostAS: new Set(),
     hamPostAD: new Set(),
-    hamPostCustomAS: [],
+    hamPostAS: new Set(),
     hamPostCustomAD: [],
+    hamPostCustomAS: [],
 
     // NEW: Delivery (Assessment)
     deliveryFit: [],
@@ -2256,7 +2256,7 @@ window.SNB = (()=>{
   S.state = state;
 
   S.consts = {
-    HIST_ASAD: [
+    HIST_ADAS: [
       "decreased hearing",
       "tinnitus",
       { label: "sudden loss", value: "sudden hearing loss within the previous 90 days" },
@@ -2456,7 +2456,7 @@ S.utils = {
     // Hearing aids / ears
     out = out.replace(/\bhearing aids\b/gi, "HA's");
     out = out.replace(/\bhearing aid\b/gi, 'HA');
-    // (AS / AD / AU already shorthand, so we leave them)
+    // (AD / AS / AU already shorthand, so we leave them)
 
     // Medical clearance / insurance
     out = out.replace(/\bMedical clearance\b/gi, 'Rx');
@@ -2737,15 +2737,15 @@ S.utils = {
       actions: [
         { type: 'clickRaw', selector: '#apptButtons button[data-appt="hearing aid evaluation"]' },
 
-        // Recommendation scope: AS + AD
-        { type: 'clickRaw', selector: '#ha-rec-sub button[data-recscope="AS"]' },
+        // Recommendation scope: AD + AS
         { type: 'clickRaw', selector: '#ha-rec-sub button[data-recscope="AD"]' },
+        { type: 'clickRaw', selector: '#ha-rec-sub button[data-recscope="AS"]' },
 
 
-        // Otoscopy: clear canals + unremarkable TM (AS then copy to AD)
-        { type: 'toggleOption', containerId: 'oto-AS-canal', value: 'clear' },
-        { type: 'toggleOption', containerId: 'oto-AS-tm', value: 'unremarkable' },
-        { type: 'clickRaw', selector: '[data-copy="oto-AS-to-AD"]' },
+        // Otoscopy: clear canals + unremarkable TM (AD then copy to AS)
+        { type: 'toggleOption', containerId: 'oto-AD-canal', value: 'clear' },
+        { type: 'toggleOption', containerId: 'oto-AD-tm', value: 'unremarkable' },
+        { type: 'clickRaw', selector: '[data-copy="oto-AD-to-AS"]' },
 
         // Recommend BTE + RIC
         { type: 'toggleOption', containerId: 'ha-style-row', value: 'behind-the-ear' },
@@ -2776,15 +2776,15 @@ S.utils = {
       actions: [
         { type: 'clickRaw', selector: '#apptButtons button[data-appt="hearing aid evaluation"]' },
 
-        // Recommendation scope: AS + AD
-        { type: 'clickRaw', selector: '#ha-rec-sub button[data-recscope="AS"]' },
+        // Recommendation scope: AD + AS
         { type: 'clickRaw', selector: '#ha-rec-sub button[data-recscope="AD"]' },
+        { type: 'clickRaw', selector: '#ha-rec-sub button[data-recscope="AS"]' },
 
 
-        // Otoscopy: clear canals + unremarkable TM (AS then copy to AD)
-        { type: 'toggleOption', containerId: 'oto-AS-canal', value: 'clear' },
-        { type: 'toggleOption', containerId: 'oto-AS-tm', value: 'unremarkable' },
-        { type: 'clickRaw', selector: '[data-copy="oto-AS-to-AD"]' },
+        // Otoscopy: clear canals + unremarkable TM (AD then copy to AS)
+        { type: 'toggleOption', containerId: 'oto-AD-canal', value: 'clear' },
+        { type: 'toggleOption', containerId: 'oto-AD-tm', value: 'unremarkable' },
+        { type: 'clickRaw', selector: '[data-copy="oto-AD-to-AS"]' },
 
         // Recommend BTE + RIC
         { type: 'toggleOption', containerId: 'ha-style-row', value: 'behind-the-ear' },
@@ -2814,15 +2814,15 @@ S.utils = {
       actions: [
         { type: 'clickRaw', selector: '#apptButtons button[data-appt="hearing aid consultation"]' },
 
-// Recommendation scope: AS + AD
-        { type: 'clickRaw', selector: '#ha-rec-sub button[data-recscope="AS"]' },
+// Recommendation scope: AD + AS
         { type: 'clickRaw', selector: '#ha-rec-sub button[data-recscope="AD"]' },
+        { type: 'clickRaw', selector: '#ha-rec-sub button[data-recscope="AS"]' },
 
 
-        // Otoscopy: clear canals + unremarkable TM (AS then copy to AD)
-        { type: 'toggleOption', containerId: 'oto-AS-canal', value: 'clear' },
-        { type: 'toggleOption', containerId: 'oto-AS-tm', value: 'unremarkable' },
-        { type: 'clickRaw', selector: '[data-copy="oto-AS-to-AD"]' },
+        // Otoscopy: clear canals + unremarkable TM (AD then copy to AS)
+        { type: 'toggleOption', containerId: 'oto-AD-canal', value: 'clear' },
+        { type: 'toggleOption', containerId: 'oto-AD-tm', value: 'unremarkable' },
+        { type: 'clickRaw', selector: '[data-copy="oto-AD-to-AS"]' },
 
         // Recommend RIC + Dome
         { type: 'toggleOption', containerId: 'ha-style-row', value: 'receiver-in-the-canal' },
@@ -2849,10 +2849,10 @@ S.utils = {
       actions: [
         { type: 'clickRaw', selector: '#apptButtons button[data-appt="hearing aid consultation (TPA)"]' },
 
-        // Otoscopy: clear canals + unremarkable TM (AS then copy to AD)
-        { type: 'toggleOption', containerId: 'oto-AS-canal', value: 'clear' },
-        { type: 'toggleOption', containerId: 'oto-AS-tm', value: 'unremarkable' },
-        { type: 'clickRaw', selector: '[data-copy="oto-AS-to-AD"]' },
+        // Otoscopy: clear canals + unremarkable TM (AD then copy to AS)
+        { type: 'toggleOption', containerId: 'oto-AD-canal', value: 'clear' },
+        { type: 'toggleOption', containerId: 'oto-AD-tm', value: 'unremarkable' },
+        { type: 'clickRaw', selector: '[data-copy="oto-AD-to-AS"]' },
 
         // TPA lines (fill TPA name as needed)
         { type: 'toggleOption', containerId: 'ins-tpa-lines', value: 'carved' },
@@ -2876,10 +2876,10 @@ S.utils = {
       actions: [
         { type: 'clickRaw', selector: '#apptButtons button[data-appt="hearing aid delivery"]' },
 
-        // Otoscopy: clear canals + unremarkable TM (AS then copy to AD)
-        { type: 'toggleOption', containerId: 'oto-AS-canal', value: 'clear' },
-        { type: 'toggleOption', containerId: 'oto-AS-tm', value: 'unremarkable' },
-        { type: 'clickRaw', selector: '[data-copy="oto-AS-to-AD"]' },
+        // Otoscopy: clear canals + unremarkable TM (AD then copy to AS)
+        { type: 'toggleOption', containerId: 'oto-AD-canal', value: 'clear' },
+        { type: 'toggleOption', containerId: 'oto-AD-tm', value: 'unremarkable' },
+        { type: 'clickRaw', selector: '[data-copy="oto-AD-to-AS"]' },
 
         // Standard delivery preset (fills common delivery text)
         { type: 'clickRaw', selector: '#delivery-standard' },
@@ -2903,18 +2903,18 @@ S.utils = {
       actions: [
         { type: 'clickRaw', selector: '#apptButtons button[data-appt="in-warranty hearing aid check and clean"]' },
 
-        // Condition: needs cleaning (set on AS then copy to AD)
-        { type: 'toggleOption', containerId: 'hac-AS', value: 'appears dirty' },
-        { type: 'clickRaw', selector: '[data-copy="hac-AS-to-AD"]' },
+        // Condition: needs cleaning (set on AD then copy to AS)
+        { type: 'toggleOption', containerId: 'hac-AD', value: 'appears dirty' },
+        { type: 'clickRaw', selector: '[data-copy="hac-AD-to-AS"]' },
 
-        // Maintenance: cleaned + vacuumed microphones (set on AS then copy to AD)
-        { type: 'toggleOption', containerId: 'ham-AS', value: 'cleaned' },
-        { type: 'toggleOption', containerId: 'ham-AS', value: 'vacuumed microphones' },
-        { type: 'clickRaw', selector: '[data-copy="ham-AS-to-AD"]' },
+        // Maintenance: cleaned + vacuumed microphones (set on AD then copy to AS)
+        { type: 'toggleOption', containerId: 'ham-AD', value: 'cleaned' },
+        { type: 'toggleOption', containerId: 'ham-AD', value: 'vacuumed microphones' },
+        { type: 'clickRaw', selector: '[data-copy="ham-AD-to-AS"]' },
 
-        // Post: sounds good (set on AS then copy to AD)
-        { type: 'toggleOption', containerId: 'ham-post-AS', value: 'sounds good' },
-        { type: 'clickRaw', selector: '[data-copy="ham-post-AS-to-AD"]' },
+        // Post: sounds good (set on AD then copy to AS)
+        { type: 'toggleOption', containerId: 'ham-post-AD', value: 'sounds good' },
+        { type: 'clickRaw', selector: '[data-copy="ham-post-AD-to-AS"]' },
 
         // Plan: RTC 6 months for clean & check + "or as needed"
         { type: 'setInput', id: 'rtc-time', value: '6' },
@@ -2935,18 +2935,18 @@ S.utils = {
       actions: [
         { type: 'clickRaw', selector: '#apptButtons button[data-appt="out-of-warranty hearing aid check and clean"]' },
 
-        // Condition: needs cleaning (set on AS then copy to AD)
-        { type: 'toggleOption', containerId: 'hac-AS', value: 'appears dirty' },
-        { type: 'clickRaw', selector: '[data-copy="hac-AS-to-AD"]' },
+        // Condition: needs cleaning (set on AD then copy to AS)
+        { type: 'toggleOption', containerId: 'hac-AD', value: 'appears dirty' },
+        { type: 'clickRaw', selector: '[data-copy="hac-AD-to-AS"]' },
 
-        // Maintenance: cleaned + vacuumed microphones (set on AS then copy to AD)
-        { type: 'toggleOption', containerId: 'ham-AS', value: 'cleaned' },
-        { type: 'toggleOption', containerId: 'ham-AS', value: 'vacuumed microphones' },
-        { type: 'clickRaw', selector: '[data-copy="ham-AS-to-AD"]' },
+        // Maintenance: cleaned + vacuumed microphones (set on AD then copy to AS)
+        { type: 'toggleOption', containerId: 'ham-AD', value: 'cleaned' },
+        { type: 'toggleOption', containerId: 'ham-AD', value: 'vacuumed microphones' },
+        { type: 'clickRaw', selector: '[data-copy="ham-AD-to-AS"]' },
 
-        // Post: sounds good (set on AS then copy to AD)
-        { type: 'toggleOption', containerId: 'ham-post-AS', value: 'sounds good' },
-        { type: 'clickRaw', selector: '[data-copy="ham-post-AS-to-AD"]' },
+        // Post: sounds good (set on AD then copy to AS)
+        { type: 'toggleOption', containerId: 'ham-post-AD', value: 'sounds good' },
+        { type: 'clickRaw', selector: '[data-copy="ham-post-AD-to-AS"]' },
 
         // Plan patient: eligible for new (O/W default)
         { type: 'toggleOption', containerId: 'plan-patient', value: "Pt may be eligible for new HA’s, RTC for an annual hearing test to start the process" }
@@ -2963,18 +2963,18 @@ S.utils = {
       actions: [
         { type: 'clickRaw', selector: '#apptButtons button[data-appt="first follow-up appointment"]' },
 
-        // Condition: appears clean (set on AS then copy to AD)
-        { type: 'toggleOption', containerId: 'hac-AS', value: 'appears clean' },
-        { type: 'clickRaw', selector: '[data-copy="hac-AS-to-AD"]' },
+        // Condition: appears clean (set on AD then copy to AS)
+        { type: 'toggleOption', containerId: 'hac-AD', value: 'appears clean' },
+        { type: 'clickRaw', selector: '[data-copy="hac-AD-to-AS"]' },
 
-        // Maintenance: cleaned (set on AS then copy to AD)
-        { type: 'toggleOption', containerId: 'ham-AS', value: 'cleaned' },
-        { type: 'toggleOption', containerId: 'ham-AS', value: 'vacuumed microphones' },
-        { type: 'clickRaw', selector: '[data-copy="ham-AS-to-AD"]' },
+        // Maintenance: cleaned (set on AD then copy to AS)
+        { type: 'toggleOption', containerId: 'ham-AD', value: 'cleaned' },
+        { type: 'toggleOption', containerId: 'ham-AD', value: 'vacuumed microphones' },
+        { type: 'clickRaw', selector: '[data-copy="ham-AD-to-AS"]' },
 
-        // Post: sounds good (set on AS then copy to AD)
-        { type: 'toggleOption', containerId: 'ham-post-AS', value: 'sounds good' },
-        { type: 'clickRaw', selector: '[data-copy="ham-post-AS-to-AD"]' },
+        // Post: sounds good (set on AD then copy to AS)
+        { type: 'toggleOption', containerId: 'ham-post-AD', value: 'sounds good' },
+        { type: 'clickRaw', selector: '[data-copy="ham-post-AD-to-AS"]' },
 
         // Plan: RTC 6 months + "or as needed"
         { type: 'setInput', id: 'rtc-time', value: '6' },
@@ -3051,9 +3051,9 @@ S.utils = {
     'ha-rec-sub'
   ],
   actions: [
-    // Order Scope (click AS, then AD → results in AU)
-    { type: 'clickRaw', selector: 'button[data-orderscope="AS"]' },
+    // Order Scope (click AD, then AS → results in AU)
     { type: 'clickRaw', selector: 'button[data-orderscope="AD"]' },
+    { type: 'clickRaw', selector: 'button[data-orderscope="AS"]' },
 
     // Basic order info
     { type: 'setInput', id: 'order-mfg',   value: 'Starkey' },
@@ -3061,15 +3061,15 @@ S.utils = {
     { type: 'setInput', id: 'order-style', value: 'behind-the-ear' },
     { type: 'setInput', id: 'order-color', value: 'champagne' },
 
-    // Ear molds AS
-    { type: 'setSelect', id: 'order-mold-type-AS',     value: 'half shell' },
-    { type: 'setSelect', id: 'order-mold-material-AS', value: 'hard' },
-    { type: 'setInput',  id: 'mold-color-AS',          value: 'clear' },
-
     // Ear molds AD
     { type: 'setSelect', id: 'order-mold-type-AD',     value: 'half shell' },
     { type: 'setSelect', id: 'order-mold-material-AD', value: 'hard' },
     { type: 'setInput',  id: 'mold-color-AD',          value: 'clear' },
+
+    // Ear molds AS
+    { type: 'setSelect', id: 'order-mold-type-AS',     value: 'half shell' },
+    { type: 'setSelect', id: 'order-mold-material-AS', value: 'hard' },
+    { type: 'setInput',  id: 'mold-color-AS',          value: 'clear' },
 
     // Coupling selection (ear mold)
     { 
@@ -3090,9 +3090,9 @@ S.utils = {
         'ha-rec-sub'
       ],
       actions: [
-        // AU = click AS then AD
-        { type: 'clickRaw', selector: 'button[data-orderscope="AS"]' },
+        // AU = click AD then AS
         { type: 'clickRaw', selector: 'button[data-orderscope="AD"]' },
+        { type: 'clickRaw', selector: 'button[data-orderscope="AS"]' },
 
         // Basic order info
         { type: 'setInput', id: 'order-mfg',   value: 'Starkey' },
@@ -3104,10 +3104,10 @@ S.utils = {
         { type: 'clickRaw', selector: 'button[data-ordertube="receiver"]' },
 
         // Receivers #3 50 AU
-        { type: 'setSelect', id: 'rec-len-AS', value: '3' },
         { type: 'setSelect', id: 'rec-len-AD', value: '3' },
-        { type: 'setInput',  id: 'rec-pwr-AS', value: '50' },
+        { type: 'setSelect', id: 'rec-len-AS', value: '3' },
         { type: 'setInput',  id: 'rec-pwr-AD', value: '50' },
+        { type: 'setInput',  id: 'rec-pwr-AS', value: '50' },
 
         // Coupling: domes
         {
@@ -3129,8 +3129,8 @@ S.utils = {
       ],
       actions: [
         // AU
-        { type: 'clickRaw', selector: 'button[data-orderscope="AS"]' },
         { type: 'clickRaw', selector: 'button[data-orderscope="AD"]' },
+        { type: 'clickRaw', selector: 'button[data-orderscope="AS"]' },
 
         // Basic order info
         { type: 'setInput', id: 'order-mfg',   value: 'Starkey' },
@@ -3142,18 +3142,18 @@ S.utils = {
         { type: 'clickRaw', selector: 'button[data-ordertube="receiver"]' },
 
         // Receivers #3 60 AU
-        { type: 'setSelect', id: 'rec-len-AS', value: '3' },
         { type: 'setSelect', id: 'rec-len-AD', value: '3' },
-        { type: 'setInput',  id: 'rec-pwr-AS', value: '60' },
+        { type: 'setSelect', id: 'rec-len-AS', value: '3' },
         { type: 'setInput',  id: 'rec-pwr-AD', value: '60' },
+        { type: 'setInput',  id: 'rec-pwr-AS', value: '60' },
 
         // RIC ear molds with skeleton style (I’m assuming soft/clear; you can tweak)
-        { type: 'setSelect', id: 'order-mold-type-AS',     value: 'skeleton' },
         { type: 'setSelect', id: 'order-mold-type-AD',     value: 'skeleton' },
-        { type: 'setSelect', id: 'order-mold-material-AS', value: 'soft' },
+        { type: 'setSelect', id: 'order-mold-type-AS',     value: 'skeleton' },
         { type: 'setSelect', id: 'order-mold-material-AD', value: 'soft' },
-        { type: 'setInput',  id: 'mold-color-AS',          value: 'clear' },
+        { type: 'setSelect', id: 'order-mold-material-AS', value: 'soft' },
         { type: 'setInput',  id: 'mold-color-AD',          value: 'clear' },
+        { type: 'setInput',  id: 'mold-color-AS',          value: 'clear' },
 
         // Coupling: RIC ear molds
         {
@@ -3175,8 +3175,8 @@ S.utils = {
       ],
       actions: [
         // AU
-        { type: 'clickRaw', selector: 'button[data-orderscope="AS"]' },
         { type: 'clickRaw', selector: 'button[data-orderscope="AD"]' },
+        { type: 'clickRaw', selector: 'button[data-orderscope="AS"]' },
 
         // Basic order info
         { type: 'setInput', id: 'order-mfg',   value: 'ReSound' },
@@ -3198,8 +3198,8 @@ S.utils = {
       ],
       actions: [
         // AU
-        { type: 'clickRaw', selector: 'button[data-orderscope="AS"]' },
         { type: 'clickRaw', selector: 'button[data-orderscope="AD"]' },
+        { type: 'clickRaw', selector: 'button[data-orderscope="AS"]' },
 
         // Basic order info
         { type: 'setInput', id: 'order-mfg',   value: 'ReSound' },
@@ -3325,18 +3325,18 @@ S.utils = {
       color: '',
       scope: '',
 
-      recLenAS: '',
       recLenAD: '',
-      recPwrAS: '',
+      recLenAS: '',
       recPwrAD: '',
+      recPwrAS: '',
       tubeType: '',
 
-      moldTypeAS: '',
       moldTypeAD: '',
-      moldMaterialAS: '',
+      moldTypeAS: '',
       moldMaterialAD: '',
-      moldColorAS: '',
+      moldMaterialAS: '',
       moldColorAD: '',
+      moldColorAS: '',
 
       extraDetails: ''
     });
@@ -3355,18 +3355,18 @@ S.utils = {
       color: '',
       scope: '',
 
-      recLenAS: '',
       recLenAD: '',
-      recPwrAS: '',
+      recLenAS: '',
       recPwrAD: '',
+      recPwrAS: '',
       tubeType: '',
 
-      moldTypeAS: '',
       moldTypeAD: '',
-      moldMaterialAS: '',
+      moldTypeAS: '',
       moldMaterialAD: '',
-      moldColorAS: '',
+      moldMaterialAS: '',
       moldColorAD: '',
+      moldColorAS: '',
 
       extraDetails: ''
     });
@@ -3382,10 +3382,10 @@ S.utils = {
       'order-model',
       'order-style',
       'order-color',
-      'rec-pwr-AS',
       'rec-pwr-AD',
-      'mold-color-AS',
+      'rec-pwr-AS',
       'mold-color-AD',
+      'mold-color-AS',
       'order-extra'
     ].forEach(id=>{
       const el = document.getElementById(id);
@@ -3394,18 +3394,18 @@ S.utils = {
 
     // Reset selects
     [
-      'rec-len-AS',
       'rec-len-AD',
-      'order-mold-type-AS',
+      'rec-len-AS',
       'order-mold-type-AD',
-      'order-mold-material-AS',
-      'order-mold-material-AD'
+      'order-mold-type-AS',
+      'order-mold-material-AD',
+      'order-mold-material-AS'
     ].forEach(id=>{
       const el = document.getElementById(id);
       if(el) el.selectedIndex = 0;
     });
 
-    // Clear scope buttons (AS / AD)
+    // Clear scope buttons (AD / AS)
     state.order.scope = '';
     document.querySelectorAll('button[data-orderscope]').forEach(b=>{
       b.classList.remove('toggled');
@@ -3429,10 +3429,10 @@ S.utils = {
      HISTORY TEXT LOGIC
      ============================ */
   function historyText(){
-    const as = [...state.historyAS];
-    const ad = [...state.historyAD];
+    const as = [...state.historyAD];
+    const ad = [...state.historyAS];
     const gen = [...state.historyGeneral];
-    const allRaw = [...S.consts.HIST_ASAD, ...S.consts.HIST_GENERAL];
+    const allRaw = [...S.consts.HIST_ADAS, ...S.consts.HIST_GENERAL];
 const all = [];
 allRaw.forEach(opt=>{
   const v = (opt && opt.value) || opt;  // use .value for objects, string as-is
@@ -3457,8 +3457,8 @@ allRaw.forEach(opt=>{
       if(asStr && adStr && asStr===adStr){
         parts.push(`${asStr} AU`);
       } else {
-        if(asStr) parts.push(`${asStr} AS`);
-        if(adStr) parts.push(`${adStr} AD`);
+        if(asStr) parts.push(`${asStr} AD`);
+        if(adStr) parts.push(`${adStr} AS`);
       }
     }
 
@@ -3508,47 +3508,47 @@ allRaw.forEach(opt=>{
     linesS.push(...historyText());
 
 // Patient Reports
-const genAS = [...state.repGenAS];
 const genAD = [...state.repGenAD];
-const haAS  = [...state.repHAAS];
-const haAD  = [...state.repHAAD];
+const genAS = [...state.repGenAS];
+const haAD  = [...state.repHAAS];
+const haAS  = [...state.repHAAD];
 
 // General (non–hearing-aid) reports – single line
-if(genAS.length || genAD.length){
+if(genAD.length || genAS.length){
   const sameGen =
-    genAS.length && genAD.length &&
-    genAS.length === genAD.length &&
-    genAS.every(v => genAD.includes(v));
+    genAD.length && genAS.length &&
+    genAD.length === genAS.length &&
+    genAD.every(v => genAS.includes(v));
 
   if(sameGen){
-    const phrase = S.utils.joinAnd(genAS);
+    const phrase = S.utils.joinAnd(genAD);
     // Example: "Patient reports decreased hearing AU."
     linesS.push(`Patient reports ${phrase} AU.`);
   } else {
     const parts = [];
-    if(genAS.length) parts.push(`${S.utils.joinAnd(genAS)} AS`);
     if(genAD.length) parts.push(`${S.utils.joinAnd(genAD)} AD`);
-    // Example: "Patient reports decreased hearing AS; tinnitus AD."
+    if(genAS.length) parts.push(`${S.utils.joinAnd(genAS)} AS`);
+    // Example: "Patient reports decreased hearing AD; tinnitus AS."
     linesS.push(`Patient reports ${parts.join('; ')}.`);
   }
 }
 
 // Hearing-aid related reports – separate line
-if(haAS.length || haAD.length){
+if(haAD.length || haAS.length){
   const sameHA =
-    haAS.length && haAD.length &&
-    haAS.length === haAD.length &&
-    haAS.every(v => haAD.includes(v));
+    haAD.length && haAS.length &&
+    haAD.length === haAS.length &&
+    haAD.every(v => haAS.includes(v));
 
   if(sameHA){
-    const phrase = S.utils.joinAnd(haAS);
+    const phrase = S.utils.joinAnd(haAD);
     // Example: "Patient reports hearing aids working well AU."
     linesS.push(`Patient reports hearing aids ${phrase} AU.`);
   } else {
     const parts = [];
-    if(haAS.length) parts.push(`hearing aid ${S.utils.joinAnd(haAS)} AS`);
     if(haAD.length) parts.push(`hearing aid ${S.utils.joinAnd(haAD)} AD`);
-    // Example: "Patient reports hearing aid working well AS; hearing aid sounds weak AD."
+    if(haAS.length) parts.push(`hearing aid ${S.utils.joinAnd(haAS)} AS`);
+    // Example: "Patient reports hearing aid working well AD; hearing aid sounds weak AS."
     linesS.push(`Patient reports ${parts.join('; ')}.`);
   }
 }
@@ -3580,8 +3580,8 @@ if(state.subjCustom.length)
         linesArr.push(`${label}: ${asTxt}, AU.`);
       } else {
         const parts = [];
-        if(asTxt) parts.push(`${asTxt}, AS`);
-        if(adTxt) parts.push(`${adTxt}, AD`);
+        if(asTxt) parts.push(`${asTxt}, AD`);
+        if(adTxt) parts.push(`${adTxt}, AS`);
         linesArr.push(`${label}: ${parts.join('; ')}.`);
       }
     }
@@ -3597,23 +3597,10 @@ if(state.subjCustom.length)
 
 
     // 🔹 Otoscopy – 1 line per ear: Canal + TM + custom
-    const canalAS = [...state.otoAScanal];
-    const tmAS    = [...state.otoAStm];
     const canalAD = [...state.otoADcanal];
     const tmAD    = [...state.otoADtm];
-
-    if(canalAS.length || tmAS.length || state.otoCustomAS.length){
-      const partsAS = [];
-      if(canalAS.length) partsAS.push(`Canal: ${S.utils.joinAnd(canalAS)}`);
-      if(tmAS.length)    partsAS.push(`TM: ${S.utils.joinAnd(tmAS)}`);
-      if(state.otoCustomAS.length){
-        const customAS = state.otoCustomAS
-          .map(l=>l.endsWith('.')?l:l+'.')
-          .join(' ');
-        partsAS.push(customAS);
-      }
-      linesO.push(`Otoscopy (AS): ${partsAS.join('; ')}`);
-    }
+    const canalAS = [...state.otoAScanal];
+    const tmAS    = [...state.otoAStm];
 
     if(canalAD.length || tmAD.length || state.otoCustomAD.length){
       const partsAD = [];
@@ -3626,6 +3613,19 @@ if(state.subjCustom.length)
         partsAD.push(customAD);
       }
       linesO.push(`Otoscopy (AD): ${partsAD.join('; ')}`);
+    }
+
+    if(canalAS.length || tmAS.length || state.otoCustomAS.length){
+      const partsAS = [];
+      if(canalAS.length) partsAS.push(`Canal: ${S.utils.joinAnd(canalAS)}`);
+      if(tmAS.length)    partsAS.push(`TM: ${S.utils.joinAnd(tmAS)}`);
+      if(state.otoCustomAS.length){
+        const customAS = state.otoCustomAS
+          .map(l=>l.endsWith('.')?l:l+'.')
+          .join(' ');
+        partsAS.push(customAS);
+      }
+      linesO.push(`Otoscopy (AS): ${partsAS.join('; ')}`);
     }
 
     // Outside audiogram – single sentence, AU when ears match
@@ -3720,62 +3720,62 @@ if(state.subjCustom.length)
       return pieces.join(', ');
     }
 
-    const aObjAS = buildAudioObjEarDesc(
-      state.audioObjASdeg,
-      state.audioObjAStype,
-      state.audioObjASconf,
-      state.audioObjCustomAS
-    );
     const aObjAD = buildAudioObjEarDesc(
       state.audioObjADdeg,
       state.audioObjADtype,
       state.audioObjADconf,
       state.audioObjCustomAD
     );
+    const aObjAS = buildAudioObjEarDesc(
+      state.audioObjASdeg,
+      state.audioObjAStype,
+      state.audioObjASconf,
+      state.audioObjCustomAS
+    );
 
-    if(aObjAS || aObjAD){
-      if(aObjAS && aObjAD && aObjAS === aObjAD){
+    if(aObjAD || aObjAS){
+      if(aObjAD && aObjAS && aObjAD === aObjAS){
         // Example: "Audiogram from Dr. X shows moderate to severe hearing loss, AU."
-        linesO.push(`${prefix} shows ${aObjAS}, AU.`);
+        linesO.push(`${prefix} shows ${aObjAD}, AU.`);
       } else {
         const parts = [];
-        if(aObjAS) parts.push(`${aObjAS}, AS`);
         if(aObjAD) parts.push(`${aObjAD}, AD`);
+        if(aObjAS) parts.push(`${aObjAS}, AS`);
         linesO.push(`${prefix} shows ${parts.join('; ')}.`);
       }
 
     // Outside Audiogram metrics
     pushEarLine(linesO, 'Pure Tone Average (PTA)',
-      state.audioObjASpta ? `${state.audioObjASpta} dB HL` : '',
-      state.audioObjADpta ? `${state.audioObjADpta} dB HL` : ''
+      state.audioObjADpta ? `${state.audioObjADpta} dB HL` : '',
+      state.audioObjASpta ? `${state.audioObjASpta} dB HL` : ''
     );
 
     pushEarLine(linesO, 'Speech Reception Threshold (SRT)',
-      state.audioObjASsrt ? `${state.audioObjASsrt} dB HL` : '',
-      state.audioObjADsrt ? `${state.audioObjADsrt} dB HL` : ''
+      state.audioObjADsrt ? `${state.audioObjADsrt} dB HL` : '',
+      state.audioObjASsrt ? `${state.audioObjASsrt} dB HL` : ''
     );
 
     pushEarLine(linesO, 'Word Recognition Score (WRS)',
-      buildWrsText(state.audioObjASwrs, state.audioObjASwrsdb),
-      buildWrsText(state.audioObjADwrs, state.audioObjADwrsdb)
+      buildWrsText(state.audioObjADwrs, state.audioObjADwrsdb),
+      buildWrsText(state.audioObjASwrs, state.audioObjASwrsdb)
     );
 
     pushEarLine(linesO, 'Tympanometry',
-      tympDescription(state.audioObjAStymp),
-      tympDescription(state.audioObjADtymp)
+      tympDescription(state.audioObjADtymp),
+      tympDescription(state.audioObjAStymp)
     );
 
     }
-    // 🔹 Medical Clearance – single line, uses Doctor + AS/AD/AU
+    // 🔹 Medical Clearance – single line, uses Doctor + AD/AS/AU
     if(state.clearance){
       const status = state.clearance === 'received' ? 'received' : 'not received';
-      const asOn = !!state.clearanceAS;
-      const adOn = !!state.clearanceAD;
+      const asOn = !!state.clearanceAD;
+      const adOn = !!state.clearanceAS;
 
       let scope = '';
       if(asOn && adOn) scope = 'AU';
-      else if(asOn)    scope = 'AS';
-      else if(adOn)    scope = 'AD';
+      else if(asOn)    scope = 'AD';
+      else if(adOn)    scope = 'AS';
 
       let line = 'Medical clearance ';
 
@@ -3801,8 +3801,8 @@ if(state.subjCustom.length)
     }
 
   // 🔹 Hearing Aid Condition – single line, AU if same (now supports custom text)
-  const hacAS = [...state.hacAS];
   const hacAD = [...state.hacAD];
+  const hacAS = [...state.hacAS];
 
   // Make "filters plugged" singular when we're talking about a single ear
   function singularizeFilters(text, scope){
@@ -3839,26 +3839,26 @@ if(state.subjCustom.length)
   }
 
   const hasAnyHAC =
-    hacAS.length || hacAD.length ||
-    (state.hacCustomAS && state.hacCustomAS.length) ||
-    (state.hacCustomAD && state.hacCustomAD.length);
+    hacAD.length || hacAS.length ||
+    (state.hacCustomAD && state.hacCustomAD.length) ||
+    (state.hacCustomAS && state.hacCustomAS.length);
 
   if(hasAnyHAC){
     const sameSet =
-      hacAS.length === hacAD.length &&
-      hacAS.every(v => hacAD.includes(v));
+      hacAD.length === hacAS.length &&
+      hacAD.every(v => hacAS.includes(v));
 
-    const sameCustom = sameArray(state.hacCustomAS, state.hacCustomAD);
+    const sameCustom = sameArray(state.hacCustomAD, state.hacCustomAS);
 
     if(sameSet && sameCustom){
-      const condAU = condDesc(hacAS, state.hacCustomAS, 'AU');
+      const condAU = condDesc(hacAD, state.hacCustomAD, 'AU');
       if(condAU) linesO.push(`Hearing aid condition: ${condAU}, AU.`);
     } else {
       const parts = [];
-      const condAS = condDesc(hacAS, state.hacCustomAS, 'AS');
       const condAD = condDesc(hacAD, state.hacCustomAD, 'AD');
-      if(condAS) parts.push(`${condAS}, AS`);
+      const condAS = condDesc(hacAS, state.hacCustomAS, 'AS');
       if(condAD) parts.push(`${condAD}, AD`);
+      if(condAS) parts.push(`${condAS}, AS`);
       if(parts.length) linesO.push(`Hearing aid condition: ${parts.join('; ')}.`);
     }
   }
@@ -3872,7 +3872,7 @@ if(state.subjCustom.length)
 
 
     /* ============================
-       ASSESSMENT
+       ADSESSMENT
        ============================ */
 
     // In-office audiogram – same behavior as outside audiogram
@@ -3959,42 +3959,42 @@ if(state.subjCustom.length)
       return pieces.join(', ');
     }
 
-    const inAS = buildAudioEarDesc(
-      state.audioASdeg,
-      state.audioAStype,
-      state.audioASconf,
-      state.audioCustomAS
-    );
     const inAD = buildAudioEarDesc(
       state.audioADdeg,
       state.audioADtype,
       state.audioADconf,
       state.audioCustomAD
     );
+    const inAS = buildAudioEarDesc(
+      state.audioASdeg,
+      state.audioAStype,
+      state.audioASconf,
+      state.audioCustomAS
+    );
 
-    if(inAS || inAD){
+    if(inAD || inAS){
       // Same description both ears (AU)
-      if(inAS && inAD && inAS === inAD){
-        if(inAS === 'hearing is within normal limits'){
+      if(inAD && inAS && inAD === inAS){
+        if(inAD === 'hearing is within normal limits'){
           // Normal both ears
           linesA.push(`Audiogram was performed today. Results indicate hearing is within normal limits.`);
         } else {
           // Hearing loss, AU
-          const needsArticle = /hearing loss\b/.test(inAS);
-          const core = needsArticle ? `a ${inAS}` : inAS;
+          const needsArticle = /hearing loss\b/.test(inAD);
+          const core = needsArticle ? `a ${inAD}` : inAD;
           linesA.push(`Audiogram was performed today. Results indicate ${core}, AU.`);
         }
       } else {
-        // AS / AD different or only one ear documented
+        // AD / AS different or only one ear documented
         const parts = [];
-        if(inAS) parts.push(`${inAS}, AS`);
         if(inAD) parts.push(`${inAD}, AD`);
+        if(inAS) parts.push(`${inAS}, AS`);
 
         const joined = parts.join('; ');
 
         // Add "a" only if it's a single-ear phrase with "hearing loss"
         let prefixArticle = '';
-        if((inAS && !inAD) || (!inAS && inAD)){
+        if((inAD && !inAS) || (!inAD && inAS)){
           if(/hearing loss\b/.test(joined)){
             prefixArticle = 'a ';
           }
@@ -4007,23 +4007,23 @@ if(state.subjCustom.length)
 
     // In-office Audiogram metrics
     pushEarLine(linesA, 'Pure Tone Average (PTA)',
-      state.audioASpta ? `${state.audioASpta} dB HL` : '',
-      state.audioADpta ? `${state.audioADpta} dB HL` : ''
+      state.audioADpta ? `${state.audioADpta} dB HL` : '',
+      state.audioASpta ? `${state.audioASpta} dB HL` : ''
     );
 
     pushEarLine(linesA, 'Speech Reception Threshold (SRT)',
-      state.audioASsrt ? `${state.audioASsrt} dB HL` : '',
-      state.audioADsrt ? `${state.audioADsrt} dB HL` : ''
+      state.audioADsrt ? `${state.audioADsrt} dB HL` : '',
+      state.audioASsrt ? `${state.audioASsrt} dB HL` : ''
     );
 
     pushEarLine(linesA, 'Word Recognition Score (WRS)',
-      buildWrsText(state.audioASwrs, state.audioASwrsdb),
-      buildWrsText(state.audioADwrs, state.audioADwrsdb)
+      buildWrsText(state.audioADwrs, state.audioADwrsdb),
+      buildWrsText(state.audioASwrs, state.audioASwrsdb)
     );
 
     pushEarLine(linesA, 'Tympanometry',
-      tympDescription(state.audioAStymp),
-      tympDescription(state.audioADtymp)
+      tympDescription(state.audioADtymp),
+      tympDescription(state.audioAStymp)
     );
 
 
@@ -4060,11 +4060,11 @@ if(state.subjCustom.length)
 // HA RECOMMENDATION & PATIENT ORDER
 // =====================
 
-// --- Recommendation scope (AS/AD -> AU) ---
+// --- Recommendation scope (AD/AS -> AU) ---
 let recScope = '';
-if(state.haRecAS && state.haRecAD) recScope = 'AU';
-else if(state.haRecAS)             recScope = 'AS';
+if(state.haRecAD && state.haRecAS) recScope = 'AU';
 else if(state.haRecAD)             recScope = 'AD';
+else if(state.haRecAS)             recScope = 'AS';
 
 let recScopeFull = recScope;
 
@@ -4136,45 +4136,45 @@ if(recPrefix){
 // =====================
 const o = state.order;
 
-// Build "Pt chose ..." line with style/material & AS/AD/AU logic
+// Build "Pt chose ..." line with style/material & AD/AS/AU logic
 (function buildPatientChoseLine(){
   const cv = [...state.orderCoupling];
 
-  // Use the *per-ear* mold fields now (AS/AD)
-  const moldTypeAS      = o.moldTypeAS && o.moldTypeAS.trim();
+  // Use the *per-ear* mold fields now (AD/AS)
   const moldTypeAD      = o.moldTypeAD && o.moldTypeAD.trim();
-  const moldMaterialAS  = o.moldMaterialAS && o.moldMaterialAS.trim();
+  const moldTypeAS      = o.moldTypeAS && o.moldTypeAS.trim();
   const moldMaterialAD  = o.moldMaterialAD && o.moldMaterialAD.trim();
+  const moldMaterialAS  = o.moldMaterialAS && o.moldMaterialAS.trim();
 
   // Derive a "common" mold type / material, based on scope & matching values
   let moldType = '';
   let moldMaterial = '';
 
-  if (moldTypeAS && moldTypeAD && moldTypeAS === moldTypeAD) {
-    moldType = moldTypeAS;        // same both ears
-  } else if (o.scope === 'AS' && moldTypeAS) {
-    moldType = moldTypeAS;
+  if (moldTypeAD && moldTypeAS && moldTypeAD === moldTypeAS) {
+    moldType = moldTypeAD;        // same both ears
   } else if (o.scope === 'AD' && moldTypeAD) {
     moldType = moldTypeAD;
+  } else if (o.scope === 'AS' && moldTypeAS) {
+    moldType = moldTypeAS;
   }
 
-  if (moldMaterialAS && moldMaterialAD && moldMaterialAS === moldMaterialAD) {
-    moldMaterial = moldMaterialAS;
-  } else if (o.scope === 'AS' && moldMaterialAS) {
-    moldMaterial = moldMaterialAS;
+  if (moldMaterialAD && moldMaterialAS && moldMaterialAD === moldMaterialAS) {
+    moldMaterial = moldMaterialAD;
   } else if (o.scope === 'AD' && moldMaterialAD) {
     moldMaterial = moldMaterialAD;
+  } else if (o.scope === 'AS' && moldMaterialAS) {
+    moldMaterial = moldMaterialAS;
   }
 
   const hasOrderCore =
     o.mfg || o.model || o.style || o.color ||
     moldType || moldMaterial ||
-    o.moldColorAS || o.moldColorAD ||
+    o.moldColorAD || o.moldColorAS ||
     cv.length;
 
   if(!hasOrderCore) return;
 
-  const scope = o.scope; // '', 'AS', 'AD', 'AU'
+  const scope = o.scope; // '', 'AD', 'AS', 'AU'
 
   let line = 'Pt chose ';
 
@@ -4206,8 +4206,8 @@ const o = state.order;
 
   if(cv.length){
     const couplingType = cv[0]; // assume one selection
-    const leftColor  = o.moldColorAS && o.moldColorAS.trim();
-    const rightColor = o.moldColorAD && o.moldColorAD.trim();
+    const leftColor  = o.moldColorAD && o.moldColorAD.trim();
+    const rightColor = o.moldColorAS && o.moldColorAS.trim();
 
     // Build a descriptive ear-mold base from common type/material
     function buildMoldBase(isRIC){
@@ -4238,10 +4238,10 @@ const o = state.order;
         const singleBase = (base || 'ear mold').replace('ear molds','ear mold');
 
         if(leftColor){
-          parts.push(`${singleBase} in “${leftColor}” (AS)`);
+          parts.push(`${singleBase} in “${leftColor}” (AD)`);
         }
         if(rightColor){
-          parts.push(`${singleBase} in “${rightColor}” (AD)`);
+          parts.push(`${singleBase} in “${rightColor}” (AS)`);
         }
         withPhrase = parts.join(', ');
       } else {
@@ -4259,10 +4259,10 @@ const o = state.order;
   }
 
   // Scope suffix at end
-  if(scope === 'AS'){
-    line += ', AS.';
-  } else if(scope === 'AD'){
+  if(scope === 'AD'){
     line += ', AD.';
+  } else if(scope === 'AS'){
+    line += ', AS.';
   } else if(scope === 'AU'){
     line += ', AU.';
   } else {
@@ -4272,14 +4272,14 @@ const o = state.order;
   linesA.push(line);
 })();
 
-// Receiver / slim tube order line with AU vs AS/AD logic
+// Receiver / slim tube order line with AU vs AD/AS logic
 (function buildReceiverOrderLine(){
   if(!o.tubeType) return;
 
-  const hasRecAS = (o.recLenAS || o.recPwrAS);
   const hasRecAD = (o.recLenAD || o.recPwrAD);
+  const hasRecAS = (o.recLenAS || o.recPwrAS);
 
-  if(!hasRecAS && !hasRecAD) return;
+  if(!hasRecAD && !hasRecAS) return;
 
   const isSlim = (o.tubeType === 'slim tube');
 
@@ -4293,11 +4293,11 @@ const o = state.order;
 
   // If both ears have identical receiver data, use AU
   if(
-    hasRecAS && hasRecAD &&
-    o.recLenAS === o.recLenAD &&
-    o.recPwrAS === o.recPwrAD
+    hasRecAD && hasRecAS &&
+    o.recLenAD === o.recLenAS &&
+    o.recPwrAD === o.recPwrAS
   ){
-    const details = buildRecDetails(o.recLenAS, o.recPwrAS);
+    const details = buildRecDetails(o.recLenAD, o.recPwrAD);
     const noun = isSlim ? 'slim tubes' : 'receivers';
 
     let line = `I will order ${noun}`;
@@ -4308,17 +4308,17 @@ const o = state.order;
     return;
   }
 
-  // Otherwise, specify AS and AD separately
+  // Otherwise, specify AD and AS separately
   const parts = [];
-  if(hasRecAS){
-    const details = buildRecDetails(o.recLenAS, o.recPwrAS);
-    const noun = isSlim ? 'slim tube' : 'receiver';
-    parts.push(`AS: ${details ? details + ' ' + noun : noun}`);
-  }
   if(hasRecAD){
     const details = buildRecDetails(o.recLenAD, o.recPwrAD);
     const noun = isSlim ? 'slim tube' : 'receiver';
     parts.push(`AD: ${details ? details + ' ' + noun : noun}`);
+  }
+  if(hasRecAS){
+    const details = buildRecDetails(o.recLenAS, o.recPwrAS);
+    const noun = isSlim ? 'slim tube' : 'receiver';
+    parts.push(`AS: ${details ? details + ' ' + noun : noun}`);
   }
 
   const pluralNoun = isSlim ? 'slim tubes' : 'receivers';
@@ -4381,16 +4381,16 @@ pushDeliveryLines(state.deliveryPurchase);
       return parts.join('; ');
     }
 
-    const hmAS = maintDesc(state.hamAS, state.hamCustomAS);
     const hmAD = maintDesc(state.hamAD, state.hamCustomAD);
+    const hmAS = maintDesc(state.hamAS, state.hamCustomAS);
 
-    if(hmAS || hmAD){
-      if(hmAS && hmAD && hmAS === hmAD){
-        linesA.push(`Hearing aid maintenance: ${hmAS} AU.`);
+    if(hmAD || hmAS){
+      if(hmAD && hmAS && hmAD === hmAS){
+        linesA.push(`Hearing aid maintenance: ${hmAD} AU.`);
       } else {
         const parts = [];
-        if(hmAS) parts.push(`${hmAS} AS`);
         if(hmAD) parts.push(`${hmAD} AD`);
+        if(hmAS) parts.push(`${hmAS} AS`);
         linesA.push(`Hearing aid maintenance: ${parts.join('; ')}.`);
       }
     }
@@ -4409,16 +4409,16 @@ pushDeliveryLines(state.deliveryPurchase);
       return parts.join('; ');
     }
 
-    const hpmAS = postMaintDesc(state.hamPostAS, state.hamPostCustomAS);
     const hpmAD = postMaintDesc(state.hamPostAD, state.hamPostCustomAD);
+    const hpmAS = postMaintDesc(state.hamPostAS, state.hamPostCustomAS);
 
-    if(hpmAS || hpmAD){
-      if(hpmAS && hpmAD && hpmAS === hpmAD){
-        linesA.push(`Post-maintenance status: ${hpmAS} AU.`);
+    if(hpmAD || hpmAS){
+      if(hpmAD && hpmAS && hpmAD === hpmAS){
+        linesA.push(`Post-maintenance status: ${hpmAD} AU.`);
       } else {
         const parts = [];
-        if(hpmAS) parts.push(`${hpmAS} AS`);
         if(hpmAD) parts.push(`${hpmAD} AD`);
+        if(hpmAS) parts.push(`${hpmAS} AS`);
         linesA.push(`Post-maintenance status: ${parts.join('; ')}.`);
       }
     }
@@ -4514,20 +4514,20 @@ pushDeliveryLines(state.deliveryPurchase);
 
   S.maxSelect = {
     // Outside audiogram (Objective)
-    'audio-obj-AS-deg': 2,
     'audio-obj-AD-deg': 2,
-    'audio-obj-AS-type': 1,
+    'audio-obj-AS-deg': 2,
     'audio-obj-AD-type': 1,
-    'audio-obj-AS-conf': 1,
+    'audio-obj-AS-type': 1,
     'audio-obj-AD-conf': 1,
+    'audio-obj-AS-conf': 1,
 
     // In-office audiogram (Assessment)
-    'audio-AS-deg': 2,
     'audio-AD-deg': 2,
-    'audio-AS-type': 1,
+    'audio-AS-deg': 2,
     'audio-AD-type': 1,
-    'audio-AS-conf': 1,
+    'audio-AS-type': 1,
     'audio-AD-conf': 1,
+    'audio-AS-conf': 1,
 
     // HA coupling – usually one choice
     'ha-coupling-row': 2
@@ -4655,15 +4655,15 @@ pushDeliveryLines(state.deliveryPurchase);
     }
 
     /* History buttons */
-    makeButtons('hist-AS', S.consts.HIST_ASAD, state.historyAS);
-    makeButtons('hist-AD', S.consts.HIST_ASAD, state.historyAD);
+    makeButtons('hist-AD', S.consts.HIST_ADAS, state.historyAD);
+    makeButtons('hist-AS', S.consts.HIST_ADAS, state.historyAS);
     makeButtons('hist-general', S.consts.HIST_GENERAL, state.historyGeneral);
 
-    const histCopy = document.querySelector('[data-copy="hist-AS-to-AD"]');
+    const histCopy = document.querySelector('[data-copy="hist-AD-to-AS"]');
     if(histCopy){
       histCopy.addEventListener('click', ()=>{
-        copySet(state.historyAS, state.historyAD);
-        makeButtons('hist-AD', S.consts.HIST_ASAD, state.historyAD);
+        copySet(state.historyAD, state.historyAS);
+        makeButtons('hist-AS', S.consts.HIST_ADAS, state.historyAS);
         S.rebuild();
       });
     }
@@ -4685,7 +4685,7 @@ pushDeliveryLines(state.deliveryPurchase);
     }
 
     /* Clicking any history button turns off "Denies all" */
-    ['hist-AS','hist-AD','hist-general'].forEach(id=>{
+    ['hist-AD','hist-AS','hist-general'].forEach(id=>{
       const el = document.getElementById(id);
       if(!el) return;
       el.addEventListener('click', ()=>{
@@ -4711,8 +4711,8 @@ pushDeliveryLines(state.deliveryPurchase);
 
     if(btnClear){
       btnClear.addEventListener('click', ()=>{
-        state.historyAS.clear();
         state.historyAD.clear();
+        state.historyAS.clear();
         state.historyGeneral.clear();
         state.historyDeniesAll = false;
         state.historyAdditional = '';
@@ -4723,7 +4723,7 @@ pushDeliveryLines(state.deliveryPurchase);
           if(el) el.value = '';
         });
 
-        document.querySelectorAll('#hist-AS .btn,#hist-AD .btn,#hist-general .btn')
+        document.querySelectorAll('#hist-AD .btn,#hist-AS .btn,#hist-general .btn')
           .forEach(b=>b.classList.remove('toggled'));
         if(btnAll) btnAll.classList.remove('toggled');
 
@@ -4732,30 +4732,30 @@ pushDeliveryLines(state.deliveryPurchase);
     }
 
     /* Patient Reports buttons */
-    makeButtons('reports-gen-AS', S.consts.REPORTS_GENERAL, state.repGenAS);
     makeButtons('reports-gen-AD', S.consts.REPORTS_GENERAL, state.repGenAD);
-    makeButtons('reports-ha-AS', S.consts.REPORTS_HA, state.repHAAS);
-    makeButtons('reports-ha-AD', S.consts.REPORTS_HA, state.repHAAD);
+    makeButtons('reports-gen-AS', S.consts.REPORTS_GENERAL, state.repGenAS);
+    makeButtons('reports-ha-AD', S.consts.REPORTS_HA, state.repHAAS);
+    makeButtons('reports-ha-AS', S.consts.REPORTS_HA, state.repHAAD);
 
-    const rgenCopy = document.querySelector('[data-copy="rgen-AS-to-AD"]');
+    const rgenCopy = document.querySelector('[data-copy="rgen-AD-to-AS"]');
     if(rgenCopy){
       rgenCopy.addEventListener('click', ()=>{
-        copySet(state.repGenAS, state.repGenAD);
-        makeButtons('reports-gen-AD', S.consts.REPORTS_GENERAL, state.repGenAD);
+        copySet(state.repGenAD, state.repGenAS);
+        makeButtons('reports-gen-AS', S.consts.REPORTS_GENERAL, state.repGenAS);
         S.rebuild();
       });
     }
-    const rhaCopy = document.querySelector('[data-copy="rha-AS-to-AD"]');
+    const rhaCopy = document.querySelector('[data-copy="rha-AD-to-AS"]');
     if(rhaCopy){
       rhaCopy.addEventListener('click', ()=>{
         copySet(state.repHAAS, state.repHAAD);
-        makeButtons('reports-ha-AD', S.consts.REPORTS_HA, state.repHAAD);
+        makeButtons('reports-ha-AS', S.consts.REPORTS_HA, state.repHAAD);
         S.rebuild();
       });
     }
 
-    wireLiveTextarea('reportsAS-custom','repCustomAS');
     wireLiveTextarea('reportsAD-custom','repCustomAD');
+    wireLiveTextarea('reportsAS-custom','repCustomAS');
     wireLiveTextarea('custom-subjective','subjCustom');
   }
 
@@ -4765,24 +4765,24 @@ pushDeliveryLines(state.deliveryPurchase);
   function wireObjective(){
 
     /* Otoscopy */
-    makeButtons('oto-AS-canal', S.consts.OTO_CANAL, state.otoAScanal);
-    makeButtons('oto-AS-tm',    S.consts.OTO_TM,    state.otoAStm);
     makeButtons('oto-AD-canal', S.consts.OTO_CANAL, state.otoADcanal);
     makeButtons('oto-AD-tm',    S.consts.OTO_TM,    state.otoADtm);
+    makeButtons('oto-AS-canal', S.consts.OTO_CANAL, state.otoAScanal);
+    makeButtons('oto-AS-tm',    S.consts.OTO_TM,    state.otoAStm);
 
-    const otoCopy = document.querySelector('[data-copy="oto-AS-to-AD"]');
+    const otoCopy = document.querySelector('[data-copy="oto-AD-to-AS"]');
     if(otoCopy){
       otoCopy.addEventListener('click', ()=>{
-        copySet(state.otoAScanal, state.otoADcanal);
-        copySet(state.otoAStm,    state.otoADtm);
-        makeButtons('oto-AD-canal', S.consts.OTO_CANAL, state.otoADcanal);
-        makeButtons('oto-AD-tm',    S.consts.OTO_TM,    state.otoADtm);
+        copySet(state.otoADcanal, state.otoAScanal);
+        copySet(state.otoADtm,    state.otoAStm);
+        makeButtons('oto-AS-canal', S.consts.OTO_CANAL, state.otoAScanal);
+        makeButtons('oto-AS-tm',    S.consts.OTO_TM,    state.otoAStm);
         S.rebuild();
       });
     }
 
-    wireLiveTextarea('oto-AS-custom','otoCustomAS');
     wireLiveTextarea('oto-AD-custom','otoCustomAD');
+    wireLiveTextarea('oto-AS-custom','otoCustomAS');
 
     /* Outside Audiogram */
     const src = document.getElementById('audio-obj-src');
@@ -4793,12 +4793,12 @@ pushDeliveryLines(state.deliveryPurchase);
       });
     }
 
-    makeButtons('audio-obj-AS-deg',  S.consts.AUDIO_DEG,        state.audioObjASdeg);
     makeButtons('audio-obj-AD-deg',  S.consts.AUDIO_DEG,        state.audioObjADdeg);
-    makeButtons('audio-obj-AS-type', S.consts.AUDIO_TYPE_ONLY,  state.audioObjAStype);
+    makeButtons('audio-obj-AS-deg',  S.consts.AUDIO_DEG,        state.audioObjASdeg);
     makeButtons('audio-obj-AD-type', S.consts.AUDIO_TYPE_ONLY,  state.audioObjADtype);
-    makeButtons('audio-obj-AS-conf', S.consts.AUDIO_CONFIG,     state.audioObjASconf);
+    makeButtons('audio-obj-AS-type', S.consts.AUDIO_TYPE_ONLY,  state.audioObjAStype);
     makeButtons('audio-obj-AD-conf', S.consts.AUDIO_CONFIG,     state.audioObjADconf);
+    makeButtons('audio-obj-AS-conf', S.consts.AUDIO_CONFIG,     state.audioObjASconf);
 
     // Audiogram numeric + tymp (Outside)
     function wireValue(id, setter){
@@ -4812,69 +4812,69 @@ pushDeliveryLines(state.deliveryPurchase);
       el.addEventListener('change', ()=>{ setter(el.value); S.rebuild(); });
     }
 
-    wireValue('audio-obj-AS-pta',   v=>state.audioObjASpta=v);
-    wireValue('audio-obj-AS-srt',   v=>state.audioObjASsrt=v);
-    wireValue('audio-obj-AS-wrs',   v=>state.audioObjASwrs=v);
-    wireValue('audio-obj-AS-wrsdb', v=>state.audioObjASwrsdb=v);
-    wireSelect('audio-obj-AS-tymp', v=>state.audioObjAStymp=v);
-
     wireValue('audio-obj-AD-pta',   v=>state.audioObjADpta=v);
     wireValue('audio-obj-AD-srt',   v=>state.audioObjADsrt=v);
     wireValue('audio-obj-AD-wrs',   v=>state.audioObjADwrs=v);
     wireValue('audio-obj-AD-wrsdb', v=>state.audioObjADwrsdb=v);
     wireSelect('audio-obj-AD-tymp', v=>state.audioObjADtymp=v);
 
+    wireValue('audio-obj-AS-pta',   v=>state.audioObjASpta=v);
+    wireValue('audio-obj-AS-srt',   v=>state.audioObjASsrt=v);
+    wireValue('audio-obj-AS-wrs',   v=>state.audioObjASwrs=v);
+    wireValue('audio-obj-AS-wrsdb', v=>state.audioObjASwrsdb=v);
+    wireSelect('audio-obj-AS-tymp', v=>state.audioObjAStymp=v);
 
-    const aobjCopy = document.querySelector('[data-copy="aobj-AS-to-AD"]');
+
+    const aobjCopy = document.querySelector('[data-copy="aobj-AD-to-AS"]');
     if(aobjCopy){
       aobjCopy.addEventListener('click', ()=>{
-        copySet(state.audioObjASdeg,   state.audioObjADdeg);
-        copySet(state.audioObjAStype,  state.audioObjADtype);
-        copySet(state.audioObjASconf,  state.audioObjADconf);
+        copySet(state.audioObjADdeg,   state.audioObjASdeg);
+        copySet(state.audioObjADtype,  state.audioObjAStype);
+        copySet(state.audioObjADconf,  state.audioObjASconf);
 
         // copy numeric + tymp
-        state.audioObjADpta   = state.audioObjASpta;
-        state.audioObjADsrt   = state.audioObjASsrt;
-        state.audioObjADwrs   = state.audioObjASwrs;
-        state.audioObjADwrsdb = state.audioObjASwrsdb;
-        state.audioObjADtymp  = state.audioObjAStymp;
+        state.audioObjASpta   = state.audioObjADpta;
+        state.audioObjASsrt   = state.audioObjADsrt;
+        state.audioObjASwrs   = state.audioObjADwrs;
+        state.audioObjASwrsdb = state.audioObjADwrsdb;
+        state.audioObjAStymp  = state.audioObjADtymp;
 
-        const adPTA = document.getElementById('audio-obj-AD-pta');
-        const adSRT = document.getElementById('audio-obj-AD-srt');
-        const adWRS = document.getElementById('audio-obj-AD-wrs');
-        const adWDB = document.getElementById('audio-obj-AD-wrsdb');
-        const adTYP = document.getElementById('audio-obj-AD-tymp');
-        if(adPTA) adPTA.value = state.audioObjADpta || '';
-        if(adSRT) adSRT.value = state.audioObjADsrt || '';
-        if(adWRS) adWRS.value = state.audioObjADwrs || '';
-        if(adWDB) adWDB.value = state.audioObjADwrsdb || '';
-        if(adTYP) adTYP.value = state.audioObjADtymp || '';
-        makeButtons('audio-obj-AD-deg',  S.consts.AUDIO_DEG,        state.audioObjADdeg);
-        makeButtons('audio-obj-AD-type', S.consts.AUDIO_TYPE_ONLY,  state.audioObjADtype);
-        makeButtons('audio-obj-AD-conf', S.consts.AUDIO_CONFIG,     state.audioObjADconf);
+        const adPTA = document.getElementById('audio-obj-AS-pta');
+        const adSRT = document.getElementById('audio-obj-AS-srt');
+        const adWRS = document.getElementById('audio-obj-AS-wrs');
+        const adWDB = document.getElementById('audio-obj-AS-wrsdb');
+        const adTYP = document.getElementById('audio-obj-AS-tymp');
+        if(adPTA) adPTA.value = state.audioObjASpta || '';
+        if(adSRT) adSRT.value = state.audioObjASsrt || '';
+        if(adWRS) adWRS.value = state.audioObjASwrs || '';
+        if(adWDB) adWDB.value = state.audioObjASwrsdb || '';
+        if(adTYP) adTYP.value = state.audioObjAStymp || '';
+        makeButtons('audio-obj-AS-deg',  S.consts.AUDIO_DEG,        state.audioObjASdeg);
+        makeButtons('audio-obj-AS-type', S.consts.AUDIO_TYPE_ONLY,  state.audioObjAStype);
+        makeButtons('audio-obj-AS-conf', S.consts.AUDIO_CONFIG,     state.audioObjASconf);
         S.rebuild();
       });
     }
 
-    wireLiveTextarea('audio-obj-AS-custom','audioObjCustomAS');
     wireLiveTextarea('audio-obj-AD-custom','audioObjCustomAD');
+    wireLiveTextarea('audio-obj-AS-custom','audioObjCustomAS');
 
 
     /* HA Condition */
-    makeButtons('hac-AS', S.consts.HAC_OPTS, state.hacAS);
     makeButtons('hac-AD', S.consts.HAC_OPTS, state.hacAD);
+    makeButtons('hac-AS', S.consts.HAC_OPTS, state.hacAS);
 
-    const hacCopy = document.querySelector('[data-copy="hac-AS-to-AD"]');
+    const hacCopy = document.querySelector('[data-copy="hac-AD-to-AS"]');
     if(hacCopy){
       hacCopy.addEventListener('click', ()=>{
-        copySet(state.hacAS, state.hacAD);
-        makeButtons('hac-AD', S.consts.HAC_OPTS, state.hacAD);
+        copySet(state.hacAD, state.hacAS);
+        makeButtons('hac-AS', S.consts.HAC_OPTS, state.hacAS);
         S.rebuild();
       });
     }
 
-    wireLiveTextarea('hac-AS-custom','hacCustomAS');
     wireLiveTextarea('hac-AD-custom','hacCustomAD');
+    wireLiveTextarea('hac-AS-custom','hacCustomAS');
 
       /* Clearance */
     const clearSub = document.getElementById('clearance-sub');
@@ -4896,18 +4896,18 @@ pushDeliveryLines(state.deliveryPurchase);
           return;
         }
 
-        // Ear toggles (AS / AD)
+        // Ear toggles (AD / AS)
         if(earBtn){
           const ear = earBtn.dataset.clearEar;
-          if(ear === 'AS'){
-            state.clearanceAS = !state.clearanceAS;
-          } else if(ear === 'AD'){
+          if(ear === 'AD'){
             state.clearanceAD = !state.clearanceAD;
+          } else if(ear === 'AS'){
+            state.clearanceAS = !state.clearanceAS;
           }
 
           clearSub.querySelectorAll('button[data-clear-ear]').forEach(btn=>{
             const eEar = btn.dataset.clearEar;
-            const on = (eEar === 'AS') ? state.clearanceAS : state.clearanceAD;
+            const on = (eEar === 'AD') ? state.clearanceAD : state.clearanceAS;
             btn.classList.toggle('toggled', on);
           });
 
@@ -4974,7 +4974,7 @@ pushDeliveryLines(state.deliveryPurchase);
 
 
   /* ============================
-     WIRE ASSESSMENT
+     WIRE ADSESSMENT
      ============================ */
   function wireAssessment(){
 
@@ -4988,12 +4988,12 @@ pushDeliveryLines(state.deliveryPurchase);
       });
     }
 
-    makeButtons('audio-AS-deg',  S.consts.AUDIO_DEG,        state.audioASdeg);
     makeButtons('audio-AD-deg',  S.consts.AUDIO_DEG,        state.audioADdeg);
-    makeButtons('audio-AS-type', S.consts.AUDIO_TYPE_ONLY,  state.audioAStype);
+    makeButtons('audio-AS-deg',  S.consts.AUDIO_DEG,        state.audioASdeg);
     makeButtons('audio-AD-type', S.consts.AUDIO_TYPE_ONLY,  state.audioADtype);
-    makeButtons('audio-AS-conf', S.consts.AUDIO_CONFIG,     state.audioASconf);
+    makeButtons('audio-AS-type', S.consts.AUDIO_TYPE_ONLY,  state.audioAStype);
     makeButtons('audio-AD-conf', S.consts.AUDIO_CONFIG,     state.audioADconf);
+    makeButtons('audio-AS-conf', S.consts.AUDIO_CONFIG,     state.audioASconf);
 
     // Audiogram numeric + tymp (In-office)
     function wireValueA(id, setter){
@@ -5007,52 +5007,52 @@ pushDeliveryLines(state.deliveryPurchase);
       el.addEventListener('change', ()=>{ setter(el.value); S.rebuild(); });
     }
 
-    wireValueA('audio-AS-pta',   v=>state.audioASpta=v);
-    wireValueA('audio-AS-srt',   v=>state.audioASsrt=v);
-    wireValueA('audio-AS-wrs',   v=>state.audioASwrs=v);
-    wireValueA('audio-AS-wrsdb', v=>state.audioASwrsdb=v);
-    wireSelectA('audio-AS-tymp', v=>state.audioAStymp=v);
-
     wireValueA('audio-AD-pta',   v=>state.audioADpta=v);
     wireValueA('audio-AD-srt',   v=>state.audioADsrt=v);
     wireValueA('audio-AD-wrs',   v=>state.audioADwrs=v);
     wireValueA('audio-AD-wrsdb', v=>state.audioADwrsdb=v);
     wireSelectA('audio-AD-tymp', v=>state.audioADtymp=v);
 
+    wireValueA('audio-AS-pta',   v=>state.audioASpta=v);
+    wireValueA('audio-AS-srt',   v=>state.audioASsrt=v);
+    wireValueA('audio-AS-wrs',   v=>state.audioASwrs=v);
+    wireValueA('audio-AS-wrsdb', v=>state.audioASwrsdb=v);
+    wireSelectA('audio-AS-tymp', v=>state.audioAStymp=v);
 
-    const aCopy = document.querySelector('[data-copy="audio-AS-to-AD"]');
+
+    const aCopy = document.querySelector('[data-copy="audio-AD-to-AS"]');
     if(aCopy){
       aCopy.addEventListener('click', ()=>{
-        copySet(state.audioASdeg,   state.audioADdeg);
-        copySet(state.audioAStype,  state.audioADtype);
-        copySet(state.audioASconf,  state.audioADconf);
+        copySet(state.audioADdeg,   state.audioASdeg);
+        copySet(state.audioADtype,  state.audioAStype);
+        copySet(state.audioADconf,  state.audioASconf);
 
         // copy numeric + tymp
-        state.audioADpta   = state.audioASpta;
-        state.audioADsrt   = state.audioASsrt;
-        state.audioADwrs   = state.audioASwrs;
-        state.audioADwrsdb = state.audioASwrsdb;
-        state.audioADtymp  = state.audioAStymp;
+        state.audioASpta   = state.audioADpta;
+        state.audioASsrt   = state.audioADsrt;
+        state.audioASwrs   = state.audioADwrs;
+        state.audioASwrsdb = state.audioADwrsdb;
+        state.audioAStymp  = state.audioADtymp;
 
-        const adPTA = document.getElementById('audio-AD-pta');
-        const adSRT = document.getElementById('audio-AD-srt');
-        const adWRS = document.getElementById('audio-AD-wrs');
-        const adWDB = document.getElementById('audio-AD-wrsdb');
-        const adTYP = document.getElementById('audio-AD-tymp');
-        if(adPTA) adPTA.value = state.audioADpta || '';
-        if(adSRT) adSRT.value = state.audioADsrt || '';
-        if(adWRS) adWRS.value = state.audioADwrs || '';
-        if(adWDB) adWDB.value = state.audioADwrsdb || '';
-        if(adTYP) adTYP.value = state.audioADtymp || '';
-        makeButtons('audio-AD-deg',  S.consts.AUDIO_DEG,        state.audioADdeg);
-        makeButtons('audio-AD-type', S.consts.AUDIO_TYPE_ONLY,  state.audioADtype);
-        makeButtons('audio-AD-conf', S.consts.AUDIO_CONFIG,     state.audioADconf);
+        const adPTA = document.getElementById('audio-AS-pta');
+        const adSRT = document.getElementById('audio-AS-srt');
+        const adWRS = document.getElementById('audio-AS-wrs');
+        const adWDB = document.getElementById('audio-AS-wrsdb');
+        const adTYP = document.getElementById('audio-AS-tymp');
+        if(adPTA) adPTA.value = state.audioASpta || '';
+        if(adSRT) adSRT.value = state.audioASsrt || '';
+        if(adWRS) adWRS.value = state.audioASwrs || '';
+        if(adWDB) adWDB.value = state.audioASwrsdb || '';
+        if(adTYP) adTYP.value = state.audioAStymp || '';
+        makeButtons('audio-AS-deg',  S.consts.AUDIO_DEG,        state.audioASdeg);
+        makeButtons('audio-AS-type', S.consts.AUDIO_TYPE_ONLY,  state.audioAStype);
+        makeButtons('audio-AS-conf', S.consts.AUDIO_CONFIG,     state.audioASconf);
         S.rebuild();
       });
     }
 
-    wireLiveTextarea('audio-AS-custom','audioCustomAS');
     wireLiveTextarea('audio-AD-custom','audioCustomAD');
+    wireLiveTextarea('audio-AS-custom','audioCustomAS');
 
 
     /* Insurance */
@@ -5371,13 +5371,13 @@ makeButtons('order-coupling-row', S.consts.HA_COUPLING, state.orderCoupling);
   document.querySelectorAll('button[data-recscope]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const ear = btn.dataset.recscope;
-      if(ear === 'AS') state.haRecAS = !state.haRecAS;
       if(ear === 'AD') state.haRecAD = !state.haRecAD;
+      if(ear === 'AS') state.haRecAS = !state.haRecAS;
 
       document.querySelectorAll('button[data-recscope]').forEach(b=>{
         const e = b.dataset.recscope;
-        const on = (e === 'AS' && state.haRecAS) ||
-                   (e === 'AD' && state.haRecAD);
+        const on = (e === 'AD' && state.haRecAD) ||
+                   (e === 'AS' && state.haRecAS);
         b.classList.toggle('toggled', on);
       });
 
@@ -5385,11 +5385,11 @@ makeButtons('order-coupling-row', S.consts.HA_COUPLING, state.orderCoupling);
     });
   });
 
-    // Order scope: AS / AD buttons, internally '', 'AS', 'AD', or 'AU'
+    // Order scope: AD / AS buttons, internally '', 'AD', 'AS', or 'AU'
     function updateOrderScopeButtons(){
-      const scope = state.order.scope; // '', 'AS', 'AD', 'AU'
+      const scope = state.order.scope; // '', 'AD', 'AS', 'AU'
       document.querySelectorAll('button[data-orderscope]').forEach(b=>{
-        const ear = b.dataset.orderscope; // "AS" or "AD"
+        const ear = b.dataset.orderscope; // "AD" or "AS"
         const on = (scope === 'AU') || (scope === ear);
         b.classList.toggle('toggled', on);
       });
@@ -5397,7 +5397,7 @@ makeButtons('order-coupling-row', S.consts.HA_COUPLING, state.orderCoupling);
 
     document.querySelectorAll('button[data-orderscope]').forEach(btn=>{
       btn.addEventListener('click', ()=>{
-        const ear = btn.dataset.orderscope; // "AS" or "AD"
+        const ear = btn.dataset.orderscope; // "AD" or "AS"
         const cur = state.order.scope;      // current value
 
         if(cur === ear){
@@ -5408,7 +5408,7 @@ makeButtons('order-coupling-row', S.consts.HA_COUPLING, state.orderCoupling);
           state.order.scope = ear;
         } else if(cur === 'AU'){
           // Both selected; clicking one means "only the other ear"
-          state.order.scope = (ear === 'AS') ? 'AD' : 'AS';
+          state.order.scope = (ear === 'AD') ? 'AS' : 'AD';
         } else {
           // One ear selected; clicking the other -> AU
           state.order.scope = 'AU';
@@ -5456,55 +5456,55 @@ if(haTech){
     bindOrderInput('order-color','color');
 
     // Receiver lengths / powers
-    bindOrderSelect('rec-len-AS','recLenAS');
     bindOrderSelect('rec-len-AD','recLenAD');
-    bindOrderInput('rec-pwr-AS','recPwrAS');
+    bindOrderSelect('rec-len-AS','recLenAS');
     bindOrderInput('rec-pwr-AD','recPwrAD');
+    bindOrderInput('rec-pwr-AS','recPwrAS');
 
     // Ear mold style / material / color — independent per ear
-    bindOrderSelect('order-mold-type-AS','moldTypeAS');
     bindOrderSelect('order-mold-type-AD','moldTypeAD');
-    bindOrderSelect('order-mold-material-AS','moldMaterialAS');
+    bindOrderSelect('order-mold-type-AS','moldTypeAS');
     bindOrderSelect('order-mold-material-AD','moldMaterialAD');
-    bindOrderInput('mold-color-AS','moldColorAS');
+    bindOrderSelect('order-mold-material-AS','moldMaterialAS');
     bindOrderInput('mold-color-AD','moldColorAD');
+    bindOrderInput('mold-color-AS','moldColorAS');
 
     bindOrderInput('order-extra','extraDetails');
 
     // Copy entire left coupling row → right
-    const copyCouplingBtn = document.getElementById('copy-coupling-AS-to-AD');
+    const copyCouplingBtn = document.getElementById('copy-coupling-AD-to-AS');
     if(copyCouplingBtn){
       copyCouplingBtn.addEventListener('click', ()=>{
-        const lenAS  = document.getElementById('rec-len-AS');
         const lenAD  = document.getElementById('rec-len-AD');
-        const pwrAS  = document.getElementById('rec-pwr-AS');
+        const lenAS  = document.getElementById('rec-len-AS');
         const pwrAD  = document.getElementById('rec-pwr-AD');
-        const typeAS = document.getElementById('order-mold-type-AS');
+        const pwrAS  = document.getElementById('rec-pwr-AS');
         const typeAD = document.getElementById('order-mold-type-AD');
-        const matAS  = document.getElementById('order-mold-material-AS');
+        const typeAS = document.getElementById('order-mold-type-AS');
         const matAD  = document.getElementById('order-mold-material-AD');
-        const moldAS = document.getElementById('mold-color-AS');
+        const matAS  = document.getElementById('order-mold-material-AS');
         const moldAD = document.getElementById('mold-color-AD');
+        const moldAS = document.getElementById('mold-color-AS');
 
-        if(lenAS && lenAD){
-          lenAD.value = lenAS.value;
-          state.order.recLenAD = lenAS.value || '';
+        if(lenAD && lenAS){
+          lenAS.value = lenAD.value;
+          state.order.recLenAS = lenAD.value || '';
         }
-        if(pwrAS && pwrAD){
-          pwrAD.value = pwrAS.value;
-          state.order.recPwrAD = pwrAS.value || '';
+        if(pwrAD && pwrAS){
+          pwrAS.value = pwrAD.value;
+          state.order.recPwrAS = pwrAD.value || '';
         }
-        if(typeAS && typeAD){
-          typeAD.value = typeAS.value;
-          state.order.moldTypeAD = typeAS.value || '';
+        if(typeAD && typeAS){
+          typeAS.value = typeAD.value;
+          state.order.moldTypeAS = typeAD.value || '';
         }
-        if(matAS && matAD){
-          matAD.value = matAS.value;
-          state.order.moldMaterialAD = matAS.value || '';
+        if(matAD && matAS){
+          matAS.value = matAD.value;
+          state.order.moldMaterialAS = matAD.value || '';
         }
-        if(moldAS && moldAD){
-          moldAD.value = moldAS.value;
-          state.order.moldColorAD = moldAS.value || '';
+        if(moldAD && moldAS){
+          moldAS.value = moldAD.value;
+          state.order.moldColorAS = moldAD.value || '';
         }
 
         S.rebuild();
@@ -5554,36 +5554,36 @@ document
 
     /* HA Maintenance */
     /* HA Maintenance */
-    makeButtons('ham-AS', S.consts.HAM_OPTS, state.hamAS);
     makeButtons('ham-AD', S.consts.HAM_OPTS, state.hamAD);
+    makeButtons('ham-AS', S.consts.HAM_OPTS, state.hamAS);
 
-    const hamCopy = document.querySelector('[data-copy="ham-AS-to-AD"]');
+    const hamCopy = document.querySelector('[data-copy="ham-AD-to-AS"]');
     if(hamCopy){
       hamCopy.addEventListener('click', ()=>{
-        copySet(state.hamAS, state.hamAD);
-        makeButtons('ham-AD', S.consts.HAM_OPTS, state.hamAD);
+        copySet(state.hamAD, state.hamAS);
+        makeButtons('ham-AS', S.consts.HAM_OPTS, state.hamAS);
         S.rebuild();
       });
     }
 
-    wireLiveTextarea('ham-AS-custom','hamCustomAS');
     wireLiveTextarea('ham-AD-custom','hamCustomAD');
+    wireLiveTextarea('ham-AS-custom','hamCustomAS');
 
     /* HA Post-maintenance */
-    makeButtons('ham-post-AS', S.consts.HAM_POST_OPTS, state.hamPostAS);
     makeButtons('ham-post-AD', S.consts.HAM_POST_OPTS, state.hamPostAD);
+    makeButtons('ham-post-AS', S.consts.HAM_POST_OPTS, state.hamPostAS);
 
-    const hamPostCopy = document.querySelector('[data-copy="ham-post-AS-to-AD"]');
+    const hamPostCopy = document.querySelector('[data-copy="ham-post-AD-to-AS"]');
     if(hamPostCopy){
       hamPostCopy.addEventListener('click', ()=>{
-        copySet(state.hamPostAS, state.hamPostAD);
-        makeButtons('ham-post-AD', S.consts.HAM_POST_OPTS, state.hamPostAD);
+        copySet(state.hamPostAD, state.hamPostAS);
+        makeButtons('ham-post-AS', S.consts.HAM_POST_OPTS, state.hamPostAS);
         S.rebuild();
       });
     }
 
-    wireLiveTextarea('ham-post-AS-custom','hamPostCustomAS');
     wireLiveTextarea('ham-post-AD-custom','hamPostCustomAD');
+    wireLiveTextarea('ham-post-AS-custom','hamPostCustomAS');
 
     // NEW: Delivery text boxes (single-line)
     wireLiveTextarea('delivery-fit','deliveryFit');
